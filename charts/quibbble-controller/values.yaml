@@ -1,0 +1,19 @@
+# Default values for quibbble-controller
+
+replicaCount: 1
+
+controller:
+  port: 8080
+
+image:
+  repository: docker.io/quibbble/controller
+  tag: latest
+  pullPolicy: IfNotPresent
+
+cron:
+  suspend: false
+  schedule: "*/30 * * * *"
+
+ingress:
+  host: apiv2.quibbble.com
+  port: 80
