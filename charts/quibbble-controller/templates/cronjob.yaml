@@ -5,8 +5,8 @@ metadata:
   labels:
     {{- include "quibbble-controller.labels" . | nindent 4 }}
 spec:
-  suspend: {{ .Values.cron.schedule }}
-  schedule: {{ .Values.cron.schedule }}
+  suspend: {{ .Values.cron.suspend }}
+  schedule: {{ .Values.cron.schedule | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -19,7 +19,7 @@ spec:
           - name: {{ include "quibbble-controller.fullname" . }}
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
             imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-          - name: MODE
-            value: CLEAN
+            env:
+            - name: MODE
+              value: CLEAN
           restartPolicy: Never

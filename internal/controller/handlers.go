@@ -1,4 +1,4 @@
-package quibbble_controller
+package controller
 
 import (
 	"io"
@@ -29,14 +29,8 @@ func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	found, err := c.find(snapshot.Tags[qgn.KeyTag], snapshot.Tags[qgn.IDTag])
-	if found {
+	if found := c.find(snapshot.Tags[qgn.KeyTag], snapshot.Tags[qgn.IDTag]); found {
 		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-		return
-	}
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 	if err := c.create(snapshot); err != nil {

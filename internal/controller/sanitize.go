@@ -1,4 +1,4 @@
-package quibbble_controller
+package controller
 
 import (
 	"strings"

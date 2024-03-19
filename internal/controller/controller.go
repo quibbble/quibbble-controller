@@ -34,11 +34,11 @@ func NewController(clientset *kubernetes.Clientset) *Controller {
 	return c
 }
 
-func (c *Controller) find(key, id string) (bool, error) {
+func (c *Controller) find(key, id string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	_, err := c.clientset.CoreV1().Pods(key).Get(ctx, id, metav1.GetOptions{})
-	return err == nil, err
+	_, err := c.clientset.CoreV1().Pods(k8s.Namespace).Get(ctx, k8s.Name(key, id), metav1.GetOptions{})
+	return err == nil
 }
 
 func (c *Controller) create(snapshot *qgn.Snapshot) error {
@@ -117,24 +117,4 @@ func (c *Controller) active(key, id string) (bool, error) {
 		return true, nil
 	}
 	return false, nil
-}
-
-func (c *Controller) clean() error {
-	names, err := c.list()
-	if err != nil {
-		return err
-	}
-	for _, name := range names {
-		key, id := k8s.KeyID(name)
-		active, err := c.active(key, id)
-		if err != nil {
-			return err
-		}
-		if !active {
-			if err := c.delete(key, id); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
 }

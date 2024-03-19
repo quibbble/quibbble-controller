@@ -1,4 +1,4 @@
-package quibbble_server
+package server
 
 import qg "github.com/quibbble/quibbble-controller/pkg/game"
 
