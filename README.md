@@ -174,6 +174,18 @@ There are three main processes in this system.
 </details>
 
 <details>
+ <summary><code><b>ai</b></code> <code>(ai plays for the current team)</code></summary>
+
+##### Message
+
+```json
+{
+    "type": "ai",
+}
+```
+</details>
+
+<details>
  <summary><code><b>chat</b></code> <code>(send a chat message)</code></summary>
 
 ##### Message

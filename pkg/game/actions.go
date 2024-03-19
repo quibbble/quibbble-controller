@@ -1,6 +1,7 @@
 package game
 
 import (
+	"math"
 	"strconv"
 
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
@@ -10,6 +11,7 @@ import (
 const (
 	UndoAction  = "undo"
 	ResetAction = "reset"
+	AIAction    = "ai"
 )
 
 // Undo returns a new game with the last action  undone.
@@ -37,4 +39,17 @@ func Reset(b GameBuilder, g Game, seed ...int) (Game, error) {
 	}
 	snapshot.Actions = make([]qgn.Action, 0)
 	return b.Create(snapshot)
+}
+
+// AI plays the turn for the current player.
+func AI(b GameBuilder, ai GameAI, g Game, depth int) error {
+	snapshot, err := g.GetSnapshotJSON()
+	if err != nil {
+		return err
+	}
+	_, action, err := alphabeta(b, ai, g, depth, math.Inf(-1), math.Inf(1), snapshot.Turn)
+	if err != nil {
+		return err
+	}
+	return g.Do(action)
 }

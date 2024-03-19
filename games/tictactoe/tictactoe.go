@@ -47,6 +47,10 @@ func (t *Tictactoe) Do(action *qg.Action) error {
 		}
 		t.state = g.(*Tictactoe).state
 		t.history = g.(*Tictactoe).history
+	case qg.AIAction:
+		if err := qg.AI(Builder{}, AI{}, t, 3); err != nil {
+			return err
+		}
 	case MarkAction:
 		var details MarkDetails
 		if err := mapstructure.Decode(action.Details, &details); err != nil {
