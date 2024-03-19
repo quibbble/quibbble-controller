@@ -5,6 +5,8 @@ The project allows Quibbble games to be run in a K8s cluster. Games are spun up 
 ## TODO
 
 - Add storage
+- Implement other 5 games
+- Add Github Actions pipeline that builds and pushes new images on tag
 
 ## Supported Games
 - [carcassonne](/games/carcassonne/)
@@ -46,7 +48,7 @@ There are three main processes in this system.
 
 > | name      |  type     | data type                          | description                                                       |
 > |-----------|-----------|------------------------------------|-------------------------------------------------------------------|
-> | None      |  required | object ([QGN](/pkg/qgn/README.md)) | QGN descibing the game to create                                  |
+> | None      |  required | [QGN](/pkg/gamenotation/README.md) | [QGN](/pkg/gamenotation/README.md) descibing the game to create   |
 
 
 ##### Responses
@@ -103,7 +105,7 @@ There are three main processes in this system.
 
 > | http code     | content-type                            | response                                                            |
 > |---------------|-----------------------------------------|---------------------------------------------------------------------|
-> | `200`         | `application/json` or `application/qgn` | JSON or [QGN](/pkg/qgn/README.md)                                   |
+> | `200`         | `application/json` or `application/qgn` | JSON or [QGN](/pkg/gamenotation/README.md)                          |
 > | `400`         | `text/plain;charset=UTF-8`              | `Bad Request`                                                       |
 > | `404`         | `text/plain;charset=UTF-8`              | `Not Found`                                                         |
 > | `500`         | `text/plain;charset=UTF-8`              | `Internal Server Error`                                             |
