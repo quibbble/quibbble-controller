@@ -8,8 +8,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func CreateIngress(key, id string) *networkingv1.Ingress {
-	prefix := networkingv1.PathTypePrefix
+func CreateIngress(host, key, id string) *networkingv1.Ingress {
+	pathType := networkingv1.PathTypeImplementationSpecific
 	return &networkingv1.Ingress{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Ingress",
@@ -30,13 +30,13 @@ func CreateIngress(key, id string) *networkingv1.Ingress {
 		Spec: networkingv1.IngressSpec{
 			Rules: []networkingv1.IngressRule{
 				{
-					Host: "apiv2.quibbble.com",
+					Host: host,
 					IngressRuleValue: networkingv1.IngressRuleValue{
 						HTTP: &networkingv1.HTTPIngressRuleValue{
 							Paths: []networkingv1.HTTPIngressPath{
 								{
 									Path:     fmt.Sprintf("/%s/%s", key, id) + "(/|$)(.*)",
-									PathType: &prefix,
+									PathType: &pathType,
 									Backend: networkingv1.IngressBackend{
 										Service: &networkingv1.IngressServiceBackend{
 											Name: Name(key, id),

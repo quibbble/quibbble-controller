@@ -4,9 +4,9 @@ The project allows Quibbble games to be run in a K8s cluster. Games are spun up 
 
 ## TODO
 
-- Add storage
+- Add controller stats endpoint
 - Implement other 5 games
-- Add Github Actions pipeline that builds and pushes new images on tag
+- Add Github Actions pipeline that builds and pushes new images and helm releases
 
 ## Supported Games
 - [carcassonne](/games/carcassonne/)

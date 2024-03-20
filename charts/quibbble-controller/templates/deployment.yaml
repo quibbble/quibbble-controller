@@ -20,13 +20,24 @@ spec:
         {{- include "quibbble-controller.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "quibbble-controller.fullname" . }}
+      volumes:
+      - name: config-vol
+        configMap:
+          name: {{ include "quibbble-controller.fullname" . }}
       containers:
       - name: quibbble-controller
         image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default "latest" }}"
         imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+        volumeMounts:
+        - name: config-vol
+          mountPath: /root/config.yaml
+          subPath: config.yaml
         env:
-        - name: PORT
-          value: {{ .Values.controller.port | quote }}
+        - name: STORAGE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "quibbble-controller.fullname" . }}
+              key: storage-password
         livenessProbe:
           httpGet:
             path: /health

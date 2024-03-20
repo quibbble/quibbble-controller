@@ -10,10 +10,11 @@ import (
 	"os/signal"
 	"time"
 
+	st "github.com/quibbble/quibbble-controller/pkg/store"
 	"k8s.io/client-go/kubernetes"
 )
 
-func ServeHTTP(clientset *kubernetes.Clientset, port string) {
+func ServeHTTP(clientset *kubernetes.Clientset, storage st.GameStore, config *GameServerConfig, port string) {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatal(err)
@@ -21,7 +22,7 @@ func ServeHTTP(clientset *kubernetes.Clientset, port string) {
 	log.Printf("listening on %v", l.Addr())
 
 	s := &http.Server{
-		Handler:      NewController(clientset),
+		Handler:      NewController(config, clientset, storage),
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}

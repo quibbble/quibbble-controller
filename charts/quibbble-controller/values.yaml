@@ -2,6 +2,7 @@
 
 replicaCount: 1
 
+# controller parameters
 controller:
   image:
     repository: docker.io/quibbble/controller
@@ -9,6 +10,7 @@ controller:
     pullPolicy: IfNotPresent
   port: 8080
 
+# watcher parameters
 watcher:
   image:
     repository: docker.io/quibbble/watcher
@@ -17,6 +19,25 @@ watcher:
   suspend: false
   schedule: "*/30 * * * *"
 
+# server parameters
+server:
+  image:
+    repository: docker.io/quibbble/server
+    tag: latest
+    pullPolicy: IfNotPresent
+
+# storage parameters
+# if enabled, uncomment lines below. A K8s secret holding
+# the storage password will also need to be create before
+# installing this chart.
+storage:
+  enabled: false
+  # host: ""
+  # username: ""
+  # database: ""
+  # sslmode: ""
+
+# ingress parameters
 ingress:
-  host: apiv2.quibbble.com
+  host: ""
   port: 80

@@ -1,4 +1,4 @@
-package game_store
+package cockroachdb
 
 import (
 	"context"
@@ -7,20 +7,21 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
+	"github.com/quibbble/quibbble-controller/pkg/store"
 )
 
-type CockroachClient struct {
+type Client struct {
 	pool *pgxpool.Pool
 }
 
-func NewCockroachClient(config *CockroachConfig) (*CockroachClient, error) {
+func NewClient(config *Config) (*Client, error) {
 	if !config.Enabled {
-		return &CockroachClient{}, nil
+		return &Client{}, nil
 	}
 
 	cfg, err := pgxpool.ParseConfig(config.GetURL())
 	if err != nil {
-		return nil, ErrGameStoreConnection
+		return nil, store.ErrGameStoreConnection
 	}
 
 	cfg.MaxConns = 3
@@ -31,17 +32,17 @@ func NewCockroachClient(config *CockroachConfig) (*CockroachClient, error) {
 
 	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
-		return nil, ErrGameStoreConnection
+		return nil, store.ErrGameStoreConnection
 	}
 
-	return &CockroachClient{
+	return &Client{
 		pool: pool,
 	}, nil
 }
 
-func (c *CockroachClient) GetGame(ctx context.Context, key, id string) (*Game, error) {
+func (c *Client) GetGame(ctx context.Context, key, id string) (*store.Game, error) {
 	if c.pool == nil {
-		return nil, ErrGameStoreNotEnabled
+		return nil, store.ErrGameStoreNotEnabled
 	}
 
 	sql := `
@@ -58,9 +59,9 @@ func (c *CockroachClient) GetGame(ctx context.Context, key, id string) (*Game, e
 
 	if err := row.Scan(&raw, &updatedAt); err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, ErrGameStoreNotFound
+			return nil, store.ErrGameStoreNotFound
 		}
-		return nil, ErrGameStoreSelect
+		return nil, store.ErrGameStoreSelect
 	}
 
 	snapshot, err := qgn.Parse(raw)
@@ -68,7 +69,7 @@ func (c *CockroachClient) GetGame(ctx context.Context, key, id string) (*Game, e
 		return nil, err
 	}
 
-	return &Game{
+	return &store.Game{
 		Key:       key,
 		ID:        id,
 		Snapshot:  snapshot,
@@ -76,9 +77,9 @@ func (c *CockroachClient) GetGame(ctx context.Context, key, id string) (*Game, e
 	}, nil
 }
 
-func (c *CockroachClient) GetStats(ctx context.Context) (*Stats, error) {
+func (c *Client) GetStats(ctx context.Context) (*store.Stats, error) {
 	if c.pool == nil {
-		return nil, ErrGameStoreNotEnabled
+		return nil, store.ErrGameStoreNotEnabled
 	}
 
 	sql := `
@@ -95,12 +96,12 @@ func (c *CockroachClient) GetStats(ctx context.Context) (*Stats, error) {
 	rows, err := c.pool.Query(ctx, sql)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, ErrGameStoreNotFound
+			return nil, store.ErrGameStoreNotFound
 		}
-		return nil, ErrGameStoreSelect
+		return nil, store.ErrGameStoreSelect
 	}
 
-	stats := &Stats{
+	stats := &store.Stats{
 		ActiveGames:   make(map[string]int),
 		CompleteGames: make(map[string]int),
 	}
@@ -113,9 +114,9 @@ func (c *CockroachClient) GetStats(ctx context.Context) (*Stats, error) {
 	for rows.Next() {
 		if err := rows.Scan(&gameKey, &activeGames, &completeGames); err != nil {
 			if err == pgx.ErrNoRows {
-				return nil, ErrGameStoreNotFound
+				return nil, store.ErrGameStoreNotFound
 			}
-			return nil, ErrGameStoreSelect
+			return nil, store.ErrGameStoreSelect
 		}
 		stats.ActiveGames[gameKey] = activeGames
 		stats.CompleteGames[gameKey] = completeGames
@@ -124,9 +125,9 @@ func (c *CockroachClient) GetStats(ctx context.Context) (*Stats, error) {
 	return stats, nil
 }
 
-func (c *CockroachClient) StoreActive(ctx context.Context, game *Game) error {
+func (c *Client) StoreActive(ctx context.Context, game *store.Game) error {
 	if c.pool == nil {
-		return ErrGameStoreNotEnabled
+		return store.ErrGameStoreNotEnabled
 	}
 
 	sql := `
@@ -136,15 +137,15 @@ func (c *CockroachClient) StoreActive(ctx context.Context, game *Game) error {
 
 	_, err := c.pool.Exec(ctx, sql, game.Key, game.ID, game.Snapshot.String(), game.UpdatedAt)
 	if err != nil {
-		return ErrGameStoreInsert
+		return store.ErrGameStoreInsert
 	}
 
 	return nil
 }
 
-func (c *CockroachClient) DeleteActive(ctx context.Context, game *Game) error {
+func (c *Client) DeleteActive(ctx context.Context, game *store.Game) error {
 	if c.pool == nil {
-		return ErrGameStoreNotEnabled
+		return store.ErrGameStoreNotEnabled
 	}
 
 	sql := `
@@ -155,15 +156,15 @@ func (c *CockroachClient) DeleteActive(ctx context.Context, game *Game) error {
 
 	_, err := c.pool.Exec(ctx, sql, game.Key, game.ID)
 	if err != nil {
-		return ErrGameStoreDelete
+		return store.ErrGameStoreDelete
 	}
 
 	return nil
 }
 
-func (c *CockroachClient) StoreComplete(ctx context.Context, game *Game) error {
+func (c *Client) StoreComplete(ctx context.Context, game *store.Game) error {
 	if c.pool == nil {
-		return ErrGameStoreNotEnabled
+		return store.ErrGameStoreNotEnabled
 	}
 
 	sql := `
@@ -173,13 +174,13 @@ func (c *CockroachClient) StoreComplete(ctx context.Context, game *Game) error {
 
 	_, err := c.pool.Exec(ctx, sql, game.Key, game.Snapshot.String(), game.UpdatedAt)
 	if err != nil {
-		return ErrGameStoreInsert
+		return store.ErrGameStoreInsert
 	}
 
 	return nil
 }
 
-func (c *CockroachClient) Close(ctx context.Context) error {
+func (c *Client) Close(ctx context.Context) error {
 	if c.pool == nil {
 		return nil
 	}

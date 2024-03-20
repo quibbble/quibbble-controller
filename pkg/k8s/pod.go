@@ -6,7 +6,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func CreatePod(key, id string) *corev1.Pod {
+func CreatePod(key, id, image, pullyPolicy string) *corev1.Pod {
 	return &corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Pod",
@@ -25,13 +25,18 @@ func CreatePod(key, id string) *corev1.Pod {
 			Containers: []corev1.Container{
 				{
 					Name:            Name(key, id),
-					Image:           "docker.io/quibbble/server:latest",
-					ImagePullPolicy: "Always", // todo reset to IfNotPresent
+					Image:           image,
+					ImagePullPolicy: corev1.PullPolicy(pullyPolicy),
 					VolumeMounts: []corev1.VolumeMount{
 						{
-							Name:      Name(key, id),
+							Name:      "qgn-vol",
 							MountPath: "/root/qgn",
 							SubPath:   "qgn",
+						},
+						{
+							Name:      "config-vol",
+							MountPath: "/root/config.yaml",
+							SubPath:   "config.yaml",
 						},
 					},
 					Ports: []corev1.ContainerPort{
@@ -41,15 +46,38 @@ func CreatePod(key, id string) *corev1.Pod {
 							ContainerPort: 8080,
 						},
 					},
+					Env: []corev1.EnvVar{
+						{
+							Name: "STORAGE_PASSWORD", // password used to connect to the game store
+							ValueFrom: &corev1.EnvVarSource{
+								SecretKeyRef: &corev1.SecretKeySelector{
+									Key: "storage-password",
+									LocalObjectReference: corev1.LocalObjectReference{
+										Name: ChartName,
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			Volumes: []corev1.Volume{
 				{
-					Name: Name(key, id),
+					Name: "qgn-vol",
 					VolumeSource: corev1.VolumeSource{
 						ConfigMap: &corev1.ConfigMapVolumeSource{
 							LocalObjectReference: corev1.LocalObjectReference{
 								Name: Name(key, id),
+							},
+						},
+					},
+				},
+				{
+					Name: "config-vol",
+					VolumeSource: corev1.VolumeSource{
+						ConfigMap: &corev1.ConfigMapVolumeSource{
+							LocalObjectReference: corev1.LocalObjectReference{
+								Name: ChartName,
 							},
 						},
 					},

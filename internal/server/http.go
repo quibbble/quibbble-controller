@@ -14,21 +14,12 @@ import (
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 )
 
-func ServeHTTP(builders []qg.GameBuilder, completeFn func(qg.Game), qgnPath, port string) {
+func ServeHTTP(builders []qg.GameBuilder, completeFn func(qg.Game), snapshot *qgn.Snapshot, port string) {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("listening on %v", l.Addr())
-
-	raw, err := os.ReadFile(qgnPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	snapshot, err := qgn.Parse(string(raw))
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	var builder qg.GameBuilder
 	for _, b := range builders {

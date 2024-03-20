@@ -1,6 +1,6 @@
 apiVersion: v2
 name: quibbble-controller
-description: Deployment of the quibbble game controller
+description: K8s quibbble controller
 type: application
 version: 0.0.1
 appVersion: "latest"

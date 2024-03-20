@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quibbble-controller.fullname" . }}
+data:
+  config.yaml: |
+    storage:
+      enabled: {{ .Values.storage.enabled | default false }}
+      host: {{ .Values.storage.host | default "" }}
+      username: {{ .Values.storage.username | default "" }}
+      database: {{ .Values.storage.database | default "" }}
+      sslmode: {{ .Values.storage.sslmode | default "" }}
+    server:
+      host: {{ .Values.ingress.host }}
+      image:
+        repository: {{ .Values.server.image.repository }}
+        tag: {{ .Values.server.image.tag }}
+        pullPolicy: {{ .Values.server.image.pullPolicy }}
+    port: {{ .Values.controller.port }}

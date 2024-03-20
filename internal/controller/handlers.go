@@ -29,16 +29,23 @@ func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	if found := c.find(snapshot.Tags[qgn.KeyTag], snapshot.Tags[qgn.IDTag]); found {
+	key, id := snapshot.Tags[qgn.KeyTag], snapshot.Tags[qgn.IDTag]
+	if found := c.find(key, id); found {
 		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 		return
 	}
 
-	// todo check active table and load if already exists
+	// Check long term store to see if a snapshot exists
+	// for the given key and id. If so then use that
+	// instead of snapshot provided in the request.
+	if s, err := c.lookup(key, id); err == nil {
+		snapshot = s
+		snapshot.Tags[qgn.IDTag] = id
+	}
 
 	if err := c.create(snapshot); err != nil {
 		log.Println(err.Error())
-		c.delete(snapshot.Tags[qgn.KeyTag], snapshot.Tags[qgn.IDTag])
+		c.delete(key, id)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -54,7 +61,11 @@ func (c *Controller) deleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// todo save to active table
+	// Store the game into long term storage
+	// for future retrieval and play.
+	if err := c.store(key, id); err != nil {
+		log.Println(err.Error())
+	}
 
 	if err := c.delete(key, id); err != nil {
 		log.Println(err.Error())
