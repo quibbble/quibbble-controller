@@ -25,8 +25,8 @@ type Game struct {
 }
 
 type Stats struct {
-	ActiveGames   map[string]int `json:"active_games"`
-	CompleteGames map[string]int `json:"complete_games"`
+	CreatedGameCount  map[string]int `json:"created_game_count"`
+	CompleteGameCount map[string]int `json:"complete_game_count"`
 }
 
 // GameStore stores games into long term storage

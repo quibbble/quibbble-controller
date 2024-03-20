@@ -59,7 +59,7 @@ func (w *Watcher) active(key, id string) (bool, error) {
 		return false, err
 	}
 
-	if active.Players > 0 || active.LastUpdated.Add(30*time.Minute).After(time.Now()) {
+	if active.PlayerCount > 0 || active.LastUpdated.Add(30*time.Minute).After(time.Now()) {
 		return true, nil
 	}
 	return false, nil

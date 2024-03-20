@@ -75,13 +75,13 @@ func (gs *GameServer) snapshotHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type Active struct {
-	Players     int       `json:"players"`
+	PlayerCount int       `json:"player_count"`
 	LastUpdated time.Time `json:"last_updated"`
 }
 
 func (gs *GameServer) activeHandler(w http.ResponseWriter, r *http.Request) {
 	raw, _ := json.Marshal(Active{
-		Players:     len(gs.players),
+		PlayerCount: len(gs.players),
 		LastUpdated: gs.lastUpdated,
 	})
 	w.Header().Set("Content-Type", "application/json")
