@@ -25,7 +25,6 @@ helm upgrade --install quibbble-controller quibbble-controller \
 
 ## TODO
 
-- Add controller stats endpoint
 - Implement other 5 games
 - Add Github Actions pipeline that builds and pushes new images and helm releases
 
@@ -40,24 +39,24 @@ helm upgrade --install quibbble-controller quibbble-controller \
 ## Architecture
 
 There are three main processes in this system.
-1. `Controller` - Processes game create and delete requests.
-2. `Warcher` - Periodically searches for and cleans up stale games.
-3. `Server` - Runs a game instance.
+1. `controller` - Processes game create and delete requests.
+2. `watcher` - Periodically searches for and cleans up stale games.
+3. `server` - Runs a game instance.
 
 ## Flows
 
 ### Game Creation
-- Send `POST https://api.quibbble.com/create` with some `qqn` such as `[key "tictactoe"][id "example"][teams "red, blue"]`.
-- `Controller` processes the request and, if valid, creates K8s ConfigMap, Pod, Service, and Ingress resources.
-- Game can now be accessed at `https://api.quibbble.com/tictactoe/example`.
+- Send `POST https://<host>/create` with some `qqn` such as `[key "tictactoe"][id "example"][teams "red, blue"]`.
+- `controller` processes the request and, if valid, creates K8s ConfigMap, Pod, Service, and Ingress resources.
+- Game can now be accessed at `https://<host>/tictactoe/example`.
 
 ### Game Connection
-- Join a game by connection to `wss://api.quibbble.com/tictactoe/example/connect` with websockets.
-- Connection should be open to a `Server` instance and relevant game messages should be recieved.
+- Join a game by connection to `wss://<host>/tictactoe/example/connect` with websockets.
+- Connection should be open to a `server` instance and relevant game messages should be recieved.
 
 ### Game Cleanup
-- `Watcher` will kick off every `X` timeperiod. 
-- Job requests data from all live games by calling `GET https://api.quibbble.com/<key>/<id>/active` for each game.
+- `watcher` will kick off every `X` timeperiod. 
+- Job requests data from all live games by calling `GET https://<host>/<key>/<id>/active` for each game.
 - If there are no connected players and no recent updates then all K8s related resources are deleted.
 
 ## REST API
@@ -161,6 +160,28 @@ There are three main processes in this system.
 
 > ```javascript
 >  curl -X GET https://api.quibbble.com/{key}/{id}/snapshot?format=json
+> ```
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/stats</b></code> <code>(get all game stats)</code></summary>
+
+##### Parameters
+
+> None
+
+
+##### Responses
+
+> | http code     | content-type                            | response                                                            |
+> |---------------|-----------------------------------------|---------------------------------------------------------------------|
+> | `200`         | `application/json`                      | Stats for all games                                                 |
+> | `500`         | `text/plain;charset=UTF-8`              | `Internal Server Error`                                             |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X GET https://api.quibbble.com/stats
 > ```
 </details>
 

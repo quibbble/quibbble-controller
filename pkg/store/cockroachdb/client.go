@@ -102,8 +102,8 @@ func (c *Client) GetStats(ctx context.Context) (*store.Stats, error) {
 	}
 
 	stats := &store.Stats{
-		ActiveGames:   make(map[string]int),
-		CompleteGames: make(map[string]int),
+		CreatedGameCount:  make(map[string]int),
+		CompleteGameCount: make(map[string]int),
 	}
 
 	var (
@@ -118,8 +118,8 @@ func (c *Client) GetStats(ctx context.Context) (*store.Stats, error) {
 			}
 			return nil, store.ErrGameStoreSelect
 		}
-		stats.ActiveGames[gameKey] = activeGames
-		stats.CompleteGames[gameKey] = completeGames
+		stats.CreatedGameCount[gameKey] = activeGames
+		stats.CompleteGameCount[gameKey] = completeGames
 	}
 
 	return stats, nil

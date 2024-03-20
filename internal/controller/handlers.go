@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -74,6 +75,23 @@ func (c *Controller) deleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(http.StatusText(http.StatusOK)))
+}
+
+func (c *Controller) statsHandler(w http.ResponseWriter, r *http.Request) {
+	stats, err := c.stats()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	raw, err := json.Marshal(stats)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(raw)
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {

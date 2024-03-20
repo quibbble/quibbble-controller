@@ -38,13 +38,14 @@ func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, st
 	}
 	c.serveMux.HandleFunc("/create", c.createHandler)
 	c.serveMux.HandleFunc("/delete", c.deleteHandler)
+	c.serveMux.HandleFunc("/stats", c.statsHandler)
 	c.serveMux.HandleFunc("/health", healthHandler)
 	return c
 }
 
 // find checks to see if a game is currently live (game server up and running).
 func (c *Controller) find(key, id string) bool {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	_, err := c.clientset.CoreV1().Pods(k8s.Namespace).Get(ctx, k8s.Name(key, id), metav1.GetOptions{})
 	return err == nil
