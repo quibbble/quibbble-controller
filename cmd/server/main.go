@@ -24,5 +24,8 @@ func main() {
 		port = "8080"
 	}
 
+	log.Println("server starting...")
+	defer log.Println("server closed")
+
 	qs.ServeHTTP([]qg.GameBuilder{tictactoe.Builder{}}, path, port)
 }

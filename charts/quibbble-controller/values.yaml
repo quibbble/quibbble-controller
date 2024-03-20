@@ -3,14 +3,17 @@
 replicaCount: 1
 
 controller:
+  image:
+    repository: docker.io/quibbble/controller
+    tag: latest
+    pullPolicy: IfNotPresent
   port: 8080
 
-image:
-  repository: docker.io/quibbble/controller
-  tag: latest
-  pullPolicy: IfNotPresent
-
-cron:
+watcher:
+  image:
+    repository: docker.io/quibbble/watcher
+    tag: latest
+    pullPolicy: IfNotPresent
   suspend: false
   schedule: "*/30 * * * *"
 

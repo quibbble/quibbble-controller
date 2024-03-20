@@ -19,23 +19,23 @@ The project allows Quibbble games to be run in a K8s cluster. Games are spun up 
 ## Architecture
 
 There are three main processes in this system.
-1. `Controller Service` - Processes game creation requests.
-2. `Controller Cronjob` - Periodically searches and cleans stale games.
-3. `Game Service` - Runs a game instance.
+1. `Controller` - Processes game create and delete requests.
+2. `Warcher` - Periodically searches for and cleans up stale games.
+3. `Server` - Runs a game instance.
 
 ## Flows
 
 ### Game Creation
 - Send `POST https://api.quibbble.com/create` with some `qqn` such as `[key "tictactoe"][id "example"][teams "red, blue"]`.
-- `Controller Service` processes the request and, if valid, creates K8s ConfigMap, Pod, Service, and Ingress resources.
+- `Controller` processes the request and, if valid, creates K8s ConfigMap, Pod, Service, and Ingress resources.
 - Game can now be accessed at `https://api.quibbble.com/tictactoe/example`.
 
 ### Game Connection
 - Join a game by connection to `wss://api.quibbble.com/tictactoe/example/connect` with websockets.
-- Connection should be open to a `Game Service` instance and relevant game messages should be recieved.
+- Connection should be open to a `Server` instance and relevant game messages should be recieved.
 
 ### Game Cleanup
-- `Controller Cronjob` will kick off every `X` timeperiod. 
+- `Watcher` will kick off every `X` timeperiod. 
 - Job requests data from all live games by calling `GET https://api.quibbble.com/<key>/<id>/active` for each game.
 - If there are no connected players and no recent updates then all K8s related resources are deleted.
 
@@ -64,6 +64,32 @@ There are three main processes in this system.
 
 > ```javascript
 >  curl -X POST -H "Content-Type: application/qgn" --data @post.qgn https://api.quibbble.com/create
+> ```
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/delete?key={key}&id={id}</b></code> <code>(delete a game)</code></summary>
+
+##### Parameters
+
+> | name      |  type     | data type                          | description                                                       |
+> |-----------|-----------|------------------------------------|-------------------------------------------------------------------|
+> | key       |  required | string                             | The name of the game i.e. `tictactoe` or `connect4`               |
+> | id        |  required | string                             | The unique id of the game instance to join                        |
+
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `text/plain;charset=UTF-8`        | `OK`                                                                |
+> | `404`         | `text/plain;charset=UTF-8`        | `Not Found`                                                         |
+> | `500`         | `text/plain;charset=UTF-8`        | `Internal Server Error`                                             |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X DELETE https://api.quibbble.com/delete?key={key}&id={id}
 > ```
 </details>
 

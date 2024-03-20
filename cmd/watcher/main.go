@@ -2,9 +2,8 @@ package main
 
 import (
 	"log"
-	"os"
 
-	qc "github.com/quibbble/quibbble-controller/internal/controller"
+	"github.com/quibbble/quibbble-controller/internal/watcher"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
@@ -14,10 +13,6 @@ func init() {
 }
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
 
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
@@ -29,8 +24,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("controller starting...")
-	defer log.Println("controller closed")
+	log.Println("watcher starting...")
+	defer log.Println("watcher closed")
 
-	qc.ServeHTTP(clientset, port)
+	if err := watcher.Clean(clientset); err != nil {
+		log.Fatal(err)
+	}
 }

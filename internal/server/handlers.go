@@ -49,7 +49,7 @@ func (gs *GameServer) snapshotHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-	switch r.URL.Query().Get("format") {
+	switch r.URL.Query().Get(FormatQuery) {
 	case JSONFormat:
 		snapshot, err := gs.game.GetSnapshotJSON()
 		if err != nil {

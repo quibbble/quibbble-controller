@@ -22,13 +22,11 @@ spec:
       serviceAccountName: {{ include "quibbble-controller.fullname" . }}
       containers:
       - name: quibbble-controller
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default "latest" }}"
+        imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
         env:
         - name: PORT
           value: {{ .Values.controller.port | quote }}
-        - name: MODE
-          value: CREATE
         livenessProbe:
           httpGet:
             path: /health

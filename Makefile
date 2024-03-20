@@ -15,3 +15,12 @@ push_controller:
 
 run_controller:
 	docker run -p 8080:8080 quibbble/controller:latest
+
+build_watcher:
+	docker build -t quibbble/watcher:latest -f build/watcher.Dockerfile .
+
+push_watcher:
+	docker push quibbble/watcher:latest
+
+run_watcher:
+	docker run quibbble/watcher:latest
