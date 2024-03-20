@@ -22,12 +22,6 @@ helm upgrade --install quibbble-controller quibbble-controller \
     --namespace quibbble --create-namespace
 ```
 
-
-## TODO
-
-- Implement other 5 games
-- Add Github Actions pipeline that builds and pushes new images and helm releases
-
 ## Supported Games
 - [carcassonne](/games/carcassonne/)
 - [connect4](/games/connect4/)
