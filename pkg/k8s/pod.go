@@ -26,7 +26,7 @@ func CreatePod(key, id string) *corev1.Pod {
 				{
 					Name:            Name(key, id),
 					Image:           "docker.io/quibbble/server:latest",
-					ImagePullPolicy: "Always", // IfNotPresent
+					ImagePullPolicy: "Always", // todo reset to IfNotPresent
 					VolumeMounts: []corev1.VolumeMount{
 						{
 							Name:      Name(key, id),

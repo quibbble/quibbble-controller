@@ -27,5 +27,9 @@ func main() {
 	log.Println("server starting...")
 	defer log.Println("server closed")
 
-	qs.ServeHTTP([]qg.GameBuilder{tictactoe.Builder{}}, path, port)
+	completeFn := func(qg.Game) {
+		// todo store to complete table
+	}
+
+	qs.ServeHTTP([]qg.GameBuilder{tictactoe.Builder{}}, completeFn, path, port)
 }

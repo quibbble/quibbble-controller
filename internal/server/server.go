@@ -29,9 +29,12 @@ type GameServer struct {
 
 	// actionCh sends actions to the server to be processed.
 	actionCh chan *Action
+
+	// completeFn is called on game end.
+	completeFn func(qg.Game)
 }
 
-func NewGameServer(game qg.Game) *GameServer {
+func NewGameServer(game qg.Game, completeFn func(qg.Game)) *GameServer {
 	gs := &GameServer{
 		lastUpdated: time.Now(),
 		game:        game,
@@ -39,6 +42,7 @@ func NewGameServer(game qg.Game) *GameServer {
 		joinCh:      make(chan *Player),
 		leaveCh:     make(chan *Player),
 		actionCh:    make(chan *Action),
+		completeFn:  completeFn,
 	}
 	go gs.Start()
 	gs.serveMux.HandleFunc("/connect", gs.connectHandler)
@@ -101,6 +105,10 @@ func (gs *GameServer) Start() {
 					continue
 				}
 				gs.sendSnapshotMessages()
+
+				if snapshot, err := gs.game.GetSnapshotJSON(); err == nil && len(snapshot.Winners) > 0 {
+					gs.completeFn(gs.game)
+				}
 			}
 		}
 		gs.lastUpdated = time.Now()

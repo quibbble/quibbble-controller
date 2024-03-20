@@ -2,10 +2,6 @@ package game_store
 
 import "fmt"
 
-type DatastoreConfig struct {
-	Cockroach CockroachConfig
-}
-
 type CockroachConfig struct {
 	Enabled  bool
 	Host     string

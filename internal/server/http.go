@@ -14,7 +14,7 @@ import (
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 )
 
-func ServeHTTP(builders []qg.GameBuilder, qgnPath, port string) {
+func ServeHTTP(builders []qg.GameBuilder, completeFn func(qg.Game), qgnPath, port string) {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +46,7 @@ func ServeHTTP(builders []qg.GameBuilder, qgnPath, port string) {
 	}
 
 	s := &http.Server{
-		Handler:      NewGameServer(game),
+		Handler:      NewGameServer(game, completeFn),
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}
