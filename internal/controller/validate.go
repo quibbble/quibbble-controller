@@ -3,14 +3,10 @@ package controller
 import (
 	"fmt"
 
-	"github.com/quibbble/quibbble-controller/games/tictactoe"
+	"github.com/quibbble/quibbble-controller/games"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 )
-
-var builders = map[string]qg.GameBuilder{
-	tictactoe.Builder{}.GetInformation().Key: tictactoe.Builder{},
-}
 
 func validateSnapshot(snapshot *qgn.Snapshot) error {
 	key := snapshot.Tags[qgn.KeyTag]
@@ -28,8 +24,8 @@ func validateSnapshot(snapshot *qgn.Snapshot) error {
 }
 
 func validateKey(key string) error {
-	for k := range builders {
-		if k == key {
+	for _, builder := range games.Builders {
+		if builder.GetInformation().Key == key {
 			return nil
 		}
 	}
@@ -37,7 +33,16 @@ func validateKey(key string) error {
 }
 
 func validateTeams(key string, teams []string) error {
-	builder := builders[key]
+	var builder qg.GameBuilder
+	for _, b := range games.Builders {
+		if b.GetInformation().Key == key {
+			builder = b
+			break
+		}
+	}
+	if builder == nil {
+		return fmt.Errorf("key %s is invalid", key)
+	}
 	if len(teams) < builder.GetInformation().Min {
 		return fmt.Errorf("too few teams for key %s", key)
 	} else if len(teams) > builder.GetInformation().Max {
