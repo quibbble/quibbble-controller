@@ -96,7 +96,7 @@ func (t *Tictactoe) GetSnapshotQGN() (*qgn.Snapshot, error) {
 func (t *Tictactoe) GetSnapshotJSON(team ...string) (*qg.Snapshot, error) {
 	var actions []*qg.Action
 	if len(t.winners) == 0 && (len(team) == 0 || (len(team) == 1 && team[0] == t.turn)) {
-		actions = t.getActions()
+		actions = t.actions()
 	}
 	return &qg.Snapshot{
 		Turn:    t.turn,
@@ -107,6 +107,6 @@ func (t *Tictactoe) GetSnapshotJSON(team ...string) (*qg.Snapshot, error) {
 		},
 		Actions: actions,
 		History: t.history,
-		Message: t.getMessage(),
+		Message: t.message(),
 	}, nil
 }

@@ -5,6 +5,7 @@ go 1.22
 require (
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/mitchellh/mapstructure v1.5.0
+	github.com/mroth/weightedrand v1.0.0
 	github.com/stretchr/testify v1.8.4
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.29.2

@@ -80,7 +80,7 @@ func checkDraw(board [BoardSize][BoardSize]*string) bool {
 	return true
 }
 
-func (s *state) getActions() []*qg.Action {
+func (s *state) actions() []*qg.Action {
 	targets := make([]*qg.Action, 0)
 	for r, row := range s.board {
 		for c, loc := range row {
@@ -99,7 +99,7 @@ func (s *state) getActions() []*qg.Action {
 	return targets
 }
 
-func (s *state) getMessage() string {
+func (s *state) message() string {
 	message := fmt.Sprintf("%s must mark a location", s.turn)
 	if len(s.winners) > 0 {
 		message = fmt.Sprintf("%s tie", strings.Join(s.winners, " and "))

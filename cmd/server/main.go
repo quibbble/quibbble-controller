@@ -6,7 +6,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/quibbble/quibbble-controller/games/connect4"
+	"github.com/quibbble/quibbble-controller/games/indigo"
+	"github.com/quibbble/quibbble-controller/games/stratego"
 	"github.com/quibbble/quibbble-controller/games/tictactoe"
+	"github.com/quibbble/quibbble-controller/games/tsuro"
 	qs "github.com/quibbble/quibbble-controller/internal/server"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
@@ -17,6 +21,14 @@ import (
 
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
+
+var builders = []qg.GameBuilder{
+	connect4.Builder{},
+	indigo.Builder{},
+	stratego.Builder{},
+	tictactoe.Builder{},
+	tsuro.Builder{},
 }
 
 type Config struct {
@@ -81,5 +93,5 @@ func main() {
 	log.Println("server starting...")
 	defer log.Println("server closed")
 
-	qs.ServeHTTP([]qg.GameBuilder{tictactoe.Builder{}}, completeFn, snapshot, port)
+	qs.ServeHTTP(builders, completeFn, snapshot, port)
 }

@@ -11,7 +11,6 @@ import (
 
 type state struct {
 	seed int64
-	rand *rand.Rand
 
 	variant string
 
@@ -91,7 +90,6 @@ func newState(variant string, seed int64, teams []string) (*state, error) {
 	}
 	return &state{
 		seed:            seed,
-		rand:            r,
 		variant:         variant,
 		turn:            teams[0],
 		teams:           teams,
