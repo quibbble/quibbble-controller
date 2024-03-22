@@ -6,7 +6,7 @@ const BoardSize = 3
 
 const MarkAction = "mark"
 
-var AllActions = []string{MarkAction}
+var Actions = []string{MarkAction}
 
 var (
 	ActionToQGN = map[string]string{

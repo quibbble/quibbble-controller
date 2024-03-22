@@ -27,10 +27,11 @@ func (t Tags) Teams() ([]string, error) {
 	return teams, nil
 }
 
-func (t Tags) Seed() (int, error) {
+func (t Tags) Seed() (int64, error) {
 	raw, ok := t[SeedTag]
 	if !ok {
 		return -1, fmt.Errorf("optional %s tag is missing", SeedTag)
 	}
-	return strconv.Atoi(raw)
+	i, err := strconv.Atoi(raw)
+	return int64(i), err
 }
