@@ -33,18 +33,22 @@ type GameServer struct {
 
 	// completeFn is called on game end.
 	completeFn func(qg.Game)
+
+	// allowedOrigins are the list of locations that may connect to the server
+	allowedOrigins []string
 }
 
 func NewGameServer(game qg.Game, completeFn func(qg.Game), allowedOrigins []string) *GameServer {
 	gs := &GameServer{
-		lastUpdated: time.Now(),
-		mux:         chi.NewRouter(),
-		game:        game,
-		players:     make(map[*Player]struct{}),
-		joinCh:      make(chan *Player),
-		leaveCh:     make(chan *Player),
-		actionCh:    make(chan *Action),
-		completeFn:  completeFn,
+		lastUpdated:    time.Now(),
+		mux:            chi.NewRouter(),
+		game:           game,
+		players:        make(map[*Player]struct{}),
+		joinCh:         make(chan *Player),
+		leaveCh:        make(chan *Player),
+		actionCh:       make(chan *Action),
+		completeFn:     completeFn,
+		allowedOrigins: allowedOrigins,
 	}
 	go gs.Start()
 	gs.mux.Use(cors.Handler(cors.Options{
