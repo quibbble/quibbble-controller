@@ -42,7 +42,6 @@ func CreatePod(key, id, image, pullyPolicy string) *corev1.Pod {
 					Ports: []corev1.ContainerPort{
 						{
 							Name:          "http",
-							HostPort:      8080,
 							ContainerPort: 8080,
 						},
 					},
