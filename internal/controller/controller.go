@@ -35,13 +35,13 @@ type Controller struct {
 	allowOrigins []string
 }
 
-func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore, allowedOrigins []string) *Controller {
+func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore, allowOrigins []string) *Controller {
 	c := &Controller{
 		clientset:    clientset,
 		storage:      storage,
 		config:       config,
 		mux:          chi.NewRouter(),
-		allowOrigins: allowedOrigins,
+		allowOrigins: allowOrigins,
 	}
 	c.mux.Post("/create", c.createHandler)
 	c.mux.Delete("/delete", c.deleteHandler)
