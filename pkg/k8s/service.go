@@ -27,7 +27,7 @@ func CreateService(key, id string) *corev1.Service {
 				{
 					Name:       "http",
 					Port:       80,
-					TargetPort: intstr.FromInt32(8080),
+					TargetPort: intstr.FromString("http"),
 				},
 			},
 			Selector: map[string]string{

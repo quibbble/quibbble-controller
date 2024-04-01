@@ -1,12 +1,14 @@
 package k8s
 
 import (
+	"strconv"
+
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func CreatePod(key, id, image, pullyPolicy string) *corev1.Pod {
+func CreatePod(key, id, image, pullyPolicy string, port int32) *corev1.Pod {
 	return &corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Pod",
@@ -42,7 +44,8 @@ func CreatePod(key, id, image, pullyPolicy string) *corev1.Pod {
 					Ports: []corev1.ContainerPort{
 						{
 							Name:          "http",
-							ContainerPort: 8080,
+							HostPort:      port,
+							ContainerPort: port,
 						},
 					},
 					Env: []corev1.EnvVar{
@@ -56,6 +59,10 @@ func CreatePod(key, id, image, pullyPolicy string) *corev1.Pod {
 									},
 								},
 							},
+						},
+						{
+							Name:  "PORT",
+							Value: strconv.Itoa(int(port)),
 						},
 					},
 				},

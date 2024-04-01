@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -64,12 +65,14 @@ func (c *Controller) create(snapshot *qgn.Snapshot) error {
 	key := snapshot.Tags[qgn.KeyTag]
 	id := snapshot.Tags[qgn.IDTag]
 
+	port := rand.Int31n(65536)
+
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	if _, err := c.clientset.CoreV1().ConfigMaps(k8s.Namespace).Create(ctx, k8s.CreateConfigMap(snapshot), metav1.CreateOptions{}); err != nil {
 		return err
 	}
-	if _, err := c.clientset.CoreV1().Pods(k8s.Namespace).Create(ctx, k8s.CreatePod(key, id, fmt.Sprintf("%s:%s", c.config.Image.Repository, c.config.Image.Tag), c.config.Image.PullPolicy), metav1.CreateOptions{}); err != nil {
+	if _, err := c.clientset.CoreV1().Pods(k8s.Namespace).Create(ctx, k8s.CreatePod(key, id, fmt.Sprintf("%s:%s", c.config.Image.Repository, c.config.Image.Tag), c.config.Image.PullPolicy, port), metav1.CreateOptions{}); err != nil {
 		return err
 	}
 	if _, err := c.clientset.CoreV1().Services(k8s.Namespace).Create(ctx, k8s.CreateService(key, id), metav1.CreateOptions{}); err != nil {
