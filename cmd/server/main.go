@@ -20,8 +20,7 @@ func init() {
 }
 
 type Config struct {
-	Storage        *crdb.Config `yaml:"storage"`
-	AllowedOrigins []string     `yaml:"allowedOrigins"`
+	Storage *crdb.Config `yaml:"storage"`
 }
 
 func main() {
@@ -82,5 +81,5 @@ func main() {
 	log.Println("server starting...")
 	defer log.Println("server closed")
 
-	qs.ServeHTTP(games.Builders, completeFn, snapshot, port, config.AllowedOrigins)
+	qs.ServeHTTP(games.Builders, completeFn, snapshot, port)
 }

@@ -16,10 +16,10 @@ func init() {
 }
 
 type Config struct {
-	Storage        *crdb.Config         `yaml:"storage"`
-	Server         *qc.GameServerConfig `yaml:"server"`
-	Port           string               `yaml:"port"`
-	AllowedOrigins []string             `yaml:"allowedOrigins"`
+	Storage      *crdb.Config         `yaml:"storage"`
+	Server       *qc.GameServerConfig `yaml:"server"`
+	Port         string               `yaml:"port"`
+	AllowOrigins []string             `yaml:"allowOrigins"`
 }
 
 func main() {
@@ -57,5 +57,5 @@ func main() {
 	log.Println("controller starting...")
 	defer log.Println("controller closed")
 
-	qc.ServeHTTP(clientset, storage, config.Server, config.Port, config.AllowedOrigins)
+	qc.ServeHTTP(clientset, storage, config.Server, config.Port, config.AllowOrigins)
 }

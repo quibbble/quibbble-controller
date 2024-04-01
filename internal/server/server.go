@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 )
 
@@ -38,23 +37,18 @@ type GameServer struct {
 	allowedOrigins []string
 }
 
-func NewGameServer(game qg.Game, completeFn func(qg.Game), allowedOrigins []string) *GameServer {
+func NewGameServer(game qg.Game, completeFn func(qg.Game)) *GameServer {
 	gs := &GameServer{
-		lastUpdated:    time.Now(),
-		mux:            chi.NewRouter(),
-		game:           game,
-		players:        make(map[*Player]struct{}),
-		joinCh:         make(chan *Player),
-		leaveCh:        make(chan *Player),
-		actionCh:       make(chan *Action),
-		completeFn:     completeFn,
-		allowedOrigins: allowedOrigins,
+		lastUpdated: time.Now(),
+		mux:         chi.NewRouter(),
+		game:        game,
+		players:     make(map[*Player]struct{}),
+		joinCh:      make(chan *Player),
+		leaveCh:     make(chan *Player),
+		actionCh:    make(chan *Action),
+		completeFn:  completeFn,
 	}
 	go gs.Start()
-	gs.mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   allowedOrigins,
-		AllowCredentials: true,
-	}))
 	gs.mux.Get("/connect", gs.connectHandler)
 	gs.mux.Get("/snapshot", gs.snapshotHandler)
 	gs.mux.Get("/active", gs.activeHandler)

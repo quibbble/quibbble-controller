@@ -2,13 +2,14 @@ package k8s
 
 import (
 	"fmt"
+	"strings"
 
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func CreateIngress(host, key, id string) *networkingv1.Ingress {
+func CreateIngress(host, key, id string, allowedOrigins []string) *networkingv1.Ingress {
 	pathType := networkingv1.PathTypeImplementationSpecific
 	return &networkingv1.Ingress{
 		TypeMeta: metav1.TypeMeta{
@@ -24,7 +25,11 @@ func CreateIngress(host, key, id string) *networkingv1.Ingress {
 				qgn.IDTag:  id,
 			},
 			Annotations: map[string]string{
-				"nginx.ingress.kubernetes.io/rewrite-target": "/$2",
+				"nginx.ingress.kubernetes.io/rewrite-target":         "/$2",
+				"nginx.ingress.kubernetes.io/enable-cors":            "true",
+				"nginx.ingress.kubernetes.io/cors-allow-methods":     "GET, HEAD, OPTIONS",
+				"nginx.ingress.kubernetes.io/cors-allow-credentials": "true",
+				"nginx.ingress.kubernetes.io/cors-allow-origin":      strings.Join(allowedOrigins, ","),
 			},
 		},
 		Spec: networkingv1.IngressSpec{

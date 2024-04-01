@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	"github.com/quibbble/quibbble-controller/pkg/k8s"
 	st "github.com/quibbble/quibbble-controller/pkg/store"
@@ -29,8 +28,11 @@ type Controller struct {
 	// config for game server creation.
 	config *GameServerConfig
 
-	// serveMux handles http server handling.
+	// mux handles http server handling.
 	mux *chi.Mux
+
+	// allowOrigins determines which locations may access the service
+	allowOrigins []string
 }
 
 func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore, allowedOrigins []string) *Controller {
@@ -40,11 +42,6 @@ func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, st
 		config:    config,
 		mux:       chi.NewRouter(),
 	}
-	c.mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   allowedOrigins,
-		AllowedMethods:   []string{http.MethodHead, http.MethodPost, http.MethodGet, http.MethodDelete},
-		AllowCredentials: true,
-	}))
 	c.mux.Post("/create", c.createHandler)
 	c.mux.Delete("/delete", c.deleteHandler)
 	c.mux.Get("/stats", c.statsHandler)
@@ -78,7 +75,7 @@ func (c *Controller) create(snapshot *qgn.Snapshot) error {
 	if _, err := c.clientset.CoreV1().Services(k8s.Namespace).Create(ctx, k8s.CreateService(key, id), metav1.CreateOptions{}); err != nil {
 		return err
 	}
-	if _, err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Create(ctx, k8s.CreateIngress(c.config.Host, key, id), metav1.CreateOptions{}); err != nil {
+	if _, err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Create(ctx, k8s.CreateIngress(c.config.Host, key, id, c.allowOrigins), metav1.CreateOptions{}); err != nil {
 		return err
 	}
 	return nil

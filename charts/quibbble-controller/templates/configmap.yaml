@@ -17,5 +17,5 @@ data:
         tag: {{ .Values.server.image.tag }}
         pullPolicy: {{ .Values.server.image.pullPolicy }}
     port: {{ .Values.port }}
-    allowedOrigins:{{- range .Values.allowedOrigins }}
+    allowOrigins:{{- range .Values.allowOrigins }}
     - {{. | quote}}{{- end }}
