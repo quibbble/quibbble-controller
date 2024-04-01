@@ -32,9 +32,6 @@ type GameServer struct {
 
 	// completeFn is called on game end.
 	completeFn func(qg.Game)
-
-	// allowedOrigins are the list of locations that may connect to the server
-	allowedOrigins []string
 }
 
 func NewGameServer(game qg.Game, completeFn func(qg.Game)) *GameServer {

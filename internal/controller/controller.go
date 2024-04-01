@@ -37,10 +37,11 @@ type Controller struct {
 
 func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore, allowedOrigins []string) *Controller {
 	c := &Controller{
-		clientset: clientset,
-		storage:   storage,
-		config:    config,
-		mux:       chi.NewRouter(),
+		clientset:    clientset,
+		storage:      storage,
+		config:       config,
+		mux:          chi.NewRouter(),
+		allowOrigins: allowedOrigins,
 	}
 	c.mux.Post("/create", c.createHandler)
 	c.mux.Delete("/delete", c.deleteHandler)

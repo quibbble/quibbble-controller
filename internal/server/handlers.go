@@ -16,7 +16,7 @@ func (gs *GameServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (gs *GameServer) connectHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
-		OriginPatterns: gs.allowedOrigins,
+		InsecureSkipVerify: true, // allow origin checks are handled at the ingress
 	})
 	if err != nil {
 		log.Println(err.Error())
