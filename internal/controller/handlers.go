@@ -10,7 +10,7 @@ import (
 )
 
 func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c.serveMux.ServeHTTP(w, r)
+	c.mux.ServeHTTP(w, r)
 }
 
 func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request) {

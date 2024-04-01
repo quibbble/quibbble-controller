@@ -41,5 +41,5 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: {{ .Values.controller.port }}
+            port: {{ .Values.port }}
           initialDelaySeconds: 3

@@ -2,13 +2,15 @@
 
 replicaCount: 1
 
+port: 8080
+allowedOrigins: []
+
 # controller parameters
 controller:
   image:
     repository: docker.io/quibbble/controller
     tag: latest
     pullPolicy: IfNotPresent
-  port: 8080
 
 # watcher parameters
 watcher:

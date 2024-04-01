@@ -16,4 +16,6 @@ data:
         repository: {{ .Values.server.image.repository }}
         tag: {{ .Values.server.image.tag }}
         pullPolicy: {{ .Values.server.image.pullPolicy }}
-    port: {{ .Values.controller.port }}
+    port: {{ .Values.port }}
+    allowedOrigins:{{- range .Values.allowedOrigins }}
+    - {{.}}{{- end }}

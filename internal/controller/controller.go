@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	"github.com/quibbble/quibbble-controller/pkg/k8s"
 	st "github.com/quibbble/quibbble-controller/pkg/store"
@@ -27,19 +29,25 @@ type Controller struct {
 	config *GameServerConfig
 
 	// serveMux handles http server handling.
-	serveMux http.ServeMux
+	mux *chi.Mux
 }
 
-func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore) *Controller {
+func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore, allowedOrigins []string) *Controller {
 	c := &Controller{
 		clientset: clientset,
 		storage:   storage,
 		config:    config,
+		mux:       chi.NewRouter(),
 	}
-	c.serveMux.HandleFunc("/create", c.createHandler)
-	c.serveMux.HandleFunc("/delete", c.deleteHandler)
-	c.serveMux.HandleFunc("/stats", c.statsHandler)
-	c.serveMux.HandleFunc("/health", healthHandler)
+	c.mux.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   allowedOrigins,
+		AllowedMethods:   []string{http.MethodHead, http.MethodPost, http.MethodGet, http.MethodDelete},
+		AllowCredentials: true,
+	}))
+	c.mux.Post("/create", c.createHandler)
+	c.mux.Delete("/delete", c.deleteHandler)
+	c.mux.Get("/stats", c.statsHandler)
+	c.mux.Get("/health", healthHandler)
 	return c
 }
 

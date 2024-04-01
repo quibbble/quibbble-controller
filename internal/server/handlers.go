@@ -11,7 +11,7 @@ import (
 )
 
 func (gs *GameServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	gs.serveMux.ServeHTTP(w, r)
+	gs.mux.ServeHTTP(w, r)
 }
 
 func (gs *GameServer) connectHandler(w http.ResponseWriter, r *http.Request) {

@@ -3,11 +3,12 @@ package server
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"runtime/debug"
 	"slices"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 )
 
@@ -15,8 +16,8 @@ type GameServer struct {
 	// createdAt and updatedAt all log time information about the server.
 	lastUpdated time.Time
 
-	// serveMux routes the various endpoints to the appropriate handler.
-	serveMux http.ServeMux
+	// mux routes the various endpoints to the appropriate handler.
+	mux *chi.Mux
 
 	// game is the instance of the game being played.
 	game qg.Game
@@ -34,9 +35,10 @@ type GameServer struct {
 	completeFn func(qg.Game)
 }
 
-func NewGameServer(game qg.Game, completeFn func(qg.Game)) *GameServer {
+func NewGameServer(game qg.Game, completeFn func(qg.Game), allowedOrigins []string) *GameServer {
 	gs := &GameServer{
 		lastUpdated: time.Now(),
+		mux:         chi.NewRouter(),
 		game:        game,
 		players:     make(map[*Player]struct{}),
 		joinCh:      make(chan *Player),
@@ -45,10 +47,14 @@ func NewGameServer(game qg.Game, completeFn func(qg.Game)) *GameServer {
 		completeFn:  completeFn,
 	}
 	go gs.Start()
-	gs.serveMux.HandleFunc("/connect", gs.connectHandler)
-	gs.serveMux.HandleFunc("/snapshot", gs.snapshotHandler)
-	gs.serveMux.HandleFunc("/active", gs.activeHandler)
-	gs.serveMux.HandleFunc("/health", healthHandler)
+	gs.mux.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   allowedOrigins,
+		AllowCredentials: true,
+	}))
+	gs.mux.Get("/connect", gs.connectHandler)
+	gs.mux.Get("/snapshot", gs.snapshotHandler)
+	gs.mux.Get("/active", gs.activeHandler)
+	gs.mux.Get("/health", healthHandler)
 	return gs
 }
 

@@ -20,14 +20,12 @@ func init() {
 }
 
 type Config struct {
-	Storage *crdb.Config `yaml:"storage"`
+	Storage        *crdb.Config `yaml:"storage"`
+	Port           string       `yaml:"port"`
+	AllowedOrigins []string     `yaml:"allowedOrigins"`
 }
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
 	qgnPath := os.Getenv("QGN_PATH")
 	if qgnPath == "" {
 		qgnPath = "./qgn"
@@ -81,5 +79,5 @@ func main() {
 	log.Println("server starting...")
 	defer log.Println("server closed")
 
-	qs.ServeHTTP(games.Builders, completeFn, snapshot, port)
+	qs.ServeHTTP(games.Builders, completeFn, snapshot, config.Port, config.AllowedOrigins)
 }
