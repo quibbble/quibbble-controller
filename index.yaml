@@ -3,6 +3,16 @@ entries:
   quibbble-controller:
   - apiVersion: v2
     appVersion: latest
+    created: "2024-04-01T19:29:50.875418464Z"
+    description: K8s quibbble controller
+    digest: 3d656951fd88bee6fe1566c147d2648b793e7829c50f4d3f24d5676c5ecd99e1
+    name: quibbble-controller
+    type: application
+    urls:
+    - https://github.com/quibbble/quibbble-controller/releases/download/helm-chart-0.1.2/quibbble-controller-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: latest
     created: "2024-04-01T19:06:41.253334894Z"
     description: K8s quibbble controller
     digest: 5f950d222cdcba7c5832affafd125556a23c1a9c5158a84a0daa3b33332e5302
@@ -21,4 +31,4 @@ entries:
     urls:
     - https://github.com/quibbble/quibbble-controller/releases/download/helm-chart-0.1.0/quibbble-controller-0.1.0.tgz
     version: 0.1.0
-generated: "2024-04-01T19:06:41.25339129Z"
+generated: "2024-04-01T19:29:50.87543232Z"
