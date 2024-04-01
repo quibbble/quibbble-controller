@@ -18,4 +18,4 @@ data:
         pullPolicy: {{ .Values.server.image.pullPolicy }}
     port: {{ .Values.port }}
     allowedOrigins:{{- range .Values.allowedOrigins }}
-    - {{.}}{{- end }}
+    - {{. | quote}}{{- end }}
