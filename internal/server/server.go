@@ -18,7 +18,7 @@ type GameServer struct {
 	lastUpdated time.Time
 
 	// mux routes the various endpoints to the appropriate handler.
-	mux *http.ServeMux
+	mux http.ServeMux
 
 	// game is the instance of the game being played.
 	game qg.Game

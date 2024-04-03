@@ -28,7 +28,7 @@ type Controller struct {
 	config *GameServerConfig
 
 	// mux handles http server handling.
-	mux *http.ServeMux
+	mux http.ServeMux
 
 	// allowOrigins determines which locations may access the service
 	allowOrigins []string
