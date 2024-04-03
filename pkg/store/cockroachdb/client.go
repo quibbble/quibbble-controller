@@ -46,7 +46,7 @@ func (c *Client) GetActiveGame(ctx context.Context, key, id string) (*store.Game
 	}
 
 	sql := `
-		SELECT snapshot, updated_at FROM quibbble.active
+		SELECT snapshot, updated_at FROM quibbble.active_games
 		WHERE game_key=$1
 		AND game_id=$2
 	`
@@ -140,7 +140,7 @@ func (c *Client) StoreActiveGame(ctx context.Context, game *store.Game) error {
 
 	// store the game
 	sql = `
-		UPSERT INTO quibbble.active (game_key, game_id, snapshot, updated_at)
+		UPSERT INTO quibbble.active_games (game_key, game_id, snapshot, updated_at)
 		VALUES ($1, $2, $3, $4)
 	`
 
@@ -181,7 +181,7 @@ func (c *Client) DeleteActiveGame(ctx context.Context, game *store.Game) error {
 
 	// delete the game
 	sql = `
-		DELETE FROM quibbble.active
+		DELETE FROM quibbble.active_games
 		WHERE game_key=$1
 		AND game_id=$2
 	`
@@ -200,7 +200,7 @@ func (c *Client) StoreCompletedGame(ctx context.Context, game *store.Game) error
 	}
 
 	sql := `
-		INSERT INTO quibbble.complete (game_key, snapshot, updated_at)
+		INSERT INTO quibbble.completed_games (game_key, snapshot, updated_at)
 		VALUES ($1, $2, $3)
 	`
 
@@ -218,7 +218,7 @@ func (c *Client) IncrementGameCount(ctx context.Context, gameKey string) error {
 	}
 
 	sql := `
-		UPDATE quibbble.game_count
+		UPDATE quibbble.created_games
 		SET count = count + 1
 		WHERE game_key=$1
 	`
@@ -237,12 +237,12 @@ func (c *Client) GetStats(ctx context.Context) (*store.Stats, error) {
 
 	sql := `
 		WITH A AS (
-			SELECT game_key, count AS created_games from quibbble.game_count
+			SELECT game_key, count AS created_games from quibbble.created_games
 		) ,B AS (
-			SELECT game_key, COUNT(game_id) AS active_games FROM quibbble.active
+			SELECT game_key, COUNT(game_id) AS active_games FROM quibbble.active_games
 			GROUP BY game_key
 		), C AS (
-			SELECT game_key, COUNT(id) AS completed_games FROM quibbble.completed
+			SELECT game_key, COUNT(id) AS completed_games FROM quibbble.completed_games
 			GROUP BY game_key
 		)
 		SELECT A.game_key, A.created_games, B.active_games, C.completed_games FROM 
