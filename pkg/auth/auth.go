@@ -3,16 +3,17 @@ package auth
 import (
 	"context"
 	"net/http"
-	"strings"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 )
 
 type AuthInfo string
 
+const TokenQueryParam = "token"
+
 const (
-	UserID   AuthInfo = "UserID"
-	Username AuthInfo = "Username"
+	UserID   AuthInfo = "user_id"
+	Username AuthInfo = "username"
 )
 
 const UsernameClaim = "usn"
@@ -34,14 +35,7 @@ func NewAuth(pkey string) (*Auth, error) {
 func (a *Auth) Authenticate(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		authorization := r.Header.Get("Authorization")
-		s := strings.Split(authorization, " ")
-		if len(s) < 2 {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte(http.StatusText(http.StatusUnauthorized)))
-			return
-		}
-		token := s[1]
+		token := r.URL.Query().Get(TokenQueryParam)
 		claims, err := a.client.DecodeToken(token)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -61,14 +55,7 @@ func (a *Auth) Authenticate(h http.Handler) http.Handler {
 func (a *Auth) Retrieve(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		authorization := r.Header.Get("Authorization")
-		s := strings.Split(authorization, " ")
-		if len(s) < 2 {
-			h.ServeHTTP(w, r)
-			return
-		}
-
-		token := s[1]
+		token := r.URL.Query().Get(TokenQueryParam)
 		claims, err := a.client.DecodeToken(token)
 		if err != nil {
 			h.ServeHTTP(w, r)
