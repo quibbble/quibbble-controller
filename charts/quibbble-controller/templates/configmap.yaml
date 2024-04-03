@@ -10,6 +10,8 @@ data:
       username: {{ .Values.storage.username | default "" }}
       database: {{ .Values.storage.database | default "" }}
       sslmode: {{ .Values.storage.sslmode | default "" }}
+    auth:
+      enabled: {{ .Values.auth.enabled | default false }}
     server:
       host: {{ .Values.ingress.host }}
       image:

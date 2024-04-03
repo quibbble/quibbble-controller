@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/quibbble/quibbble-controller/games"
 	qs "github.com/quibbble/quibbble-controller/internal/server"
+	"github.com/quibbble/quibbble-controller/pkg/auth"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	st "github.com/quibbble/quibbble-controller/pkg/store"
@@ -21,6 +24,7 @@ func init() {
 
 type Config struct {
 	Storage *crdb.Config `yaml:"storage"`
+	Auth    *auth.Config `yaml:"auth"`
 }
 
 func main() {
@@ -37,8 +41,9 @@ func main() {
 		configPath = "./config.yaml"
 	}
 	storagePassword := os.Getenv("STORAGE_PASSWORD")
+	authKey := os.Getenv("AUTH_KEY")
 
-	// create qgn snapshot
+	// parse qgn snapshot
 	raw, err := os.ReadFile(qgnPath)
 	if err != nil {
 		log.Fatal(err)
@@ -63,6 +68,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// create completeFn
 	completeFn := func(game qg.Game) {
 		snapshot, err := game.GetSnapshotQGN()
 		if err != nil {
@@ -71,15 +77,47 @@ func main() {
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
-		storage.StoreComplete(ctx, &st.Game{
+		storage.StoreCompletedGame(ctx, &st.Game{
 			Key:       snapshot.Tags[qgn.KeyTag],
 			Snapshot:  snapshot,
 			UpdatedAt: time.Now(),
 		})
 	}
 
+	// setup authenticate handler
+	authenticate := func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		})
+	}
+	if config.Auth.Enabled {
+		a, err := auth.NewAuth(authKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+		authenticate = a.Authenticate
+	}
+
+	// retrieve builder
+	var builder qg.GameBuilder
+	for _, b := range games.Builders {
+		if b.GetInformation().Key == snapshot.Tags[qgn.KeyTag] {
+			builder = b
+			break
+		}
+	}
+	if builder == nil {
+		log.Fatal(fmt.Errorf("no builder found for %s", snapshot.Tags[qgn.KeyTag]))
+	}
+
 	log.Println("server starting...")
 	defer log.Println("server closed")
 
-	qs.ServeHTTP(games.Builders, completeFn, snapshot, port)
+	qs.ServeHTTP(&qs.Params{
+		Builder:      builder,
+		Port:         port,
+		CompleteFn:   completeFn,
+		Authenticate: authenticate,
+		Snapshot:     snapshot,
+	})
 }

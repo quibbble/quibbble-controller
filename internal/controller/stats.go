@@ -7,26 +7,27 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/quibbble/quibbble-controller/games"
 	qs "github.com/quibbble/quibbble-controller/internal/server"
 	"github.com/quibbble/quibbble-controller/pkg/k8s"
-	st "github.com/quibbble/quibbble-controller/pkg/store"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type Stats struct {
 	LiveGameCount   map[string]int `json:"live_game_count"`
 	LivePlayerCount map[string]int `json:"live_player_count"`
-	*st.Stats
 }
 
 func (c *Controller) stats() (*Stats, error) {
 	stats := Stats{
 		LiveGameCount:   make(map[string]int),
 		LivePlayerCount: make(map[string]int),
-		Stats: &st.Stats{
-			CreatedGameCount:  make(map[string]int),
-			CompleteGameCount: make(map[string]int),
-		},
+	}
+
+	for _, builder := range games.Builders {
+		key := builder.GetInformation().Key
+		stats.LiveGameCount[key] = 0
+		stats.LivePlayerCount[key] = 0
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -61,10 +62,5 @@ func (c *Controller) stats() (*Stats, error) {
 		stats.LivePlayerCount[key] += active.PlayerCount
 	}
 
-	s, err := c.storage.GetStats(ctx)
-	if err != nil {
-		return nil, err
-	}
-	stats.Stats = s
 	return &stats, nil
 }

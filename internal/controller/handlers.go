@@ -41,7 +41,11 @@ func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request) {
 	// instead of snapshot provided in the request.
 	if s, err := c.lookup(key, id); err == nil {
 		snapshot = s
-		snapshot.Tags[qgn.IDTag] = id
+	} else {
+		// if this is a new game then increment game count
+		if err := c.increment(key); err != nil {
+			log.Println(err.Error())
+		}
 	}
 
 	if err := c.create(snapshot); err != nil {

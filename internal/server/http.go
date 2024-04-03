@@ -14,30 +14,51 @@ import (
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 )
 
-func ServeHTTP(builders []qg.GameBuilder, completeFn func(qg.Game), snapshot *qgn.Snapshot, port string) {
-	l, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
+type Params struct {
+	// Builder that builds the game instance
+	Builder qg.GameBuilder
+
+	// Snapshot of the game to build
+	Snapshot *qgn.Snapshot
+
+	// Port opened on the server
+	Port string
+
+	// CompleteFn called on game end
+	CompleteFn func(qg.Game)
+
+	// Authenticate validates protected endpoints
+	Authenticate func(http.Handler) http.Handler
+}
+
+func ServeHTTP(p *Params) {
+	l, err := net.Listen("tcp", fmt.Sprintf(":%s", p.Port))
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("listening on %v", l.Addr())
 
-	var builder qg.GameBuilder
-	for _, b := range builders {
-		if b.GetInformation().Key == snapshot.Tags[qgn.KeyTag] {
-			builder = b
-			break
-		}
-	}
-	if builder == nil {
-		log.Fatal(fmt.Errorf("no builder found for %s", snapshot.Tags[qgn.KeyTag]))
-	}
-	game, err := builder.Create(snapshot)
+	game, err := p.Builder.Create(p.Snapshot)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// retrieve server tags
+	typ, err := p.Snapshot.Tags.Type()
+	if err != nil {
+		log.Fatal(err)
+	}
+	players, err := p.Snapshot.Tags.Players()
+	if err != nil {
+		log.Fatal(err)
+	}
+	id, ok := p.Snapshot.Tags[qgn.IDTag]
+	if !ok {
+		log.Fatal(fmt.Errorf("missing id tag"))
+	}
+
 	s := &http.Server{
-		Handler:      NewGameServer(game, completeFn),
+		Handler:      NewGameServer(game, id, typ, players, p.CompleteFn, p.Authenticate),
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}

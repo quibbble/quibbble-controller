@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	"github.com/quibbble/quibbble-controller/pkg/k8s"
 	st "github.com/quibbble/quibbble-controller/pkg/store"
@@ -29,7 +28,7 @@ type Controller struct {
 	config *GameServerConfig
 
 	// mux handles http server handling.
-	mux *chi.Mux
+	mux *http.ServeMux
 
 	// allowOrigins determines which locations may access the service
 	allowOrigins []string
@@ -40,13 +39,12 @@ func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, st
 		clientset:    clientset,
 		storage:      storage,
 		config:       config,
-		mux:          chi.NewRouter(),
 		allowOrigins: allowOrigins,
 	}
-	c.mux.Post("/create", c.createHandler)
-	c.mux.Delete("/delete", c.deleteHandler)
-	c.mux.Get("/stats", c.statsHandler)
-	c.mux.Get("/health", healthHandler)
+	c.mux.HandleFunc("/create", c.createHandler)
+	c.mux.HandleFunc("/delete", c.deleteHandler)
+	c.mux.HandleFunc("/stats", c.statsHandler)
+	c.mux.HandleFunc("/health", healthHandler)
 	return c
 }
 
@@ -105,7 +103,7 @@ func (c *Controller) delete(key, id string) error {
 func (c *Controller) lookup(key, id string) (*qgn.Snapshot, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	g, err := c.storage.GetGame(ctx, key, id)
+	g, err := c.storage.GetActiveGame(ctx, key, id)
 	if err != nil {
 		return nil, err
 	}
@@ -130,10 +128,16 @@ func (c *Controller) store(key, id string) error {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	return c.storage.StoreActive(ctx, &st.Game{
+	return c.storage.StoreActiveGame(ctx, &st.Game{
 		Key:       key,
 		ID:        id,
 		Snapshot:  snapshot,
 		UpdatedAt: time.Now(),
 	})
+}
+
+func (c *Controller) increment(key string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	return c.storage.IncrementGameCount(ctx, key)
 }

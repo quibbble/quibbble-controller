@@ -7,7 +7,6 @@ import (
 	"time"
 
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
-	"github.com/quibbble/quibbble-controller/pkg/uid"
 	"nhooyr.io/websocket"
 	"nhooyr.io/websocket/wsjson"
 )
@@ -29,6 +28,9 @@ const (
 type Player struct {
 	// uid is the unique id of the player.
 	uid string
+
+	// username is the name displayed to others.
+	username string
 
 	// team represents the team the player joined.
 	team *string
@@ -53,9 +55,10 @@ type Player struct {
 	mu sync.Mutex
 }
 
-func NewPlayer(conn *websocket.Conn, actionCh chan *Action) *Player {
+func NewPlayer(uid, username string, conn *websocket.Conn, actionCh chan *Action) *Player {
 	return &Player{
-		uid:       uid.New(),
+		uid:       uid,
+		username:  username,
 		team:      nil,
 		messageCh: make(chan []byte, playerMessageBuffer),
 		actionCh:  actionCh,

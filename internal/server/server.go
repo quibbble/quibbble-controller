@@ -3,12 +3,14 @@ package server
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"runtime/debug"
 	"slices"
+	"strings"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
+	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 )
 
 type GameServer struct {
@@ -16,13 +18,22 @@ type GameServer struct {
 	lastUpdated time.Time
 
 	// mux routes the various endpoints to the appropriate handler.
-	mux *chi.Mux
+	mux *http.ServeMux
 
 	// game is the instance of the game being played.
 	game qg.Game
 
-	// players is a map from player to team
-	players map[*Player]struct{}
+	// id of the game server
+	id string
+
+	// typ is one of ai, multiplayer, or local.
+	typ string
+
+	// players is a map from team to list of players allowed to join that team.
+	players map[string][]string
+
+	// connected represents all players currently connected to the server.
+	connected map[*Player]struct{}
 
 	// joinCh and leaveCh adds/remove a player from the server.
 	joinCh, leaveCh chan *Player
@@ -34,22 +45,24 @@ type GameServer struct {
 	completeFn func(qg.Game)
 }
 
-func NewGameServer(game qg.Game, completeFn func(qg.Game)) *GameServer {
+func NewGameServer(game qg.Game, id, typ string, players map[string][]string, completeFn func(qg.Game), authenticate func(http.Handler) http.Handler) *GameServer {
 	gs := &GameServer{
 		lastUpdated: time.Now(),
-		mux:         chi.NewRouter(),
 		game:        game,
-		players:     make(map[*Player]struct{}),
+		id:          id,
+		typ:         typ,
+		players:     players,
+		connected:   make(map[*Player]struct{}),
 		joinCh:      make(chan *Player),
 		leaveCh:     make(chan *Player),
 		actionCh:    make(chan *Action),
 		completeFn:  completeFn,
 	}
 	go gs.Start()
-	gs.mux.Get("/connect", gs.connectHandler)
-	gs.mux.Get("/snapshot", gs.snapshotHandler)
-	gs.mux.Get("/active", gs.activeHandler)
-	gs.mux.Get("/health", healthHandler)
+	gs.mux.Handle("/connect", authenticate(http.HandlerFunc(gs.connectHandler)))
+	gs.mux.HandleFunc("/snapshot", gs.snapshotHandler)
+	gs.mux.HandleFunc("/active", gs.activeHandler)
+	gs.mux.HandleFunc("/health", healthHandler)
 	return gs
 }
 
@@ -63,16 +76,23 @@ func (gs *GameServer) Start() {
 	for {
 		select {
 		case p := <-gs.joinCh:
-			gs.players[p] = struct{}{}
+			gs.connected[p] = struct{}{}
+			if gs.typ == qgn.AIType || gs.typ == qgn.MultiplayerType {
+				p.team = team(gs.players, p.uid)
+			}
 			gs.sendConnectionMessages()
 			gs.sendSnapshotMessage(p)
 		case p := <-gs.leaveCh:
-			delete(gs.players, p)
+			delete(gs.connected, p)
 			go p.Close()
 			gs.sendConnectionMessages()
 		case a := <-gs.actionCh:
 			switch a.Type {
 			case Join:
+				if gs.typ == qgn.AIType || gs.typ == qgn.MultiplayerType {
+					gs.sendErrorMessage(a.Player, fmt.Errorf("join action disabled for this game type"))
+					continue
+				}
 				snapshot, err := gs.game.GetSnapshotJSON()
 				if err != nil {
 					gs.sendErrorMessage(a.Player, err)
@@ -114,4 +134,40 @@ func (gs *GameServer) Start() {
 		}
 		gs.lastUpdated = time.Now()
 	}
+}
+
+func (gs *GameServer) GetSnapshotJSON(team ...string) (*qg.Snapshot, error) {
+	snapshot, err := gs.game.GetSnapshotJSON(team...)
+	if err != nil {
+		return nil, err
+	}
+	// add missing server specific data
+	snapshot.Type = gs.typ
+	return snapshot, nil
+}
+
+func (gs *GameServer) GetSnapshotQGN() (*qgn.Snapshot, error) {
+	snapshot, err := gs.game.GetSnapshotQGN()
+	if err != nil {
+		return nil, err
+	}
+	// add missing server specific tags
+	snapshot.Tags[qgn.IDTag] = gs.id
+	snapshot.Tags[qgn.TypeTag] = gs.typ
+	for team, players := range gs.players {
+		tag := fmt.Sprintf("%s_%s", team, qgn.PlayersTagSuffix)
+		snapshot.Tags[tag] = strings.Join(players, ", ")
+	}
+	return snapshot, nil
+}
+
+func team(players map[string][]string, uid string) *string {
+	var team *string
+	for t, players := range players {
+		if slices.Contains(players, uid) {
+			team = &t
+			break
+		}
+	}
+	return team
 }

@@ -39,6 +39,9 @@ type Snapshot struct {
 	// Details allows for additional info to be returned that is unique to each game - optional
 	Details interface{} `json:"details,omitempty"`
 
+	// Type is one of ai, multiplayer, or local
+	Type string `json:"type,omitempty"`
+
 	// Actions are a list of all valid Actions that can be performed on the current game state - optional
 	Actions []*Action `json:"actions,omitempty"`
 

@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	Key = "tictactoe"
+	Key = "carcassonne"
 	Min = 2
-	Max = 2
+	Max = 4
 )
 
 type Builder struct{}

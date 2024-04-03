@@ -291,13 +291,18 @@ Message sent to all players on every player connection, drop, or team change.
 
 ```json
 {
-    "type": "snapshot",
+    "type": "connection",
     "details": {
         "uid": "$UID1",
-        "players": {
+        "teams": {
             "$UID1": "$TEAM1",
             "$UID2": "$TEAM2",
             "$UID3": null
+        },
+        "usernames": {
+            "$UID1": "$USERNAME1",
+            "$UID2": "$USERNAME2",
+            "$UID3": "$USERNAME3"
         }
     }
 }
@@ -318,6 +323,7 @@ Message sent to all players on every sent chat message.
     "type": "chat",
     "details": {
         "uid": "$UID",
+        "username": "$USERNAME",
         "team": "$TEAM",
         "message": "$MESSAGE",
     }

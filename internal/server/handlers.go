@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/quibbble/quibbble-controller/pkg/auth"
+	"github.com/quibbble/quibbble-controller/pkg/uid"
 	"nhooyr.io/websocket"
 )
 
@@ -23,7 +25,16 @@ func (gs *GameServer) connectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := NewPlayer(conn, gs.actionCh)
+	userId, ok := r.Context().Value(auth.UserID).(string)
+	if !ok {
+		userId = uid.New()
+	}
+	username, ok := r.Context().Value(auth.Username).(string)
+	if !ok {
+		username = userId
+	}
+
+	p := NewPlayer(userId, username, conn, gs.actionCh)
 	gs.joinCh <- p
 
 	ctx := context.Background()
@@ -53,7 +64,7 @@ func (gs *GameServer) snapshotHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.URL.Query().Get(FormatQuery) {
 	case JSONFormat:
-		snapshot, err := gs.game.GetSnapshotJSON()
+		snapshot, err := gs.GetSnapshotJSON()
 		if err != nil {
 			log.Println(err.Error())
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -63,7 +74,7 @@ func (gs *GameServer) snapshotHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(raw)
 	case QGNFormat:
-		snapshot, err := gs.game.GetSnapshotQGN()
+		snapshot, err := gs.GetSnapshotQGN()
 		if err != nil {
 			log.Println(err.Error())
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -83,7 +94,7 @@ type Active struct {
 
 func (gs *GameServer) activeHandler(w http.ResponseWriter, r *http.Request) {
 	raw, _ := json.Marshal(Active{
-		PlayerCount: len(gs.players),
+		PlayerCount: len(gs.connected),
 		LastUpdated: gs.lastUpdated,
 	})
 	w.Header().Set("Content-Type", "application/json")
