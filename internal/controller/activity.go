@@ -13,13 +13,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type Stats struct {
+type Activity struct {
 	LiveGameCount   map[string]int `json:"live_game_count"`
 	LivePlayerCount map[string]int `json:"live_player_count"`
 }
 
-func (c *Controller) stats() (*Stats, error) {
-	stats := Stats{
+func (c *Controller) activity() (*Activity, error) {
+	stats := Activity{
 		LiveGameCount:   make(map[string]int),
 		LivePlayerCount: make(map[string]int),
 	}
@@ -53,7 +53,7 @@ func (c *Controller) stats() (*Stats, error) {
 		if err != nil {
 			return nil, err
 		}
-		var active qs.Active
+		var active qs.Activity
 		if err := json.Unmarshal(body, &active); err != nil {
 			return nil, err
 		}

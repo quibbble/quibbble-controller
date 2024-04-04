@@ -59,10 +59,11 @@ func NewGameServer(game qg.Game, id, typ string, players map[string][]string, co
 		completeFn:  completeFn,
 	}
 	go gs.Start()
-	gs.mux.Handle("/connect", authenticate(http.HandlerFunc(gs.connectHandler)))
-	gs.mux.HandleFunc("/snapshot", gs.snapshotHandler)
-	gs.mux.HandleFunc("/active", gs.activeHandler)
-	gs.mux.HandleFunc("/health", healthHandler)
+	// these will be prefixed by /game/{key}/{id} when being called through nginx
+	gs.mux.Handle("GET /", authenticate(http.HandlerFunc(gs.connectHandler)))
+	gs.mux.HandleFunc("GET /snapshot", gs.snapshotHandler)
+	gs.mux.HandleFunc("GET /activity", gs.activeHandler)
+	gs.mux.HandleFunc("GET /health", healthHandler)
 	return gs
 }
 
@@ -77,9 +78,6 @@ func (gs *GameServer) Start() {
 		select {
 		case p := <-gs.joinCh:
 			gs.connected[p] = struct{}{}
-			if gs.typ == qgn.AIType || gs.typ == qgn.MultiplayerType {
-				p.team = team(gs.players, p.uid)
-			}
 			gs.sendConnectionMessages()
 			gs.sendSnapshotMessage(p)
 		case p := <-gs.leaveCh:
@@ -88,25 +86,6 @@ func (gs *GameServer) Start() {
 			gs.sendConnectionMessages()
 		case a := <-gs.actionCh:
 			switch a.Type {
-			case Join:
-				if gs.typ == qgn.AIType || gs.typ == qgn.MultiplayerType {
-					gs.sendErrorMessage(a.Player, fmt.Errorf("join action disabled for this game type"))
-					continue
-				}
-				snapshot, err := gs.game.GetSnapshotJSON()
-				if err != nil {
-					gs.sendErrorMessage(a.Player, err)
-					continue
-				}
-				team, ok := a.Details.(string)
-				if !ok || !slices.Contains(snapshot.Teams, team) {
-					gs.sendMessage(a.Player, ErrInvalidActionMessage)
-					continue
-				}
-				a.Player.team = &team
-				gs.sendConnectionMessages()
-				gs.sendSnapshotMessage(a.Player)
-				continue
 			case Chat:
 				message, ok := a.Details.(string)
 				if !ok {
@@ -116,18 +95,19 @@ func (gs *GameServer) Start() {
 				gs.sendChatMessages(a.Player, message)
 				continue
 			default:
-				if a.Player.team == nil {
+				team := gs.team(a.uid)
+				if team == nil {
 					gs.sendErrorMessage(a.Player, fmt.Errorf("not part of a team"))
 					continue
 				}
-				a.Action.Team = *a.Player.team
+				a.Action.Team = *team
 				if err := gs.game.Do(a.Action); err != nil {
 					gs.sendErrorMessage(a.Player, err)
 					continue
 				}
 				gs.sendSnapshotMessages()
 
-				if snapshot, err := gs.game.GetSnapshotJSON(); err == nil && len(snapshot.Winners) > 0 {
+				if snapshot, err := gs.GetSnapshotJSON(); err == nil && len(snapshot.Winners) > 0 {
 					gs.completeFn(gs.game)
 				}
 			}
@@ -161,13 +141,17 @@ func (gs *GameServer) GetSnapshotQGN() (*qgn.Snapshot, error) {
 	return snapshot, nil
 }
 
-func team(players map[string][]string, uid string) *string {
+func (gs *GameServer) team(uid string) *string {
 	var team *string
-	for t, players := range players {
+	for t, players := range gs.players {
 		if slices.Contains(players, uid) {
 			team = &t
 			break
 		}
+	}
+	if team != nil && gs.typ == qgn.LocalType {
+		snapshot, _ := gs.GetSnapshotJSON()
+		team = &snapshot.Turn
 	}
 	return team
 }

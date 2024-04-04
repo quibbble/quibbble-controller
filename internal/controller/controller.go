@@ -41,10 +41,10 @@ func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, st
 		config:       config,
 		allowOrigins: allowOrigins,
 	}
-	c.mux.HandleFunc("/create", c.createHandler)
-	c.mux.HandleFunc("/delete", c.deleteHandler)
-	c.mux.HandleFunc("/stats", c.statsHandler)
-	c.mux.HandleFunc("/health", healthHandler)
+	c.mux.HandleFunc("POST /game", c.createHandler)
+	c.mux.HandleFunc("DELETE /game", c.deleteHandler)
+	c.mux.HandleFunc("GET /game/activity", c.activityHandler)
+	c.mux.HandleFunc("GET /health", healthHandler)
 	return c
 }
 

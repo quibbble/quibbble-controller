@@ -40,7 +40,7 @@ func CreateIngress(host, key, id string, allowOrigins []string) *networkingv1.In
 						HTTP: &networkingv1.HTTPIngressRuleValue{
 							Paths: []networkingv1.HTTPIngressPath{
 								{
-									Path:     fmt.Sprintf("/%s/%s", key, id) + "(/|$)(.*)",
+									Path:     fmt.Sprintf("/game/%s/%s", key, id) + "(/|$)(.*)",
 									PathType: &pathType,
 									Backend: networkingv1.IngressBackend{
 										Service: &networkingv1.IngressServiceBackend{

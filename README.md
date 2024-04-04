@@ -40,23 +40,23 @@ There are three main processes in this system.
 ## Flows
 
 ### Game Creation
-- Send `POST https://<host>/create` with some `qqn` such as `[key "tictactoe"][id "example"][teams "red, blue"]`.
+- Send `POST https://<host>/game` with some `qqn` such as `[key "tictactoe"][id "example"][teams "red, blue"]`.
 - `controller` processes the request and, if valid, creates K8s ConfigMap, Pod, Service, and Ingress resources.
-- Game can now be accessed at `https://<host>/tictactoe/example`.
+- Game can now be accessed at `https://<host>/game/tictactoe/example`.
 
 ### Game Connection
-- Join a game by connection to `wss://<host>/tictactoe/example/connect` with websockets.
+- Join a game by connection to `wss://<host>/game/tictactoe/example` with websockets.
 - Connection should be open to a `server` instance and relevant game messages should be recieved.
 
 ### Game Cleanup
 - `watcher` will kick off every `X` timeperiod. 
-- Job requests data from all live games by calling `GET https://<host>/<key>/<id>/active` for each game.
+- Job requests data from all live games by calling `GET https://<host>/game/<key>/<id>/activity` for each game.
 - If there are no connected players and no recent updates then all K8s related resources are deleted.
 
 ## REST API
 
 <details>
- <summary><code>POST</code> <code><b>/create</b></code> <code>(create a game)</code></summary>
+ <summary><code>POST</code> <code><b>/game</b></code> <code>(create a game)</code></summary>
 
 ##### Parameters
 
@@ -77,12 +77,12 @@ There are three main processes in this system.
 ##### Example cURL
 
 > ```javascript
->  curl -X POST -H "Content-Type: application/qgn" --data @post.qgn https://api.quibbble.com/create
+>  curl -X POST -H "Content-Type: application/qgn" --data @post.qgn https://api.quibbble.com/game
 > ```
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/delete?key={key}&id={id}</b></code> <code>(delete a game)</code></summary>
+ <summary><code>DELETE</code> <code><b>/game?key={key}&id={id}</b></code> <code>(delete a game)</code></summary>
 
 ##### Parameters
 
@@ -103,12 +103,12 @@ There are three main processes in this system.
 ##### Example cURL
 
 > ```javascript
->  curl -X DELETE https://api.quibbble.com/delete?key={key}&id={id}
+>  curl -X DELETE https://api.quibbble.com/game?key={key}&id={id}
 > ```
 </details>
 
 <details>
- <summary><code>WEBSOCKET</code> <code><b>/{key}/{id}/connect</b></code> <code>(connect to a game)</code></summary>
+ <summary><code>WEBSOCKET</code> <code><b>/game/{key}/{id}</b></code> <code>(connect to a game)</code></summary>
 
 ##### Parameters
 
@@ -125,12 +125,12 @@ There are three main processes in this system.
 ##### Example wscat
 
 > ```javascript
->  wscat -c wss://api.quibbble.com/{key}/{id}/connect
+>  wscat -c wss://api.quibbble.com/game/{key}/{id}
 > ```
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/{key}/{id}/snapshot?format={format}</b></code> <code>(get game snapshot)</code></summary>
+ <summary><code>GET</code> <code><b>/game/{key}/{id}/snapshot?format={format}</b></code> <code>(get game snapshot)</code></summary>
 
 ##### Parameters
 
@@ -153,12 +153,12 @@ There are three main processes in this system.
 ##### Example cURL
 
 > ```javascript
->  curl -X GET https://api.quibbble.com/{key}/{id}/snapshot?format=json
+>  curl -X GET https://api.quibbble.com/game/{key}/{id}/snapshot?format=json
 > ```
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/stats</b></code> <code>(get all game stats)</code></summary>
+ <summary><code>GET</code> <code><b>/game/activity</b></code> <code>(get all games activity)</code></summary>
 
 ##### Parameters
 
@@ -169,18 +169,18 @@ There are three main processes in this system.
 
 > | http code     | content-type                            | response                                                            |
 > |---------------|-----------------------------------------|---------------------------------------------------------------------|
-> | `200`         | `application/json`                      | Stats for all games                                                 |
+> | `200`         | `application/json`                      | Activity for all games                                                 |
 > | `500`         | `text/plain;charset=UTF-8`              | `Internal Server Error`                                             |
 
 ##### Example cURL
 
 > ```javascript
->  curl -X GET https://api.quibbble.com/stats
+>  curl -X GET https://api.quibbble.com/game/activity
 > ```
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/{key}/{id}/active</b></code> <code>(get game activity)</code></summary>
+ <summary><code>GET</code> <code><b>/game/{key}/{id}/activity</b></code> <code>(get game activity)</code></summary>
 
 ##### Parameters
 
@@ -200,7 +200,7 @@ There are three main processes in this system.
 ##### Example cURL
 
 > ```javascript
->  curl -X GET https://api.quibbble.com/{key}/{id}/active
+>  curl -X GET https://api.quibbble.com/game/{key}/{id}/activity
 > ```
 </details>
 
@@ -208,19 +208,6 @@ There are three main processes in this system.
 ## Websocket Messaging
 
 ### Sendable Messages
-
-<details>
- <summary><code><b>join</b></code> <code>(join a team)</code></summary>
-
-##### Message
-
-```json
-{
-    "type": "join",
-    "details": "$TEAM"
-}
-```
-</details>
 
 <details>
  <summary><code><b>action</b></code> <code>(perform a game action)</code></summary>

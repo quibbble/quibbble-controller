@@ -69,10 +69,11 @@ func (t Tags) Players() (map[string][]string, error) {
 		}
 	}
 
-	if slices.Contains([]string{AIType}, typ) && len(players) != 1 {
+	if typ == AIType && len(players) != 1 {
 		return nil, fmt.Errorf("players list must be of length one for ai games")
-	}
-	if typ == MultiplayerType && len(teams) != len(players) {
+	} else if typ == LocalType && len(teams) != len(players) {
+		return nil, fmt.Errorf("players list must match length of teams list for local games")
+	} else if typ == MultiplayerType && len(teams) != len(players) {
 		return nil, fmt.Errorf("players list must match length of teams list for multiplayer games")
 	}
 	return players, nil

@@ -43,7 +43,7 @@ func (w *Watcher) list() ([]string, error) {
 }
 
 func (w *Watcher) active(key, id string) (bool, error) {
-	url := fmt.Sprintf("http://%s.%s/active", k8s.Name(key, id), k8s.Namespace)
+	url := fmt.Sprintf("http://%s.%s/activity", k8s.Name(key, id), k8s.Namespace)
 	resp, err := http.Get(url)
 	if err != nil {
 		return false, err
@@ -54,7 +54,7 @@ func (w *Watcher) active(key, id string) (bool, error) {
 		return false, err
 	}
 
-	var active qs.Active
+	var active qs.Activity
 	if err := json.Unmarshal(body, &active); err != nil {
 		return false, err
 	}

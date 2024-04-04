@@ -32,9 +32,6 @@ type Player struct {
 	// username is the name displayed to others.
 	username string
 
-	// team represents the team the player joined.
-	team *string
-
 	// messageCh provides a channel the game server use to
 	// send messages to the player.
 	messageCh chan []byte
@@ -59,7 +56,6 @@ func NewPlayer(uid, username string, conn *websocket.Conn, actionCh chan *Action
 	return &Player{
 		uid:       uid,
 		username:  username,
-		team:      nil,
 		messageCh: make(chan []byte, playerMessageBuffer),
 		actionCh:  actionCh,
 		conn:      conn,
