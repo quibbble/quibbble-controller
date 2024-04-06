@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"regexp"
 	"strings"
 
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
@@ -9,6 +10,8 @@ import (
 var colors = []string{
 	"red", "blue", "green", "yellow", "orange", "pink", "purple", "teal",
 }
+
+var allowed = regexp.MustCompile(`[^a-z0-9-]+`) // a-z, 0-9, and -
 
 func sanitizeSnapshot(snapshot *qgn.Snapshot) {
 	snapshot.Tags[qgn.KeyTag] = sanitizeKey(snapshot.Tags[qgn.KeyTag])
@@ -22,7 +25,7 @@ func sanitizeSnapshot(snapshot *qgn.Snapshot) {
 }
 
 func sanitizeKey(key string) string {
-	return strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(key), " ", "-"), ".", "-")
+	return allowed.ReplaceAllString(key, "")
 }
 
 func sanitizeID(id string) string {
@@ -30,5 +33,5 @@ func sanitizeID(id string) string {
 	if len(id) > max {
 		id = id[:max]
 	}
-	return strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(id), " ", "-"), ".", "-")
+	return allowed.ReplaceAllString(id, "")
 }

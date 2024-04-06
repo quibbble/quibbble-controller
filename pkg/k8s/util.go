@@ -17,10 +17,10 @@ const ChartName = "quibbble-controller"
 const Namespace = "quibbble"
 
 func Name(key, id string) string {
-	return fmt.Sprintf("%s.%s", key, id)
+	return fmt.Sprintf("%s-%s", key, id)
 }
 
 func KeyID(name string) (string, string) {
-	s := strings.Split(name, ".")
+	s := strings.SplitN(name, "-", 2)
 	return s[0], s[1]
 }
