@@ -22,7 +22,7 @@ func sanitizeSnapshot(snapshot *qgn.Snapshot) {
 }
 
 func sanitizeKey(key string) string {
-	return strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(key), " ", "_"), "-", "_")
+	return strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(key), " ", "-"), ".", "-")
 }
 
 func sanitizeID(id string) string {
@@ -30,5 +30,5 @@ func sanitizeID(id string) string {
 	if len(id) > max {
 		id = id[:max]
 	}
-	return strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(id), " ", "_"), "-", "_")
+	return strings.ReplaceAll(strings.ReplaceAll(strings.ToLower(id), " ", "-"), ".", "-")
 }
