@@ -66,7 +66,7 @@ func (w *Watcher) active(key, id string) (bool, error) {
 }
 
 func (w *Watcher) delete(key, id string) error {
-	url := fmt.Sprintf("http://quibbble-controller.%s/delete?key=%s&id=%s", k8s.Namespace, key, id)
+	url := fmt.Sprintf("http://quibbble-controller.%s/game?key=%s&id=%s", k8s.Namespace, key, id)
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
