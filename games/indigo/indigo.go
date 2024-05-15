@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
@@ -33,7 +34,7 @@ func NewIndigo(variant string, seed int64, teams []string) (*Indigo, error) {
 func (i *Indigo) Do(action *qg.Action) error {
 	switch action.Type {
 	case qg.ResetAction:
-		g, err := qg.Reset(Builder{}, i)
+		g, err := qg.Reset(Builder{}, i, int(time.Now().Unix()))
 		if err != nil {
 			return err
 		}

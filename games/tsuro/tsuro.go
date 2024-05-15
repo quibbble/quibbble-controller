@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
@@ -36,7 +37,7 @@ func NewTsuro(variant string, seed int64, teams []string) (*Tsuro, error) {
 func (t *Tsuro) Do(action *qg.Action) error {
 	switch action.Type {
 	case qg.ResetAction:
-		g, err := qg.Reset(Builder{}, t)
+		g, err := qg.Reset(Builder{}, t, int(time.Now().Unix()))
 		if err != nil {
 			return err
 		}

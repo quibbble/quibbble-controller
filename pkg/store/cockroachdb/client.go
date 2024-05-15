@@ -77,74 +77,17 @@ func (c *Client) GetActiveGame(ctx context.Context, key, id string) (*store.Game
 	}, nil
 }
 
-func (c *Client) GetActiveGames(ctx context.Context, playerId string) ([]*store.Game, error) {
-	if c.pool == nil {
-		return nil, store.ErrGameStoreNotEnabled
-	}
-
-	sql := `
-		SELECT game_key, game_id FROM quibbble.player_games
-		WHERE player_id=$1
-		ORDER BY updated_at ASC
-		LIMIT 20;
-	`
-	rows, err := c.pool.Query(ctx, sql, playerId)
-	if err != nil {
-		return nil, err
-	}
-
-	games := make([]*store.Game, 0)
-	defer rows.Close()
-	for rows.Next() {
-		var (
-			gameKey string
-			gameId  string
-		)
-		err = rows.Scan(&gameKey, &gameId)
-		if err != nil {
-			return nil, err
-		}
-		games = append(games, &store.Game{
-			Key: gameKey,
-			ID:  gameId,
-		})
-	}
-
-	return games, nil
-}
-
 func (c *Client) StoreActiveGame(ctx context.Context, game *store.Game) error {
 	if c.pool == nil {
 		return store.ErrGameStoreNotEnabled
 	}
 
-	// link game with players
-	players, err := game.Snapshot.Tags.Players()
-	if err != nil {
-		return err
-	}
-
 	sql := `
-		UPSERT INTO quibbble.player_games (player_id, game_key, game_id, updated_at)
-		VALUES ($1, $2, $3, $4)
-	`
-
-	for _, p := range players {
-		for _, player := range p {
-			_, err = c.pool.Exec(ctx, sql, player, game.Key, game.ID, game.UpdatedAt)
-			if err != nil {
-				return store.ErrGameStoreInsert
-			}
-		}
-	}
-
-	// store the game
-	sql = `
 		UPSERT INTO quibbble.active_games (game_key, game_id, snapshot, updated_at)
 		VALUES ($1, $2, $3, $4)
 	`
 
-	_, err = c.pool.Exec(ctx, sql, game.Key, game.ID, game.Snapshot.String(), game.UpdatedAt)
+	_, err := c.pool.Exec(ctx, sql, game.Key, game.ID, game.Snapshot.String(), game.UpdatedAt)
 	if err != nil {
 		return store.ErrGameStoreInsert
 	}
@@ -157,36 +100,13 @@ func (c *Client) DeleteActiveGame(ctx context.Context, game *store.Game) error {
 		return store.ErrGameStoreNotEnabled
 	}
 
-	// remove player links
-	players, err := game.Snapshot.Tags.Players()
-	if err != nil {
-		return err
-	}
-
 	sql := `
-		DELETE FROM quibbble.player_games
-		WHERE player_id=$1
-		AND game_key=$2
-		AND game_id=$3
-	`
-
-	for _, p := range players {
-		for _, player := range p {
-			_, err = c.pool.Exec(ctx, sql, player, game.Key, game.ID)
-			if err != nil {
-				return store.ErrGameStoreDelete
-			}
-		}
-	}
-
-	// delete the game
-	sql = `
 		DELETE FROM quibbble.active_games
 		WHERE game_key=$1
 		AND game_id=$2
 	`
 
-	_, err = c.pool.Exec(ctx, sql, game.Key, game.ID)
+	_, err := c.pool.Exec(ctx, sql, game.Key, game.ID)
 	if err != nil {
 		return store.ErrGameStoreDelete
 	}

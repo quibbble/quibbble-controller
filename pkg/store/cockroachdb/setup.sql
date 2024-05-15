@@ -18,15 +18,6 @@ CREATE TABLE IF NOT EXISTS quibbble.completed_games (
     updated_at TIMESTAMP
 );
 
--- create the player games table
-CREATE TABLE IF NOT EXISTS quibbble.player_games (
-    player_id STRING NOT NULL,
-    game_key STRING NOT NULL,
-    game_id STRING NOT NULL,
-    updated_at TIMESTAMP,
-    CONSTRAINT id PRIMARY KEY (player_id, game_key, game_id)
-);
-
 -- create created games table
 CREATE TABLE IF NOT EXISTS quibbble.created_games (
     game_key STRING PRIMARY KEY,
@@ -44,10 +35,6 @@ VALUES ($1, $2, $3, $4)
 
 -- insert a game into the completed table
 INSERT INTO quibbble.completed_games (game_key, snapshot, updated_at)
-VALUES ($1, $2, $3)
-
--- insert a game into the player games table
-INSERT INTO quibbble.player_games (player_id, game_key, game_id)
 VALUES ($1, $2, $3)
 
 -- increment game count

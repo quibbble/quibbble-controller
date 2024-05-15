@@ -36,7 +36,7 @@ type Message struct {
 
 func (gs *GameServer) sendSnapshotMessage(player *Player) {
 	snapshot, _ := gs.game.GetSnapshotJSON()
-	if team := gs.team(player.uid); team != nil {
+	if team := gs.team(player.name); team != nil {
 		snapshot, _ = gs.GetSnapshotJSON(*team)
 	}
 	payload, _ := json.Marshal(Message{
@@ -53,19 +53,17 @@ func (gs *GameServer) sendSnapshotMessages() {
 }
 
 func (gs *GameServer) sendConnectionMessages() {
-	usernames := make(map[string]string)
+	connected := make(map[string]*string)
 	for player := range gs.connected {
-		usernames[player.uid] = player.username
+		connected[player.name] = player.team
 	}
 	for p := range gs.connected {
 		payload, _ := json.Marshal(Message{
 			Type: ConnectionMessage,
 			Details: struct {
-				Players   map[string][]string `json:"players"`
-				Usernames map[string]string   `json:"usernames"`
+				Connected map[string]*string `json:"connected"`
 			}{
-				Players:   gs.players,
-				Usernames: usernames,
+				Connected: connected,
 			},
 		})
 		gs.sendMessage(p, payload)
@@ -76,13 +74,11 @@ func (gs *GameServer) sendChatMessages(player *Player, message string) {
 	payload, _ := json.Marshal(Message{
 		Type: ChatMessage,
 		Details: struct {
-			UID      string `json:"uid"`
-			Username string `json:"username"`
-			Message  string `json:"message"`
+			Name    string `json:"name"`
+			Message string `json:"message"`
 		}{
-			UID:      player.uid,
-			Username: player.username,
-			Message:  message,
+			Name:    player.name,
+			Message: message,
 		},
 	})
 	for p := range gs.connected {

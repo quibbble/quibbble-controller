@@ -26,9 +26,6 @@ type Params struct {
 
 	// CompleteFn called on game end
 	CompleteFn func(qg.Game)
-
-	// Authenticate validates protected endpoints
-	Authenticate func(http.Handler) http.Handler
 }
 
 func ServeHTTP(p *Params) {
@@ -44,21 +41,12 @@ func ServeHTTP(p *Params) {
 	}
 
 	// retrieve server tags
-	typ, err := p.Snapshot.Tags.Type()
-	if err != nil {
-		log.Fatal(err)
-	}
-	players, err := p.Snapshot.Tags.Players()
-	if err != nil {
-		log.Fatal(err)
-	}
 	id, ok := p.Snapshot.Tags[qgn.IDTag]
 	if !ok {
 		log.Fatal(fmt.Errorf("missing id tag"))
 	}
-
 	s := &http.Server{
-		Handler:      NewGameServer(game, id, typ, players, p.CompleteFn, p.Authenticate),
+		Handler:      NewGameServer(game, id, p.CompleteFn),
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}

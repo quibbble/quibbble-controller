@@ -4,13 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
 	"github.com/quibbble/quibbble-controller/games"
 	qs "github.com/quibbble/quibbble-controller/internal/server"
-	"github.com/quibbble/quibbble-controller/pkg/auth"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	st "github.com/quibbble/quibbble-controller/pkg/store"
@@ -24,7 +22,6 @@ func init() {
 
 type Config struct {
 	Storage *crdb.Config `yaml:"storage"`
-	Auth    *auth.Config `yaml:"auth"`
 }
 
 func main() {
@@ -41,7 +38,6 @@ func main() {
 		configPath = "./config.yaml"
 	}
 	storagePassword := os.Getenv("STORAGE_PASSWORD")
-	authKey := os.Getenv("AUTH_KEY")
 
 	// parse qgn snapshot
 	raw, err := os.ReadFile(qgnPath)
@@ -84,20 +80,6 @@ func main() {
 		})
 	}
 
-	// setup authenticate handler
-	authenticate := func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			h.ServeHTTP(w, r)
-		})
-	}
-	if config.Auth.Enabled {
-		a, err := auth.NewAuth(authKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-		authenticate = a.Authenticate
-	}
-
 	// retrieve builder
 	var builder qg.GameBuilder
 	for _, b := range games.Builders {
@@ -114,10 +96,9 @@ func main() {
 	defer log.Println("server closed")
 
 	qs.ServeHTTP(&qs.Params{
-		Builder:      builder,
-		Port:         port,
-		CompleteFn:   completeFn,
-		Authenticate: authenticate,
-		Snapshot:     snapshot,
+		Builder:    builder,
+		Port:       port,
+		CompleteFn: completeFn,
+		Snapshot:   snapshot,
 	})
 }

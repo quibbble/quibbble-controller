@@ -39,13 +39,6 @@ storage:
   # database: ""
   # sslmode: ""
 
-# auth parameters
-# if enabled then a K8s secret holding
-# the auth key will also need to be create before
-# installing this chart.
-auth:
-  enabled: false
-
 # ingress parameters
 ingress:
   host: ""

@@ -26,11 +26,12 @@ const (
 // Messages are sent on the messages channel and if the client
 // cannot keep up with the messages, closeSlow is called.
 type Player struct {
-	// uid is the unique id of the player.
-	uid string
+	// name is the name of the player.
+	// there may not be duplicate names in a game.
+	name string
 
-	// username is the name displayed to others.
-	username string
+	// the team the player is on.
+	team *string
 
 	// messageCh provides a channel the game server use to
 	// send messages to the player.
@@ -52,10 +53,9 @@ type Player struct {
 	mu sync.Mutex
 }
 
-func NewPlayer(uid, username string, conn *websocket.Conn, actionCh chan *Action) *Player {
+func NewPlayer(name string, conn *websocket.Conn, actionCh chan *Action) *Player {
 	return &Player{
-		uid:       uid,
-		username:  username,
+		name:      name,
 		messageCh: make(chan []byte, playerMessageBuffer),
 		actionCh:  actionCh,
 		conn:      conn,

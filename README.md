@@ -45,7 +45,7 @@ There are three main processes in this system.
 - Game can now be accessed at `https://<host>/game/tictactoe/example`.
 
 ### Game Connection
-- Join a game by connection to `wss://<host>/game/tictactoe/example` with websockets.
+- Join a game by connection to `wss://<host>/game/tictactoe/example?name=<name>` with websockets.
 - Connection should be open to a `server` instance and relevant game messages should be recieved.
 
 ### Game Cleanup
@@ -108,7 +108,7 @@ There are three main processes in this system.
 </details>
 
 <details>
- <summary><code>WEBSOCKET</code> <code><b>/game/{key}/{id}</b></code> <code>(connect to a game)</code></summary>
+ <summary><code>WEBSOCKET</code> <code><b>/game/{key}/{id}?name={name}</b></code> <code>(connect to a game)</code></summary>
 
 ##### Parameters
 
@@ -116,6 +116,8 @@ There are three main processes in this system.
 > |-----------|-----------|------------------------------------|-------------------------------------------------------------------|
 > | key       |  required | string                             | The name of the game i.e. `tictactoe` or `connect4`               |
 > | id        |  required | string                             | The unique id of the game instance to join                        |
+> | name      |  required | string                             | The name of the player connecting                  |
+
 
 
 ##### Responses

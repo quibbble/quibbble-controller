@@ -35,9 +35,6 @@ type GameStore interface {
 	// GetActiveGame retrieves game data for a game
 	GetActiveGame(ctx context.Context, key, id string) (*Game, error)
 
-	// GetActiveGames retrieves a list of key-ids tied to a given player
-	GetActiveGames(ctx context.Context, playerId string) ([]*Game, error)
-
 	// StoreActiveGame stores a game in active storage
 	StoreActiveGame(ctx context.Context, game *Game) error
 

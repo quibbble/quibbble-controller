@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 	"runtime/debug"
-	"slices"
-	"strings"
 	"time"
 
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
@@ -26,12 +24,6 @@ type GameServer struct {
 	// id of the game server
 	id string
 
-	// typ is one of ai, multiplayer, or local.
-	typ string
-
-	// players is a map from team to list of players allowed to join that team.
-	players map[string][]string
-
 	// connected represents all players currently connected to the server.
 	connected map[*Player]struct{}
 
@@ -45,13 +37,11 @@ type GameServer struct {
 	completeFn func(qg.Game)
 }
 
-func NewGameServer(game qg.Game, id, typ string, players map[string][]string, completeFn func(qg.Game), authenticate func(http.Handler) http.Handler) *GameServer {
+func NewGameServer(game qg.Game, id string, completeFn func(qg.Game)) *GameServer {
 	gs := &GameServer{
 		lastUpdated: time.Now(),
 		game:        game,
 		id:          id,
-		typ:         typ,
-		players:     players,
 		connected:   make(map[*Player]struct{}),
 		joinCh:      make(chan *Player),
 		leaveCh:     make(chan *Player),
@@ -60,7 +50,7 @@ func NewGameServer(game qg.Game, id, typ string, players map[string][]string, co
 	}
 	go gs.Start()
 	// these will be prefixed by /game/{key}/{id} when being called through nginx
-	gs.mux.Handle("GET /", authenticate(http.HandlerFunc(gs.connectHandler)))
+	gs.mux.HandleFunc("GET /", gs.connectHandler)
 	gs.mux.HandleFunc("GET /snapshot", gs.snapshotHandler)
 	gs.mux.HandleFunc("GET /activity", gs.activeHandler)
 	gs.mux.HandleFunc("GET /health", healthHandler)
@@ -94,8 +84,16 @@ func (gs *GameServer) Start() {
 				}
 				gs.sendChatMessages(a.Player, message)
 				continue
+			case Join:
+				team, ok := a.Details.(string)
+				if !ok {
+					gs.sendErrorMessage(a.Player, fmt.Errorf("invalid join action"))
+					continue
+				}
+				a.Player.team = &team
+				gs.sendConnectionMessages()
 			default:
-				team := gs.team(a.uid)
+				team := a.Player.team
 				if team == nil {
 					gs.sendErrorMessage(a.Player, fmt.Errorf("not part of a team"))
 					continue
@@ -121,8 +119,6 @@ func (gs *GameServer) GetSnapshotJSON(team ...string) (*qg.Snapshot, error) {
 	if err != nil {
 		return nil, err
 	}
-	// add missing server specific data
-	snapshot.Type = gs.typ
 	return snapshot, nil
 }
 
@@ -133,25 +129,23 @@ func (gs *GameServer) GetSnapshotQGN() (*qgn.Snapshot, error) {
 	}
 	// add missing server specific tags
 	snapshot.Tags[qgn.IDTag] = gs.id
-	snapshot.Tags[qgn.TypeTag] = gs.typ
-	for team, players := range gs.players {
-		tag := fmt.Sprintf("%s_%s", team, qgn.PlayersTagSuffix)
-		snapshot.Tags[tag] = strings.Join(players, ", ")
-	}
 	return snapshot, nil
 }
 
-func (gs *GameServer) team(uid string) *string {
-	var team *string
-	for t, players := range gs.players {
-		if slices.Contains(players, uid) {
-			team = &t
-			break
+func (gs *GameServer) team(name string) *string {
+	for player := range gs.connected {
+		if player.name == name {
+			return player.team
 		}
 	}
-	if team != nil && gs.typ == qgn.LocalType {
-		snapshot, _ := gs.GetSnapshotJSON()
-		team = &snapshot.Turn
+	return nil
+}
+
+func (gs *GameServer) isConnected(name string) bool {
+	for player := range gs.connected {
+		if player.name == name {
+			return true
+		}
 	}
-	return team
+	return false
 }

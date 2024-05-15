@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/quibbble/quibbble-controller/pkg/auth"
-	"github.com/quibbble/quibbble-controller/pkg/uid"
 	"nhooyr.io/websocket"
 )
 
@@ -25,16 +23,13 @@ func (gs *GameServer) connectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, ok := r.Context().Value(auth.UserID).(string)
-	if !ok {
-		userId = uid.New()
-	}
-	username, ok := r.Context().Value(auth.Username).(string)
-	if !ok {
-		username = userId
+	name := r.Header.Get("name")
+	if name == "" || gs.isConnected(name) {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
 
-	p := NewPlayer(userId, username, conn, gs.actionCh)
+	p := NewPlayer(name, conn, gs.actionCh)
 	gs.joinCh <- p
 
 	ctx := context.Background()

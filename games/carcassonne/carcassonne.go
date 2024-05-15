@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
@@ -30,7 +31,7 @@ func NewCarcassonne(seed int64, teams []string) (*Carcassonne, error) {
 func (c *Carcassonne) Do(action *qg.Action) error {
 	switch action.Type {
 	case qg.ResetAction:
-		g, err := qg.Reset(Builder{}, c)
+		g, err := qg.Reset(Builder{}, c, int(time.Now().Unix()))
 		if err != nil {
 			return err
 		}
