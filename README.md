@@ -212,6 +212,19 @@ There are three main processes in this system.
 ### Sendable Messages
 
 <details>
+ <summary><code><b>join</b></code> <code>(join a team)</code></summary>
+
+##### Join
+
+```json
+{
+    "type": "join",
+    "details": "$TEAM"
+}
+```
+</details>
+
+<details>
  <summary><code><b>action</b></code> <code>(perform a game action)</code></summary>
 
 ##### Message
@@ -282,16 +295,10 @@ Message sent to all players on every player connection, drop, or team change.
 {
     "type": "connection",
     "details": {
-        "uid": "$UID1",
-        "teams": {
-            "$UID1": "$TEAM1",
-            "$UID2": "$TEAM2",
-            "$UID3": null
-        },
-        "usernames": {
-            "$UID1": "$USERNAME1",
-            "$UID2": "$USERNAME2",
-            "$UID3": "$USERNAME3"
+        "connected": {
+            "$NAME1": "$TEAM1",
+            "$NAME2": "$TEAM2",
+            "$NAME3": null
         }
     }
 }
@@ -311,8 +318,7 @@ Message sent to all players on every sent chat message.
 {
     "type": "chat",
     "details": {
-        "uid": "$UID",
-        "username": "$USERNAME",
+        "name": "$NAME",
         "team": "$TEAM",
         "message": "$MESSAGE",
     }
