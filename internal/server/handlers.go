@@ -23,7 +23,7 @@ func (gs *GameServer) connectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.Header.Get("name")
+	name := r.URL.Query().Get("name")
 	if name == "" || gs.isConnected(name) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
