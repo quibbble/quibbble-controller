@@ -43,7 +43,7 @@ func (c *Controller) activity() (*Activity, error) {
 		names = append(names, it.Name)
 	}
 	for _, name := range names {
-		url := fmt.Sprintf("http://%s.%s/active", name, k8s.Namespace)
+		url := fmt.Sprintf("http://%s.%s/activity", name, k8s.Namespace)
 		resp, err := http.Get(url)
 		if err != nil {
 			return nil, err
