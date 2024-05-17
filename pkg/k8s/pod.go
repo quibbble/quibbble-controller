@@ -61,17 +61,6 @@ func CreatePod(key, id, image, pullyPolicy string, port int32) *corev1.Pod {
 							},
 						},
 						{
-							Name: "AUTH_KEY", // key used to connect to the auth service
-							ValueFrom: &corev1.EnvVarSource{
-								SecretKeyRef: &corev1.SecretKeySelector{
-									Key: "auth-key",
-									LocalObjectReference: corev1.LocalObjectReference{
-										Name: ChartName,
-									},
-								},
-							},
-						},
-						{
 							Name:  "PORT",
 							Value: strconv.Itoa(int(port)),
 						},
