@@ -24,6 +24,9 @@ type GameServer struct {
 	// id of the game server
 	id string
 
+	// kind of game
+	kind string
+
 	// connected represents all players currently connected to the server.
 	connected map[*Player]struct{}
 
@@ -37,11 +40,12 @@ type GameServer struct {
 	completeFn func(qg.Game)
 }
 
-func NewGameServer(game qg.Game, id string, completeFn func(qg.Game)) *GameServer {
+func NewGameServer(game qg.Game, id, kind string, completeFn func(qg.Game)) *GameServer {
 	gs := &GameServer{
 		lastUpdated: time.Now(),
 		game:        game,
 		id:          id,
+		kind:        kind,
 		connected:   make(map[*Player]struct{}),
 		joinCh:      make(chan *Player),
 		leaveCh:     make(chan *Player),
@@ -129,6 +133,7 @@ func (gs *GameServer) GetSnapshotQGN() (*qgn.Snapshot, error) {
 	}
 	// add missing server specific tags
 	snapshot.Tags[qgn.IDTag] = gs.id
+	snapshot.Tags[qgn.KindTag] = gs.kind
 	return snapshot, nil
 }
 

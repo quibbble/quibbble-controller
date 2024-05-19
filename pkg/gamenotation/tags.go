@@ -15,7 +15,8 @@ const (
 	SeedTag    = "seed"    // random seed used to generate deterministic randomness
 
 	// server only tags
-	IDTag = "id" // unique game id
+	IDTag   = "id"   // unique game id
+	KindTag = "kind" // kind of game i.e. ai, multiplayer, local
 )
 
 var RequiredTags = []string{KeyTag, TeamsTag}

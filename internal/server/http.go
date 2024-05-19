@@ -45,8 +45,12 @@ func ServeHTTP(p *Params) {
 	if !ok {
 		log.Fatal(fmt.Errorf("missing id tag"))
 	}
+	kind, ok := p.Snapshot.Tags[qgn.KindTag]
+	if !ok {
+		log.Fatal(fmt.Errorf("missing kind tag"))
+	}
 	s := &http.Server{
-		Handler:      NewGameServer(game, id, p.CompleteFn),
+		Handler:      NewGameServer(game, id, kind, p.CompleteFn),
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}
