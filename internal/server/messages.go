@@ -59,12 +59,8 @@ func (gs *GameServer) sendConnectionMessages() {
 	}
 	for p := range gs.connected {
 		payload, _ := json.Marshal(Message{
-			Type: ConnectionMessage,
-			Details: struct {
-				Connected map[string]*string `json:"connected"`
-			}{
-				Connected: connected,
-			},
+			Type:    ConnectionMessage,
+			Details: connected,
 		})
 		gs.sendMessage(p, payload)
 	}
