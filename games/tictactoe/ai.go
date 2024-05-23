@@ -12,10 +12,10 @@ type AI struct{}
 func (ai AI) Score(game qg.Game, team string) float64 {
 	g := game.(*Tictactoe)
 	if slices.Contains(g.winners, team) {
-		return math.Inf(-1)
+		return math.Inf(1)
 	}
 	if len(g.winners) > 0 {
-		return math.Inf(1)
+		return math.Inf(-1)
 	}
 	score := 0.0
 	for i := range BoardSize {

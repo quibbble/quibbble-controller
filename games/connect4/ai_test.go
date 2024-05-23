@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_Ai(t *testing.T) {
@@ -12,7 +13,12 @@ func Test_Ai(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	connect4.state.turn = TeamA
+	_ = connect4.Do(&qg.Action{Team: TeamA, Type: PlaceAction, Details: PlaceDetails{Col: 0}})
+	_ = connect4.Do(&qg.Action{Team: TeamB, Type: PlaceAction, Details: PlaceDetails{Col: 0}})
+	_ = connect4.Do(&qg.Action{Team: TeamA, Type: PlaceAction, Details: PlaceDetails{Col: 1}})
+	_ = connect4.Do(&qg.Action{Team: TeamB, Type: PlaceAction, Details: PlaceDetails{Col: 1}})
+	_ = connect4.Do(&qg.Action{Team: TeamA, Type: PlaceAction, Details: PlaceDetails{Col: 2}})
+	_ = connect4.Do(&qg.Action{Team: TeamB, Type: PlaceAction, Details: PlaceDetails{Col: 2}})
 
 	err = connect4.Do(&qg.Action{
 		Team: TeamA,
@@ -22,4 +28,6 @@ func Test_Ai(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+
+	assert.True(t, len(connect4.winners) > 0)
 }
