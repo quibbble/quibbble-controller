@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"runtime/debug"
+	"slices"
 	"time"
 
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
@@ -92,6 +93,15 @@ func (gs *GameServer) Start() {
 				team, ok := a.Details.(string)
 				if !ok {
 					gs.sendErrorMessage(a.Player, fmt.Errorf("invalid join action"))
+					continue
+				}
+				snapshot, err := gs.game.GetSnapshotJSON()
+				if err != nil {
+					gs.sendErrorMessage(a.Player, fmt.Errorf("internal game failure"))
+					continue
+				}
+				if !slices.Contains(snapshot.Teams, team) {
+					gs.sendErrorMessage(a.Player, fmt.Errorf("invalid team"))
 					continue
 				}
 				a.Player.team = &team
