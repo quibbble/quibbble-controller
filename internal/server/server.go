@@ -81,6 +81,9 @@ func (gs *GameServer) Start() {
 			gs.sendConnectionMessages()
 		case a := <-gs.actionCh:
 			switch a.Type {
+			case Ping:
+				gs.sendPongMessage(a.Player)
+				continue
 			case Chat:
 				message, ok := a.Details.(string)
 				if !ok {

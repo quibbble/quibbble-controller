@@ -6,6 +6,7 @@ import (
 
 // Message Types
 const (
+	PongMessage       = "pong"
 	ErrorMessage      = "error"
 	SnapshotMessage   = "snapshot"
 	ConnectionMessage = "connection"
@@ -86,6 +87,13 @@ func (gs *GameServer) sendErrorMessage(player *Player, err error) {
 	payload, _ := json.Marshal(Message{
 		Type:    ErrorMessage,
 		Details: err.Error(),
+	})
+	gs.sendMessage(player, payload)
+}
+
+func (gs *GameServer) sendPongMessage(player *Player) {
+	payload, _ := json.Marshal(Message{
+		Type: PongMessage,
 	})
 	gs.sendMessage(player, payload)
 }
