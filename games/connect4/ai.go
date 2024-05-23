@@ -26,9 +26,9 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 		for j := range Cols - 4 {
 			// down
 			if open(g.board.board[i][j], team) &&
-				open(g.board.board[i][j-1], team) &&
-				open(g.board.board[i][j-2], team) &&
-				open(g.board.board[i][j-3], team) {
+				open(g.board.board[i][j+1], team) &&
+				open(g.board.board[i][j+2], team) &&
+				open(g.board.board[i][j+3], team) {
 				score -= 10
 			}
 			// right
@@ -40,9 +40,9 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 			}
 			// diag
 			if open(g.board.board[i][j], team) &&
-				open(g.board.board[i+1][j-1], team) &&
-				open(g.board.board[i+2][j-2], team) &&
-				open(g.board.board[i+3][j-3], team) {
+				open(g.board.board[i+1][j+1], team) &&
+				open(g.board.board[i+2][j+2], team) &&
+				open(g.board.board[i+3][j+3], team) {
 				score -= 10
 			}
 		}

@@ -1,6 +1,8 @@
 package game
 
-import "math"
+import (
+	"math"
+)
 
 type GameAI interface {
 	// Gives a number between -inf and inf
@@ -35,14 +37,15 @@ func alphabeta(b GameBuilder, ai GameAI, node Game, depth int, alpha, beta float
 				return 0, nil, err
 			}
 
-			snapshotJSONCopy, err := node.GetSnapshotJSON()
+			snapshotJSONCopy, err := copy.GetSnapshotJSON()
 			if err != nil {
 				return 0, nil, err
 			}
-			if snapshotJSON.Turn != snapshotJSONCopy.Turn && snapshotJSON.Turn == team {
-				depth -= 1
+			newDepth := depth
+			if snapshotJSON.Turn != snapshotJSONCopy.Turn {
+				newDepth -= 1
 			}
-			v, _, err := alphabeta(b, ai, copy, depth, alpha, beta, team)
+			v, _, err := alphabeta(b, ai, copy, newDepth, alpha, beta, team)
 			if err != nil {
 				return 0, nil, err
 			}
@@ -68,14 +71,15 @@ func alphabeta(b GameBuilder, ai GameAI, node Game, depth int, alpha, beta float
 				return 0, nil, err
 			}
 
-			snapshotJSONCopy, err := node.GetSnapshotJSON()
+			snapshotJSONCopy, err := copy.GetSnapshotJSON()
 			if err != nil {
 				return 0, nil, err
 			}
-			if snapshotJSON.Turn != snapshotJSONCopy.Turn && snapshotJSON.Turn == team {
-				depth -= 1
+			newDepth := depth
+			if snapshotJSON.Turn != snapshotJSONCopy.Turn {
+				newDepth -= 1
 			}
-			v, _, err := alphabeta(b, ai, copy, depth, alpha, beta, team)
+			v, _, err := alphabeta(b, ai, copy, newDepth, alpha, beta, team)
 			if err != nil {
 				return 0, nil, err
 			}

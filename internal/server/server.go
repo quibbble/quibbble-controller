@@ -136,6 +136,7 @@ func (gs *GameServer) GetSnapshotJSON(team ...string) (*qg.Snapshot, error) {
 	if err != nil {
 		return nil, err
 	}
+	snapshot.Kind = gs.kind
 	return snapshot, nil
 }
 
