@@ -30,7 +30,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: quibbble/controller
-          tags: type=match,pattern=quibbble-controller-(v\d.\d.\d),group=1
+          tags: type=match,pattern=quibbble-controller-(v\d+.\d+.\d+),group=1
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
