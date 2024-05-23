@@ -295,11 +295,9 @@ Message sent to all players on every player connection, drop, or team change.
 {
     "type": "connection",
     "details": {
-        "connected": {
-            "$NAME1": "$TEAM1",
-            "$NAME2": "$TEAM2",
-            "$NAME3": null
-        }
+        "$NAME1": "$TEAM1",
+        "$NAME2": "$TEAM2",
+        "$NAME3": null
     }
 }
 ```
