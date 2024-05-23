@@ -29,7 +29,9 @@ func CreateIngress(host, key, id string, allowOrigins []string) *networkingv1.In
 				"nginx.ingress.kubernetes.io/enable-cors":            "true",
 				"nginx.ingress.kubernetes.io/cors-allow-methods":     "GET, HEAD, OPTIONS",
 				"nginx.ingress.kubernetes.io/cors-allow-credentials": "true",
-				"nginx.ingress.kubernetes.io/cors-allow-origin":      strings.Join(allowOrigins, ","),
+				// default is 60 - prevents continuous ws closure
+				"nginx.ingress.kubernetes.io/proxy-read-timeout": "1800",
+				"nginx.ingress.kubernetes.io/cors-allow-origin":  strings.Join(allowOrigins, ","),
 			},
 		},
 		Spec: networkingv1.IngressSpec{
