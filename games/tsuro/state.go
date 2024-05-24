@@ -107,6 +107,9 @@ func newState(variant string, seed int64, teams []string) (*state, error) {
 
 // Rotate rotates a tile in hand clockwise
 func (s *state) Rotate(team, tile string) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if s.variant == OpenTilesVariant && team != s.turn {
 		return fmt.Errorf("%s cannot rotate tile on %s turn", team, s.turn)
 	}
@@ -126,6 +129,9 @@ func (s *state) Rotate(team, tile string) error {
 
 // place places a tile on the board
 func (s *state) Place(team, tile string, row, column int) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if team != s.turn {
 		return fmt.Errorf("%s cannot play on %s turn", team, s.turn)
 	}
@@ -163,16 +169,6 @@ func (s *state) Place(team, tile string, row, column int) error {
 	s.updateAlive()
 	s.handleDraws()
 	s.nextTurn()
-	return nil
-}
-
-func (s *state) SetWinners(winners []string) error {
-	for _, winner := range winners {
-		if !slices.Contains(s.teams, winner) {
-			return fmt.Errorf("winner not in teams")
-		}
-	}
-	s.winners = winners
 	return nil
 }
 

@@ -57,6 +57,9 @@ func newState(seed int64, teams []string) *state {
 }
 
 func (s *state) RotateTileRight(team string) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if s.playTiles[team] == nil {
 		return fmt.Errorf("cannot rotate tile")
 	}
@@ -65,6 +68,9 @@ func (s *state) RotateTileRight(team string) error {
 }
 
 func (s *state) RotateTileLeft(team string) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if s.playTiles[team] == nil {
 		return fmt.Errorf("cannot rotate tile")
 	}
@@ -73,6 +79,9 @@ func (s *state) RotateTileLeft(team string) error {
 }
 
 func (s *state) PlaceTile(team string, tile *tile, x, y int) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if team != s.turn {
 		return fmt.Errorf("%s cannot play on %s turn", team, s.turn)
 	}
@@ -96,7 +105,7 @@ func (s *state) PlaceTile(team string, tile *tile, x, y int) error {
 
 func (s *state) PlaceToken(team string, pass bool, x, y int, typ, side string) error {
 	if len(s.winners) > 0 {
-		return fmt.Errorf("%s game already completed", Key)
+		return fmt.Errorf("game already over")
 	}
 	if team != s.turn {
 		return fmt.Errorf("currently %s's turn", s.turn)
@@ -467,16 +476,6 @@ func (s *state) score() error {
 			winners = []string{p}
 		} else if score == max {
 			winners = append(winners, p)
-		}
-	}
-	s.winners = winners
-	return nil
-}
-
-func (s *state) SetWinners(winners []string) error {
-	for _, winner := range winners {
-		if !slices.Contains(s.teams, winner) {
-			return fmt.Errorf("winner not in teams")
 		}
 	}
 	s.winners = winners

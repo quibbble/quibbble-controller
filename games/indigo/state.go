@@ -81,6 +81,9 @@ func newState(variant string, random int64, teams []string) (*state, error) {
 }
 
 func (s *state) rotate(team, paths string) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if !slices.Contains(s.teams, team) {
 		return fmt.Errorf("%s not a valid team", team)
 	}
@@ -98,6 +101,9 @@ func (s *state) rotate(team, paths string) error {
 }
 
 func (s *state) place(team, paths string, row, col int) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if team != s.turn {
 		return fmt.Errorf("%s cannot play on %s turn", team, s.turn)
 	}

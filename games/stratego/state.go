@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	"slices"
 
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 )
@@ -44,6 +43,9 @@ func newState(variant string, seed int64, teams []string) (*state, error) {
 }
 
 func (s *state) ToggleReady(team string) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if s.started {
 		return fmt.Errorf("cannot toggle ready when game has already started")
 	}
@@ -55,6 +57,9 @@ func (s *state) ToggleReady(team string) error {
 }
 
 func (s *state) Switch(team string, unitRow, unitCol, switchRow, switchCol int) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	boardSize := len(s.board.board)
 	if s.started {
 		return fmt.Errorf("cannot switch units when game has already started")
@@ -103,6 +108,9 @@ func (s *state) Switch(team string, unitRow, unitCol, switchRow, switchCol int) 
 }
 
 func (s *state) Move(team string, unitRow, unitCol, moveRow, moveCol int) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	boardSize := len(s.board.board)
 	if !s.playersReady() {
 		return fmt.Errorf("both players are not ready")
@@ -245,16 +253,6 @@ func (s *state) playersReady() bool {
 		r = r && b
 	}
 	return r
-}
-
-func (s *state) SetWinners(winners []string) error {
-	for _, winner := range winners {
-		if !slices.Contains(s.teams, winner) {
-			return fmt.Errorf("winner not in teams")
-		}
-	}
-	s.winners = winners
-	return nil
 }
 
 func (s *state) actions() []*qg.Action {

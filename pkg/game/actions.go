@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 
@@ -46,6 +47,9 @@ func AI(b GameBuilder, ai GameAI, g Game, depth int) error {
 	snapshot, err := g.GetSnapshotJSON()
 	if err != nil {
 		return err
+	}
+	if len(snapshot.Winners) > 0 {
+		return fmt.Errorf("game already over")
 	}
 	_, action, err := alphabeta(b, ai, g, depth, math.Inf(-1), math.Inf(1), snapshot.Turn)
 	if err != nil {

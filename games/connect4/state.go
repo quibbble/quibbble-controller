@@ -2,7 +2,6 @@ package connect4
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
@@ -25,6 +24,9 @@ func newState(teams []string) *state {
 }
 
 func (s *state) Place(team string, col int) error {
+	if len(s.winners) > 0 {
+		return fmt.Errorf("game already over")
+	}
 	if team != s.turn {
 		return fmt.Errorf("%s cannot play on %s turn", team, s.turn)
 	}
@@ -48,16 +50,6 @@ func (s *state) Place(team string, col int) error {
 			break
 		}
 	}
-	return nil
-}
-
-func (s *state) SetWinners(winners []string) error {
-	for _, winner := range winners {
-		if !slices.Contains(s.teams, winner) {
-			return fmt.Errorf("winner not in teams")
-		}
-	}
-	s.winners = winners
 	return nil
 }
 

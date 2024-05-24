@@ -17,7 +17,7 @@ type state struct {
 
 func (s *state) Mark(team string, row, col int) error {
 	if len(s.winners) > 0 {
-		return fmt.Errorf("game has ended")
+		return fmt.Errorf("game already over")
 	}
 	if !slices.Contains(s.teams, team) {
 		return fmt.Errorf("%s is not a valid team", team)
