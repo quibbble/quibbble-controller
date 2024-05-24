@@ -37,10 +37,10 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 	for _, row := range g.board.board {
 		for _, unit := range row {
 			if unit.Team != nil && *unit.Team == team {
-				score -= points[unit.Type]
+				score += points[unit.Type]
 			}
 			if unit.Team != nil && *unit.Team != team {
-				score += points[unit.Type]
+				score -= points[unit.Type]
 			}
 		}
 	}

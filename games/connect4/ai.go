@@ -29,21 +29,21 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 				open(g.board.board[i][j+1], team) &&
 				open(g.board.board[i][j+2], team) &&
 				open(g.board.board[i][j+3], team) {
-				score -= 10
+				score += 10
 			}
 			// right
 			if open(g.board.board[i][j], team) &&
 				open(g.board.board[i+1][j], team) &&
 				open(g.board.board[i+2][j], team) &&
 				open(g.board.board[i+3][j], team) {
-				score -= 10
+				score += 10
 			}
 			// diag
 			if open(g.board.board[i][j], team) &&
 				open(g.board.board[i+1][j+1], team) &&
 				open(g.board.board[i+2][j+2], team) &&
 				open(g.board.board[i+3][j+3], team) {
-				score -= 10
+				score += 10
 			}
 		}
 	}

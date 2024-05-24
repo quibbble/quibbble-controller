@@ -18,13 +18,5 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 		return math.Inf(-1)
 	}
 
-	max := 0
-	for t, p := range g.scores {
-		if t != team {
-			if p > max {
-				max = p
-			}
-		}
-	}
-	return float64(max - g.scores[team])
+	return float64(g.scores[team])
 }

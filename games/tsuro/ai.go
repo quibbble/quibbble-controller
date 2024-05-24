@@ -19,7 +19,7 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 	}
 	score := 0.0
 
-	// find number of open spaces connected to your tile and give -10 for each space
+	// find number of open spaces connected to your tile and give +10 for each space
 	t, _ := g.tokens[g.turn].getAdjacent()
 	row := t.Row
 	col := t.Col
@@ -49,6 +49,6 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 		}
 	}
 
-	score -= float64(len(f) * 10)
+	score += float64(len(f) * 10)
 	return score
 }
