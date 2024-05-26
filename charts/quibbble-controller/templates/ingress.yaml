@@ -6,7 +6,7 @@ metadata:
     {{- include "quibbble-controller.labels" . | nindent 4 }}
   annotations:
     "nginx.ingress.kubernetes.io/enable-cors": "true"
-    "nginx.ingress.kubernetes.io/cors-allow-methods": "GET, POST, DELETE, HEAD, OPTIONS"
+    "nginx.ingress.kubernetes.io/cors-allow-methods": "GET, PUT, POST, DELETE, HEAD, OPTIONS"
     "nginx.ingress.kubernetes.io/cors-allow-credentials": "true"
     "nginx.ingress.kubernetes.io/cors-allow-origin": {{ join "," .Values.allowOrigins | quote }}
 spec:
