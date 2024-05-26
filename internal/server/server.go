@@ -103,11 +103,15 @@ func (gs *GameServer) Start() {
 					gs.sendErrorMessage(a.Player, fmt.Errorf("internal game failure"))
 					continue
 				}
-				if !slices.Contains(snapshot.Teams, team) {
+				if !slices.Contains(snapshot.Teams, team) || team != "" {
 					gs.sendErrorMessage(a.Player, fmt.Errorf("invalid team"))
 					continue
 				}
-				a.Player.team = &team
+				if team == "" {
+					a.Player.team = nil
+				} else {
+					a.Player.team = &team
+				}
 				gs.sendConnectionMessages()
 			default:
 				team := a.Player.team
