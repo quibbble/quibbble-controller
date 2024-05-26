@@ -82,6 +82,33 @@ There are three main processes in this system.
 </details>
 
 <details>
+ <summary><code>PUT</code> <code><b>/game</b></code> <code>(load a game from storage)</code></summary>
+
+##### Parameters
+
+> | name      |  type     | data type                          | description                                                       |
+> |-----------|-----------|------------------------------------|-------------------------------------------------------------------|
+> | key       |  required | string                             | The name of the game i.e. `tictactoe` or `connect4`               |
+> | id        |  required | string                             | The unique id of the game instance to join                        |
+
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `text/plain;charset=UTF-8`        | `OK`                                                           |
+> | `400`         | `text/plain;charset=UTF-8`        | `Bad Request`                                                       |
+> | `404`         | `text/plain;charset=UTF-8`        | `Not Found`                                                          |
+> | `500`         | `text/plain;charset=UTF-8`        | `Internal Server Error`                                             |
+
+##### Example cURL
+
+> ```javascript
+>  curl -X PUT https://api.quibbble.com/game?key={key}&id={id}
+> ```
+</details>
+
+<details>
  <summary><code>DELETE</code> <code><b>/game?key={key}&id={id}</b></code> <code>(delete a game)</code></summary>
 
 ##### Parameters
@@ -97,6 +124,7 @@ There are three main processes in this system.
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
 > | `200`         | `text/plain;charset=UTF-8`        | `OK`                                                                |
+> | `400`         | `text/plain;charset=UTF-8`        | `Bad Request`                                                       |
 > | `404`         | `text/plain;charset=UTF-8`        | `Not Found`                                                         |
 > | `500`         | `text/plain;charset=UTF-8`        | `Internal Server Error`                                             |
 

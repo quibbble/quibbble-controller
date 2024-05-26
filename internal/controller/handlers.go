@@ -36,16 +36,15 @@ func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check long term store to see if a snapshot exists
-	// for the given key and id. If so then use that
-	// instead of snapshot provided in the request.
-	if s, err := c.lookup(key, id); err == nil {
-		snapshot = s
-	} else {
-		// if this is a new game then increment game count
-		if err := c.increment(key); err != nil {
-			log.Println(err.Error())
-		}
+	// Check long term store to see if a snapshot exists.
+	if _, err := c.lookup(key, id); err == nil {
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+
+	// If this is a new game then increment game count.
+	if err := c.increment(key); err != nil {
+		log.Println(err.Error())
 	}
 
 	if err := c.create(snapshot); err != nil {
@@ -59,8 +58,49 @@ func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(http.StatusText(http.StatusCreated)))
 }
 
+func (c *Controller) loadHandler(w http.ResponseWriter, r *http.Request) {
+	key, id := r.URL.Query().Get(qgn.KeyTag), r.URL.Query().Get(qgn.IDTag)
+	if key == "" {
+		http.Error(w, "missing 'key' url query", http.StatusBadRequest)
+		return
+	} else if id == "" {
+		http.Error(w, "missing 'id' url query", http.StatusBadRequest)
+		return
+	}
+
+	if found := c.find(key, id); found {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(http.StatusText(http.StatusOK)))
+		return
+	}
+
+	snapshot, err := c.lookup(key, id)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	if err := c.create(snapshot); err != nil {
+		log.Println(err.Error())
+		c.delete(key, id)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(http.StatusText(http.StatusOK)))
+}
+
 func (c *Controller) deleteHandler(w http.ResponseWriter, r *http.Request) {
 	key, id := r.URL.Query().Get(qgn.KeyTag), r.URL.Query().Get(qgn.IDTag)
+	if key == "" {
+		http.Error(w, "missing 'key' url query", http.StatusBadRequest)
+		return
+	} else if id == "" {
+		http.Error(w, "missing 'id' url query", http.StatusBadRequest)
+		return
+	}
+
 	if found := c.find(key, id); !found {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return

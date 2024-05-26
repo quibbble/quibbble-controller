@@ -42,6 +42,7 @@ func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, st
 		allowOrigins: allowOrigins,
 	}
 	c.mux.HandleFunc("POST /game", c.createHandler)
+	c.mux.HandleFunc("PUT /game", c.loadHandler)
 	c.mux.HandleFunc("DELETE /game", c.deleteHandler)
 	c.mux.HandleFunc("GET /game/activity", c.activityHandler)
 	c.mux.HandleFunc("GET /health", healthHandler)
