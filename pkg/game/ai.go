@@ -2,6 +2,7 @@ package game
 
 import (
 	"math"
+	"math/rand"
 )
 
 type GameAI interface {
@@ -28,6 +29,7 @@ func alphabeta(b GameBuilder, ai GameAI, node Game, depth int, alpha, beta float
 	}
 	if team == snapshotJSON.Turn {
 		value := math.Inf(-1)
+		actions := make([]*Action, 0)
 		for _, a := range snapshotJSON.Actions {
 			copy, err := b.Create(snapshotQGN)
 			if err != nil {
@@ -50,18 +52,22 @@ func alphabeta(b GameBuilder, ai GameAI, node Game, depth int, alpha, beta float
 				return 0, nil, err
 			}
 
-			if v >= value {
+			if v == value {
+				actions = append(actions, a)
+			} else if v > value {
 				value = v
-				action = a
+				actions = []*Action{a}
 			}
+
 			if value > beta {
 				break
 			}
 			alpha = math.Max(alpha, value)
 		}
-		return value, action, nil
+		return value, actions[rand.Intn(len(actions))], nil
 	} else {
 		value := math.Inf(1)
+		actions := make([]*Action, 0)
 		for _, a := range snapshotJSON.Actions {
 			copy, err := b.Create(snapshotQGN)
 			if err != nil {
@@ -84,15 +90,18 @@ func alphabeta(b GameBuilder, ai GameAI, node Game, depth int, alpha, beta float
 				return 0, nil, err
 			}
 
-			if v <= value {
+			if v == value {
+				actions = append(actions, a)
+			} else if v < value {
 				value = v
-				action = a
+				actions = []*Action{a}
 			}
+
 			if value < alpha {
 				break
 			}
 			beta = math.Min(beta, value)
 		}
-		return value, action, nil
+		return value, actions[rand.Intn(len(actions))], nil
 	}
 }
