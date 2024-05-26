@@ -65,12 +65,7 @@ func main() {
 	}
 
 	// create completeFn
-	completeFn := func(game qg.Game) {
-		snapshot, err := game.GetSnapshotQGN()
-		if err != nil {
-			log.Println(err.Error())
-			return
-		}
+	completeFn := func(snapshot *qgn.Snapshot) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		storage.StoreCompletedGame(ctx, &st.Game{

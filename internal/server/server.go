@@ -38,10 +38,10 @@ type GameServer struct {
 	actionCh chan *Action
 
 	// completeFn is called on game end.
-	completeFn func(qg.Game)
+	completeFn func(*qgn.Snapshot)
 }
 
-func NewGameServer(game qg.Game, id, kind string, completeFn func(qg.Game)) *GameServer {
+func NewGameServer(game qg.Game, id, kind string, completeFn func(*qgn.Snapshot)) *GameServer {
 	gs := &GameServer{
 		lastUpdated: time.Now(),
 		game:        game,
@@ -123,7 +123,9 @@ func (gs *GameServer) Start() {
 				gs.sendSnapshotMessages()
 
 				if snapshot, err := gs.GetSnapshotJSON(); err == nil && len(snapshot.Winners) > 0 {
-					gs.completeFn(gs.game)
+					if snapshot, err := gs.GetSnapshotQGN(); err == nil {
+						gs.completeFn(snapshot)
+					}
 				}
 			}
 		}

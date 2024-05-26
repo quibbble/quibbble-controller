@@ -36,7 +36,7 @@ type Message struct {
 }
 
 func (gs *GameServer) sendSnapshotMessage(player *Player) {
-	snapshot, _ := gs.game.GetSnapshotJSON()
+	snapshot, _ := gs.GetSnapshotJSON()
 	if team := gs.team(player.name); team != nil {
 		snapshot, _ = gs.GetSnapshotJSON(*team)
 	}

@@ -25,7 +25,7 @@ type Params struct {
 	Port string
 
 	// CompleteFn called on game end
-	CompleteFn func(qg.Game)
+	CompleteFn func(*qgn.Snapshot)
 }
 
 func ServeHTTP(p *Params) {
