@@ -113,6 +113,7 @@ func (gs *GameServer) Start() {
 					a.Player.team = &team
 				}
 				gs.sendConnectionMessages()
+				gs.sendSnapshotMessage(a.Player)
 			default:
 				team := a.Player.team
 				if team == nil {
