@@ -402,9 +402,13 @@ func (s *state) actions(team ...string) []*qg.Action {
 	// rotate actions are not stored in qgn so ignore them here as well
 	targets := make([]*qg.Action, 0)
 	if len(team) == 0 || (len(team) == 1 && team[0] == s.turn) {
-		t, _ := s.tokens[s.turn].getAdjacent()
-		row := t.Row
-		col := t.Col
+		row := s.tokens[s.turn].Row
+		col := s.tokens[s.turn].Col
+		if s.playedFirstTurn[s.turn] {
+			t, _ := s.tokens[s.turn].getAdjacent()
+			row = t.Row
+			col = t.Col
+		}
 		for _, t1 := range s.hands[s.turn].hand {
 			t2, _ := newTile(t1.Edges)
 			t2.RotateRight()
