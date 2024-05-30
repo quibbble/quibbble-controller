@@ -7,13 +7,13 @@ import (
 
 // Edges
 const (
-	A       = "A"
-	B       = "B"
-	C       = "C"
-	D       = "D"
-	E       = "E"
-	F       = "F"
-	Special = "S" // Special edge represents all edges on the central treasure tile
+	A       = "a"
+	B       = "b"
+	C       = "c"
+	D       = "d"
+	E       = "e"
+	F       = "f"
+	Special = "s" // Special edge represents all edges on the central treasure tile
 )
 
 /*
@@ -26,8 +26,8 @@ tile representation
 		 E  D
 */
 type tile struct {
-	Paths    string // defines the paths on the tile - EX: ABCDEF means A <> B, C <> D, E <> F
-	Treasure bool   // spsecial tiles with different paths rules
+	Paths    string `json:"paths"`    // defines the paths on the tile - EX: ABCDEF means A <> B, C <> D, E <> F
+	Treasure bool   `json:"treasure"` // special tiles with different paths rules
 }
 
 func newTreasureTile(paths string) *tile {

@@ -55,10 +55,10 @@ type Battle struct {
 }
 
 type SnapshotDetails struct {
-	Board       [][]Unit
-	Battle      *Battle
-	JustBattled bool
-	Started     bool
-	Ready       map[string]bool
-	Variant     string
+	Board       [][]Unit        `json:"board"`
+	Battle      *Battle         `json:"battle"`
+	JustBattled bool            `json:"just_battled"`
+	Started     bool            `json:"started"`
+	Ready       map[string]bool `json:"ready"`
+	Variant     string          `json:"variant"`
 }

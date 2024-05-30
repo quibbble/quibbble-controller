@@ -17,9 +17,9 @@ var (
 )
 
 type board struct {
-	Tiles    [][]*tile // 0,0 is upper left most tile
-	Gateways []*gateway
-	Gems     []*gem
+	Tiles    [][]*tile  `json:"tiles"` // 0,0 is upper left most tile
+	Gateways []*gateway `json:"gateways"`
+	Gems     []*gem     `json:"gems"`
 }
 
 func newBoard(teams []string) *board {

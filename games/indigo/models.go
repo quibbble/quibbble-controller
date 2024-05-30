@@ -35,12 +35,12 @@ type PlaceDetails struct {
 }
 
 type SnapshotDetails struct {
-	Board          *board
-	Hands          map[string][]tile
-	Points         map[string]int
-	Round          int
-	RoundsUntilEnd int
-	Variant        string
+	Board          *board            `json:"board"`
+	Hands          map[string][]tile `json:"hands"`
+	Points         map[string]int    `json:"points"`
+	Round          int               `json:"round"`
+	RoundsUntilEnd int               `json:"rounds_until_end"`
+	Variant        string            `json:"variant"`
 }
 
 var (

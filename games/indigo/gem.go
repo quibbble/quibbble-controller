@@ -1,9 +1,9 @@
 package indigo
 
 const (
-	Amber    = "Amber"
-	Emerald  = "Emerald"
-	Sapphire = "Sapphire"
+	Amber    = "amber"
+	Emerald  = "emerald"
+	Sapphire = "sapphire"
 )
 
 var (
@@ -15,11 +15,12 @@ var (
 )
 
 type gem struct {
-	Color       string
-	Edge        string
-	Row, Column int
-	collided    bool
-	gateway     *gateway
+	Color    string `json:"color"`
+	Edge     string `json:"edge"`
+	Row      int    `json:"row"`
+	Column   int    `json:"col"`
+	collided bool
+	gateway  *gateway
 }
 
 func newGem(color, edge string, row, column int) *gem {
