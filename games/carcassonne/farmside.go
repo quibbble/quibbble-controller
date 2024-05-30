@@ -2,8 +2,8 @@ package carcassonne
 
 // Farm notch which is a piece of a farm side
 const (
-	FarmNotchA = "A"
-	FarmNotchB = "B"
+	FarmNotchA = "a"
+	FarmNotchB = "b"
 )
 
 /*

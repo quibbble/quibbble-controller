@@ -9,21 +9,22 @@ const OutOfBounds = 999
 
 type tile struct {
 	// X and Y represent the location of the tile on the board, OutOfBounds means not in board
-	X, Y int
+	X int `json:"x"`
+	Y int `json:"y"`
 	// Sides is a map from side i.e. Top, Right, Bottom, Left to structure type i.e. Farm, City, Road
-	Sides map[string]string
+	Sides map[string]string `json:"sides"`
 	// Center represents the structure at the center, i.e. Cloister, NilStructure
-	Center string
+	Center string `json:"center"`
 	// ConnectedCitySides determines whether the city sides are connected together or separate
-	ConnectedCitySides bool
+	ConnectedCitySides bool `json:"connected_cities"`
 	// Banner determines whether this is a banner tile
-	Banner bool
+	Banner bool `json:"banner"`
 	// Teams is a map from side to list of teams that have won that side after completing the given structure
-	Teams map[string][]string
+	Teams map[string][]string `json:"teams"`
 	// FarmTeams is a map from farm side to list of teams that have won that farmland at the end of the game
-	FarmTeams map[string][]string
+	FarmTeams map[string][]string `json:"farm_teams"`
 	// CenterTeam represents the team that has won the structure in the center of the tile after completing the given structure
-	CenterTeam string
+	CenterTeam string `json:"center_team"`
 	// adjacent is a map from side to adjacent tiles
 	adjacent map[string]*tile
 }
