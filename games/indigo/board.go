@@ -103,12 +103,12 @@ nextGem:
 		if gem.Edge == Special {
 			if !centerGemMoved && placedRow >= 0 && placedCol >= 0 {
 				edgeMap := map[string][2]int{
-					"A": {-1, -1},
-					"B": {-1, 0},
-					"C": {0, 1},
-					"D": {1, 0},
-					"E": {1, -1},
-					"F": {0, -1},
+					"a": {-1, -1},
+					"b": {-1, 0},
+					"c": {0, 1},
+					"d": {1, 0},
+					"e": {1, -1},
+					"f": {0, -1},
 				}
 				for edge, loc := range edgeMap {
 					if gem.Row+loc[0] == placedRow &&
@@ -192,9 +192,9 @@ func (b *board) getAdjacent(row, col int, edge string) (adjRow, adjCol int, adjE
 	} else if row > rows/2 {
 		edgeMap = edgeToRowColBot
 	} else {
-		if strings.Contains("AB", edge) {
+		if strings.Contains("ab", edge) {
 			edgeMap = edgeToRowColTop
-		} else if strings.Contains("DE", edge) {
+		} else if strings.Contains("de", edge) {
 			edgeMap = edgeToRowColBot
 		} else {
 			edgeMap = edgeToRowColTop
