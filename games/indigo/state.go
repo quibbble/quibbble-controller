@@ -10,6 +10,7 @@ import (
 )
 
 type state struct {
+	seed                  int64
 	turn                  string
 	teams                 []string
 	winners               []string
@@ -22,11 +23,11 @@ type state struct {
 	round, roundsUntilEnd int
 }
 
-func newState(variant string, random int64, teams []string) (*state, error) {
+func newState(variant string, seed int64, teams []string) (*state, error) {
 	hands := make(map[string]*cl.Collection[tile])
 	points := make(map[string]int)
 	gemsCount := make(map[string]int)
-	deck := cl.NewCollection[tile](random)
+	deck := cl.NewCollection[tile](seed)
 	for idx, numCopies := range numCopiesByUniquePathsIndex {
 		for i := 0; i < numCopies; i++ {
 			deck.Add(tile{Paths: uniquePaths[idx]})
@@ -66,6 +67,7 @@ func newState(variant string, random int64, teams []string) (*state, error) {
 	}
 
 	return &state{
+		seed:           seed,
 		turn:           teams[0],
 		teams:          teams,
 		winners:        make([]string, 0),

@@ -485,29 +485,40 @@ func (s *state) score() error {
 func (s *state) actions() []*qg.Action {
 	targets := make([]*qg.Action, 0)
 	if s.playTiles[s.turn] != nil {
-		// add rotating tile as valid targets
-		targets = append(targets, &qg.Action{
-			Team: s.turn,
-			Type: RotateAction,
-		})
-		// find all valid places to play tile
-		emptySpaces := s.board.getEmptySpaces()
-		for _, emptySpace := range emptySpaces {
-			valid := true
-			for _, side := range Sides {
-				if emptySpace.adjacent[side] != nil && emptySpace.adjacent[side].Sides[AcrossSide[side]] != s.playTiles[s.turn].Sides[side] {
-					valid = false
-				}
+		// find all valid places to play tile in every rotation
+		for i := 0; i < 4; i++ {
+			tile := s.playTiles[s.turn].copy()
+			for j := 0; j < i; j++ {
+				tile.RotateRight()
 			}
-			if valid {
-				targets = append(targets, &qg.Action{
-					Team: s.turn,
-					Type: PlaceTileAction,
-					Details: PlaceTileDetails{
-						X: emptySpace.X,
-						Y: emptySpace.Y,
-					},
-				})
+			emptySpaces := s.board.getEmptySpaces()
+			for _, emptySpace := range emptySpaces {
+				valid := true
+				for _, side := range Sides {
+					if emptySpace.adjacent[side] != nil && emptySpace.adjacent[side].Sides[AcrossSide[side]] != tile.Sides[side] {
+						valid = false
+					}
+				}
+				if valid {
+					targets = append(targets, &qg.Action{
+						Team: s.turn,
+						Type: PlaceTileAction,
+						Details: PlaceTileDetails{
+							X: emptySpace.X,
+							Y: emptySpace.Y,
+
+							Tile: Tile{
+								Top:             tile.Sides[SideTop],
+								Right:           tile.Sides[SideRight],
+								Bottom:          tile.Sides[SideBottom],
+								Left:            tile.Sides[SideLeft],
+								Center:          tile.Center,
+								ConnectedCities: tile.ConnectedCitySides,
+								Banner:          tile.Banner,
+							},
+						},
+					})
+				}
 			}
 		}
 	} else {

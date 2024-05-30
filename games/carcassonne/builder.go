@@ -102,35 +102,36 @@ func (b Builder) Create(snapshot *qgn.Snapshot) (qg.Game, error) {
 				}); err != nil {
 					return nil, err
 				}
-			}
-			x, err := strconv.Atoi(action.Details[1])
-			if err != nil {
-				return nil, err
-			}
-			y, err := strconv.Atoi(action.Details[2])
-			if err != nil {
-				return nil, err
-			}
-			token := notationToToken[action.Details[3]]
-			if len(action.Details) == 4 {
+			} else {
+				x, err := strconv.Atoi(action.Details[1])
+				if err != nil {
+					return nil, err
+				}
+				y, err := strconv.Atoi(action.Details[2])
+				if err != nil {
+					return nil, err
+				}
+				token := notationToToken[action.Details[3]]
+				if len(action.Details) == 4 {
+					if err := game.Do(&qg.Action{
+						Team:    team,
+						Type:    QGNToAction[action.Key],
+						Details: PlaceTokenDetails{Pass: pass, X: x, Y: y, Type: token},
+					}); err != nil {
+						return nil, err
+					}
+				}
+				side := notationToSide[action.Details[4]]
+				if token == Farmer {
+					side = notationToFarmSide[action.Details[4]]
+				}
 				if err := game.Do(&qg.Action{
 					Team:    team,
 					Type:    QGNToAction[action.Key],
-					Details: PlaceTokenDetails{Pass: pass, X: x, Y: y, Type: token},
+					Details: PlaceTokenDetails{Pass: pass, X: x, Y: y, Type: token, Side: side},
 				}); err != nil {
 					return nil, err
 				}
-			}
-			side := notationToSide[action.Details[4]]
-			if token == Farmer {
-				side = notationToFarmSide[action.Details[4]]
-			}
-			if err := game.Do(&qg.Action{
-				Team:    team,
-				Type:    QGNToAction[action.Key],
-				Details: PlaceTokenDetails{Pass: pass, X: x, Y: y, Type: token, Side: side},
-			}); err != nil {
-				return nil, err
 			}
 		default:
 			return nil, fmt.Errorf("invalid action key %s", action.Key)

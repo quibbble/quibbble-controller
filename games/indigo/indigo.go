@@ -78,6 +78,7 @@ func (i *Indigo) GetSnapshotQGN() (*qgn.Snapshot, error) {
 	tags := make(qgn.Tags)
 	tags[qgn.KeyTag] = Key
 	tags[qgn.TeamsTag] = strings.Join(i.teams, ", ")
+	tags[qgn.SeedTag] = strconv.Itoa(int(i.seed))
 
 	actions := make([]qgn.Action, 0)
 	for _, action := range i.history {

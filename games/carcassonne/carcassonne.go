@@ -81,6 +81,7 @@ func (c *Carcassonne) GetSnapshotQGN() (*qgn.Snapshot, error) {
 	tags := make(qgn.Tags)
 	tags[qgn.KeyTag] = Key
 	tags[qgn.TeamsTag] = strings.Join(c.teams, ", ")
+	tags[qgn.SeedTag] = strconv.Itoa(int(c.seed))
 
 	actions := make([]qgn.Action, 0)
 	for _, action := range c.history {
@@ -112,7 +113,7 @@ func (c *Carcassonne) GetSnapshotQGN() (*qgn.Snapshot, error) {
 			}
 			actions = append(actions, qgn.Action{
 				Index:   slices.Index(c.teams, action.Team),
-				Key:     ActionToQGN[PlaceTileAction],
+				Key:     ActionToQGN[PlaceTokenAction],
 				Details: d,
 			})
 		default:
