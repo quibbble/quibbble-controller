@@ -13,12 +13,14 @@ func Test_Ai(t *testing.T) {
 		t.FailNow()
 	}
 
-	err = carcassonne.Do(&qg.Action{
-		Team: TeamA,
-		Type: qg.AIAction,
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+	for i := 0; i < 10; i++ {
+		err = carcassonne.Do(&qg.Action{
+			Team: TeamA,
+			Type: qg.AIAction,
+		})
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
 	}
 }

@@ -120,17 +120,20 @@ func (b Builder) Create(snapshot *qgn.Snapshot) (qg.Game, error) {
 					}); err != nil {
 						return nil, err
 					}
-				}
-				side := notationToSide[action.Details[4]]
-				if token == Farmer {
-					side = notationToFarmSide[action.Details[4]]
-				}
-				if err := game.Do(&qg.Action{
-					Team:    team,
-					Type:    QGNToAction[action.Key],
-					Details: PlaceTokenDetails{Pass: pass, X: x, Y: y, Type: token, Side: side},
-				}); err != nil {
-					return nil, err
+				} else if len(action.Details) == 5 {
+					side := notationToSide[action.Details[4]]
+					if token == Farmer {
+						side = notationToFarmSide[action.Details[4]]
+					}
+					if err := game.Do(&qg.Action{
+						Team:    team,
+						Type:    QGNToAction[action.Key],
+						Details: PlaceTokenDetails{Pass: pass, X: x, Y: y, Type: token, Side: side},
+					}); err != nil {
+						return nil, err
+					}
+				} else {
+					return nil, fmt.Errorf("invalid action details for %s", action.Key)
 				}
 			}
 		default:
