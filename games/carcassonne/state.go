@@ -86,7 +86,7 @@ func (s *state) PlaceTile(team string, tile *tile, x, y int) error {
 		return fmt.Errorf("%s cannot play on %s turn", team, s.turn)
 	}
 	if s.playTiles[team] == nil || !tile.equals(s.playTiles[team]) {
-		return fmt.Errorf("%s cannot place tile %+v", team, tile)
+		return fmt.Errorf("tile %+v doesn't match %+v", tile, s.playTiles[team])
 	}
 	if err := s.board.Place(tile, x, y); err != nil {
 		return err

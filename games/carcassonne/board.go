@@ -28,7 +28,7 @@ func newBoard() *board {
 
 func (b *board) Place(t *tile, x, y int) error {
 	if b.tile(x, y) != nil {
-		return fmt.Errorf("tile aready at %d,%d", x, y)
+		return fmt.Errorf("tile already at %d,%d", x, y)
 	}
 	// get all adj tiles and check if valid placement
 	sides := make(map[string]*tile)
