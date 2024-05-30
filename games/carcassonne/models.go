@@ -49,7 +49,7 @@ type Tile struct {
 	Bottom          string `json:"bottom"`
 	Left            string `json:"left"`
 	Center          string `json:"center"`
-	ConnectedCities bool   `json:"connected_cities"`
+	ConnectedCities bool   `json:"connected_cities" mapstructure:"connected_cities"`
 	Banner          bool   `json:"banner"`
 }
 
