@@ -152,13 +152,8 @@ func (s *Stratego) GetSnapshotJSON(team ...string) (*qg.Snapshot, error) {
 		board = append(board, sRow)
 	}
 
-	var turn string
-	if s.state.started {
-		turn = s.state.turn
-	}
-
 	return &qg.Snapshot{
-		Turn:    turn,
+		Turn:    s.state.turn,
 		Teams:   s.teams,
 		Winners: s.winners,
 		Details: SnapshotDetails{
