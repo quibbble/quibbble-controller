@@ -60,17 +60,6 @@ func (s *Stratego) Do(action *qg.Action) error {
 			return err
 		}
 		s.history = append(s.history, action)
-	case ReadyAction:
-		if err := s.ToggleReady(action.Team); err != nil {
-			return err
-		}
-		for idx, a := range s.history {
-			if a.Team == action.Team && a.Type == ReadyAction {
-				s.history = append(s.history[:idx], s.history[idx+1:]...)
-				break
-			}
-		}
-		s.history = append(s.history, action)
 	case MoveAction:
 		var details MoveDetails
 		if err := mapstructure.Decode(action.Details, &details); err != nil {
@@ -104,11 +93,6 @@ func (s *Stratego) GetSnapshotQGN() (*qgn.Snapshot, error) {
 				Details: []string{strconv.Itoa(details.UnitARow), strconv.Itoa(details.UnitACol),
 					strconv.Itoa(details.UnitBRow), strconv.Itoa(details.UnitBCol)},
 			})
-		case ReadyAction:
-			actions = append(actions, qgn.Action{
-				Index: slices.Index(s.teams, action.Team),
-				Key:   ActionToQGN[ReadyAction],
-			})
 		case MoveAction:
 			var details MoveDetails
 			mapstructure.Decode(action.Details, &details)
@@ -116,7 +100,7 @@ func (s *Stratego) GetSnapshotQGN() (*qgn.Snapshot, error) {
 				Index: slices.Index(s.teams, action.Team),
 				Key:   ActionToQGN[MoveAction],
 				Details: []string{strconv.Itoa(details.UnitRow), strconv.Itoa(details.UnitCol),
-					strconv.Itoa(details.TileRow), strconv.Itoa(details.TileRow)},
+					strconv.Itoa(details.TileRow), strconv.Itoa(details.TileCol)},
 			})
 		default:
 			return nil, fmt.Errorf("%s is not a valid action", action.Type)
@@ -182,7 +166,6 @@ func (s *Stratego) GetSnapshotJSON(team ...string) (*qg.Snapshot, error) {
 			Battle:      s.state.battle,
 			JustBattled: s.state.justBattled,
 			Started:     s.state.started,
-			Ready:       s.state.ready,
 			Variant:     s.variant,
 		},
 		Actions: actions,

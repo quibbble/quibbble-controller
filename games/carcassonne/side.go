@@ -14,6 +14,7 @@ const (
 	SideRight  = "right"
 	SideBottom = "bottom"
 	SideLeft   = "left"
+	SideCenter = "center"
 )
 
 var (

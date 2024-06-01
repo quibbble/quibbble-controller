@@ -70,18 +70,11 @@ func (b Builder) Create(snapshot *qgn.Snapshot) (qg.Game, error) {
 			}); err != nil {
 				return nil, err
 			}
-		case ActionToQGN[ReadyAction]:
-			if err := game.Do(&qg.Action{
-				Team: team,
-				Type: QGNToAction[action.Key],
-			}); err != nil {
-				return nil, err
-			}
 		case ActionToQGN[MoveAction]:
 			if len(action.Details) != 4 {
 				return nil, fmt.Errorf("invalid action details %v", action.Details)
 			}
-			unitRpw, err := strconv.Atoi(action.Details[0])
+			unitRow, err := strconv.Atoi(action.Details[0])
 			if err != nil {
 				return nil, err
 			}
@@ -100,7 +93,7 @@ func (b Builder) Create(snapshot *qgn.Snapshot) (qg.Game, error) {
 			if err := game.Do(&qg.Action{
 				Team:    team,
 				Type:    QGNToAction[action.Key],
-				Details: SwitchDetails{unitRpw, unitCol, tileRow, tileCol},
+				Details: MoveDetails{unitRow, unitCol, tileRow, tileCol},
 			}); err != nil {
 				return nil, err
 			}

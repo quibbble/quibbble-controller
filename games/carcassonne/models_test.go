@@ -2,7 +2,6 @@ package carcassonne
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/mitchellh/mapstructure"
@@ -18,8 +17,6 @@ func Test_Mapstructure_Decoding(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-
-	fmt.Println(a)
 
 	var tile Tile
 	if err := mapstructure.Decode(a, &tile); err != nil {

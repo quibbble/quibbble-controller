@@ -483,11 +483,20 @@ func (s *state) scoreAndClean() error {
 }
 
 // scoreLastTile finds how the points from the last time and token placement
-func (s *state) scoreLastTile(team string) (int, error) {
+func (s *state) scoreLastTile(team string) (float64, error) {
 	if len(s.board.board) == 0 {
 		return 0, fmt.Errorf("cannot score when no tile has been placed")
 	}
 	tile := s.board.board[len(s.board.board)-1]
+
+	// only score farms if farmer was placed on tile
+	scoreFarms := false
+	if len(s.boardTokens) > 0 {
+		last := s.boardTokens[len(s.boardTokens)-1]
+		if last.X == tile.X && last.Y == tile.Y && last.Type == Farmer {
+			scoreFarms = true
+		}
+	}
 
 	seen := make(map[string]bool)
 	for _, side := range Sides {
@@ -521,7 +530,7 @@ func (s *state) scoreLastTile(team string) (int, error) {
 				}
 				structures = append(structures, road)
 
-				if !seen[side+FarmNotchA] {
+				if scoreFarms && !seen[side+FarmNotchA] {
 					farm, err := s.board.generateFarm(tile.X, tile.Y, side+FarmNotchA)
 					if err != nil {
 						return 0, err
@@ -531,7 +540,7 @@ func (s *state) scoreLastTile(team string) (int, error) {
 					}
 					structures = append(structures, farm)
 				}
-				if !seen[side+FarmNotchB] {
+				if scoreFarms && !seen[side+FarmNotchB] {
 					farm, err := s.board.generateFarm(tile.X, tile.Y, side+FarmNotchB)
 					if err != nil {
 						return 0, err
@@ -542,7 +551,7 @@ func (s *state) scoreLastTile(team string) (int, error) {
 					structures = append(structures, farm)
 				}
 			case Farm:
-				if !seen[side+FarmNotchA] {
+				if scoreFarms && !seen[side+FarmNotchA] {
 					farm, err := s.board.generateFarm(tile.X, tile.Y, side+FarmNotchA)
 					if err != nil {
 						return 0, err
@@ -556,7 +565,7 @@ func (s *state) scoreLastTile(team string) (int, error) {
 		}
 	}
 
-	points := 0
+	var points float64
 	if tile.Center == Cloister {
 		found := false
 		for _, tok := range s.boardTokens {
@@ -570,7 +579,8 @@ func (s *state) scoreLastTile(team string) (int, error) {
 			if err != nil {
 				return 0, err
 			}
-			points += count
+			// prioritize cloisters
+			points += float64((count + 1) * 2)
 		}
 	}
 
@@ -584,19 +594,98 @@ func (s *state) scoreLastTile(team string) (int, error) {
 				if err != nil {
 					return 0, err
 				}
-				points += pts
+				points += float64(pts)
 			case Road:
 				pts, err := scoreRoad(structure)
 				if err != nil {
 					return 0, err
 				}
-				points += pts
+				points += float64(pts)
 			case Farm:
 				pts, err := scoreFarm(structure, s.board.completeCities)
 				if err != nil {
 					return 0, err
 				}
-				points += pts
+				// halve the score for farms to prevent over farming
+				points += float64(pts) / 2.0
+			}
+		}
+	}
+	return points, nil
+}
+
+func (s *state) score(team string) (float64, error) {
+	var points float64
+
+	tokens := make([]*token, 0)
+	for _, token := range s.boardTokens {
+		if token.Team == team {
+			tokens = append(tokens, token)
+		}
+	}
+
+	seen := make(map[string]bool)
+	for len(seen) < len(tokens) {
+		var token *token
+		for _, t := range tokens {
+			id := fmt.Sprintf("%d,%d", t.X, t.Y)
+			if !seen[id] {
+				token = t
+				seen[id] = true
+				break
+			}
+		}
+		switch token.Type {
+		case Knight:
+			city, err := s.board.generateCity(token.X, token.Y, token.Side)
+			if err != nil {
+				return 0, err
+			}
+			inside := tokensInStructure(s.boardTokens, city)
+			winners := pointsWinners(inside)
+			if slices.Contains(winners, team) {
+				pts, err := scoreCity(city)
+				if err != nil {
+					return 0, err
+				}
+				points += float64(pts)
+			}
+		case Thief:
+			road, err := s.board.generateRoad(token.X, token.Y, token.Side)
+			if err != nil {
+				return 0, err
+			}
+			inside := tokensInStructure(s.boardTokens, road)
+			winners := pointsWinners(inside)
+			if slices.Contains(winners, team) {
+				pts, err := scoreRoad(road)
+				if err != nil {
+					return 0, err
+				}
+				points += float64(pts)
+			}
+		case Monk:
+			tile := s.board.tile(token.X, token.Y)
+			if tile != nil && tile.Center == Cloister {
+				count, err := s.board.tilesSurroundingCloister(token.X, token.Y)
+				if err != nil {
+					return 0, err
+				}
+				points += float64(count + 1)
+			}
+		case Farmer:
+			farm, err := s.board.generateFarm(token.X, token.Y, token.Side)
+			if err != nil {
+				return 0, err
+			}
+			inside := tokensInStructure(s.boardTokens, farm)
+			winners := pointsWinners(inside)
+			if slices.Contains(winners, team) {
+				pts, err := scoreFarm(farm, s.board.completeCities)
+				if err != nil {
+					return 0, err
+				}
+				points += float64(pts)
 			}
 		}
 	}
@@ -659,6 +748,7 @@ func (s *state) actions() []*qg.Action {
 					X:    s.lastPlacedTiles[s.turn].X,
 					Y:    s.lastPlacedTiles[s.turn].Y,
 					Type: Monk,
+					Side: SideCenter,
 				},
 			})
 		}

@@ -23,10 +23,13 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 		return float64(0)
 	}
 
-	score, err := g.scoreLastTile(team)
+	tileScore, err := g.score(team)
 	if err != nil {
 		return 0
 	}
 
-	return float64(score + g.tokens[team])
+	score := tileScore
+	score += float64(g.tokens[team] * 2) // prioritize using less tokens
+
+	return score
 }

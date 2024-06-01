@@ -10,16 +10,14 @@ const (
 const (
 	SwitchAction = "switch"
 	MoveAction   = "move"
-	ReadyAction  = "ready"
 )
 
-var Actions = []string{SwitchAction, MoveAction, ReadyAction}
+var Actions = []string{SwitchAction, MoveAction}
 
 var (
 	ActionToQGN = map[string]string{
 		SwitchAction: "s",
 		MoveAction:   "m",
-		ReadyAction:  "r",
 	}
 	QGNToAction = util.ReverseMap(ActionToQGN)
 )
@@ -55,10 +53,9 @@ type Battle struct {
 }
 
 type SnapshotDetails struct {
-	Board       [][]Unit        `json:"board"`
-	Battle      *Battle         `json:"battle"`
-	JustBattled bool            `json:"just_battled"`
-	Started     bool            `json:"started"`
-	Ready       map[string]bool `json:"ready"`
-	Variant     string          `json:"variant"`
+	Board       [][]Unit `json:"board"`
+	Battle      *Battle  `json:"battle"`
+	JustBattled bool     `json:"just_battled"`
+	Started     bool     `json:"started"`
+	Variant     string   `json:"variant"`
 }

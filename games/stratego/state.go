@@ -14,7 +14,6 @@ type state struct {
 	turn        string
 	teams       []string
 	winners     []string
-	ready       map[string]bool
 	board       *Board
 	battle      *Battle
 	justBattled bool
@@ -27,10 +26,6 @@ func newState(variant string, seed int64, teams []string) (*state, error) {
 	if err != nil {
 		return nil, err
 	}
-	ready := make(map[string]bool)
-	for _, team := range teams {
-		ready[team] = false
-	}
 	return &state{
 		seed:    seed,
 		variant: variant,
@@ -38,22 +33,7 @@ func newState(variant string, seed int64, teams []string) (*state, error) {
 		teams:   teams,
 		turn:    teams[0],
 		winners: make([]string, 0),
-		ready:   ready,
 	}, nil
-}
-
-func (s *state) ToggleReady(team string) error {
-	if len(s.winners) > 0 {
-		return fmt.Errorf("game already over")
-	}
-	if s.started {
-		return fmt.Errorf("cannot toggle ready when game has already started")
-	}
-	s.ready[team] = !s.ready[team]
-	if s.playersReady() {
-		s.started = true
-	}
-	return nil
 }
 
 func (s *state) Switch(team string, unitRow, unitCol, switchRow, switchCol int) error {
@@ -63,9 +43,6 @@ func (s *state) Switch(team string, unitRow, unitCol, switchRow, switchCol int) 
 	boardSize := len(s.board.board)
 	if s.started {
 		return fmt.Errorf("cannot switch units when game has already started")
-	}
-	if s.ready[team] {
-		return fmt.Errorf("cannot switch units when you are ready")
 	}
 	if unitRow >= boardSize || unitRow < 0 || unitCol >= boardSize || unitCol < 0 ||
 		switchRow >= boardSize || switchRow < 0 || switchCol >= boardSize || switchCol < 0 {
@@ -112,9 +89,6 @@ func (s *state) Move(team string, unitRow, unitCol, moveRow, moveCol int) error 
 		return fmt.Errorf("game already over")
 	}
 	boardSize := len(s.board.board)
-	if !s.playersReady() {
-		return fmt.Errorf("both players are not ready")
-	}
 	if team != s.turn {
 		return fmt.Errorf("%s cannot play on %s turn", team, s.turn)
 	}
@@ -169,6 +143,7 @@ func (s *state) Move(team string, unitRow, unitCol, moveRow, moveCol int) error 
 			s.winners = []string{*attackedUnit.Team} // the other team ran out of movable units
 		}
 		s.nextTurn()
+		s.started = true
 		s.justBattled = true
 		s.battle = &Battle{
 			MoveDetails: MoveDetails{
@@ -247,14 +222,6 @@ func (s *state) nextTurn() {
 	}
 }
 
-func (s *state) playersReady() bool {
-	r := true
-	for _, b := range s.ready {
-		r = r && b
-	}
-	return r
-}
-
 func (s *state) actions() []*qg.Action {
 	targets := make([]*qg.Action, 0)
 	for r, row := range s.board.board {
@@ -268,8 +235,8 @@ func (s *state) actions() []*qg.Action {
 						Details: MoveDetails{
 							UnitRow: r,
 							UnitCol: c,
-							TileRow: move[0],
-							TileCol: move[1],
+							TileRow: r + move[0],
+							TileCol: c + move[1],
 						},
 					})
 				}

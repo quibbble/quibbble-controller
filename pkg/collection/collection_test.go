@@ -1,7 +1,6 @@
 package collection
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -158,7 +157,7 @@ func Test_CollectionCloning(t *testing.T) {
 	c2 := c1.Clone()
 
 	if _, err := c1.Draw(); err != nil {
-		fmt.Println(err)
+		t.Fatal(err)
 	}
 	assert.True(t, c1.GetSize() != c2.GetSize())
 }
