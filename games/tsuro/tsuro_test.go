@@ -11,6 +11,12 @@ import (
 const (
 	TeamA = "TeamA"
 	TeamB = "TeamB"
+	TeamC = "TeamC"
+	TeamD = "TeamD"
+	TeamE = "TeamE"
+	TeamF = "TeamF"
+	TeamG = "TeamG"
+	TeamH = "TeamH"
 )
 
 func Test_TsuroSmoke(t *testing.T) {

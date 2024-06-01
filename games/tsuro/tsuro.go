@@ -51,7 +51,7 @@ func (t *Tsuro) Do(action *qg.Action) error {
 		t.state = g.(*Tsuro).state
 		t.history = g.(*Tsuro).history
 	case qg.AIAction:
-		if err := qg.AI(Builder{}, AI{}, t, 3); err != nil {
+		if err := qg.AI(Builder{}, AI{}, t, 2); err != nil {
 			return err
 		}
 	case PlaceAction:

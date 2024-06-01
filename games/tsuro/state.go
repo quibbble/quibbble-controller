@@ -224,8 +224,9 @@ func (s *state) moveTokens() {
 }
 
 func (s *state) collided(tokens map[string]*token, team string, token *token) bool {
-	for team2, token2 := range tokens {
-		if team != team2 && (token.collided(token2) || token.equals(token2)) {
+	for _, team2 := range s.teams {
+		token2 := tokens[team2]
+		if token2 != nil && team != team2 && (token.collided(token2) || token.equals(token2)) {
 			return true
 		}
 	}
@@ -279,8 +280,9 @@ func (s *state) updateAlive() {
 		}
 	}
 	// update who is still alive
-	for team, token := range s.tokens {
-		if s.playedFirstTurn[team] {
+	for _, team := range s.teams {
+		token := s.tokens[team]
+		if token != nil && s.playedFirstTurn[team] {
 			if (token.Row == 0 && strings.Contains("AB", token.Notch)) ||
 				(token.Row == rows-1 && strings.Contains("EF", token.Notch)) ||
 				(token.Col == 0 && strings.Contains("GH", token.Notch)) ||

@@ -45,7 +45,7 @@ func (c *Carcassonne) Do(action *qg.Action) error {
 		c.state = g.(*Carcassonne).state
 		c.history = g.(*Carcassonne).history
 	case qg.AIAction:
-		if err := qg.AI(Builder{}, AI{}, c, 2); err != nil {
+		if err := qg.AI(Builder{}, AI{}, c, 1); err != nil {
 			return err
 		}
 	case RotateAction:
