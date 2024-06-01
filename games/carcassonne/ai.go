@@ -23,13 +23,10 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 		return float64(0)
 	}
 
-	scores, err := g.score()
+	score, err := g.scoreLastTile(team)
 	if err != nil {
 		return 0
 	}
 
-	// adding tokens to score encourages building on existing structures
-	score := scores[team] + g.tokens[team]
-
-	return float64(score)
+	return float64(score + g.tokens[team])
 }

@@ -48,7 +48,7 @@ func (i *Indigo) Do(action *qg.Action) error {
 		i.state = g.(*Indigo).state
 		i.history = g.(*Indigo).history
 	case qg.AIAction:
-		if err := qg.AI(Builder{}, AI{}, i, 3); err != nil {
+		if err := qg.AI(Builder{}, AI{}, i, 1); err != nil {
 			return err
 		}
 	case PlaceAction:

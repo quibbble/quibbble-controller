@@ -482,80 +482,125 @@ func (s *state) scoreAndClean() error {
 	return nil
 }
 
-func (s *state) score() (map[string]int, error) {
-	scores := make(map[string]int)
+// scoreLastTile finds how the points from the last time and token placement
+func (s *state) scoreLastTile(team string) (int, error) {
+	if len(s.board.board) == 0 {
+		return 0, fmt.Errorf("cannot score when no tile has been placed")
+	}
+	tile := s.board.board[len(s.board.board)-1]
+
 	seen := make(map[string]bool)
-	for len(seen) < len(s.boardTokens) {
-		var token *token
-		for _, t := range s.boardTokens {
-			id := fmt.Sprintf("%d,%d", t.X, t.Y)
-			if !seen[id] {
-				token = t
-				seen[id] = true
+	for _, side := range Sides {
+		seen[side] = false
+	}
+	for _, side := range FarmSides {
+		seen[side] = false
+	}
+
+	structures := make([]*structure, 0)
+
+	for _, side := range Sides {
+		if !seen[side] {
+			switch tile.Sides[side] {
+			case City:
+				city, err := s.board.generateCity(tile.X, tile.Y, side)
+				if err != nil {
+					return 0, err
+				}
+				for _, s := range city.nodes[0].sides {
+					seen[s] = true
+				}
+				structures = append(structures, city)
+			case Road:
+				road, err := s.board.generateRoad(tile.X, tile.Y, side)
+				if err != nil {
+					return 0, err
+				}
+				for _, s := range road.nodes[0].sides {
+					seen[s] = true
+				}
+				structures = append(structures, road)
+
+				if !seen[side+FarmNotchA] {
+					farm, err := s.board.generateFarm(tile.X, tile.Y, side+FarmNotchA)
+					if err != nil {
+						return 0, err
+					}
+					for _, s := range farm.nodes[0].sides {
+						seen[s] = true
+					}
+					structures = append(structures, farm)
+				}
+				if !seen[side+FarmNotchB] {
+					farm, err := s.board.generateFarm(tile.X, tile.Y, side+FarmNotchB)
+					if err != nil {
+						return 0, err
+					}
+					for _, s := range farm.nodes[0].sides {
+						seen[s] = true
+					}
+					structures = append(structures, farm)
+				}
+			case Farm:
+				if !seen[side+FarmNotchA] {
+					farm, err := s.board.generateFarm(tile.X, tile.Y, side+FarmNotchA)
+					if err != nil {
+						return 0, err
+					}
+					for _, s := range farm.nodes[0].sides {
+						seen[s] = true
+					}
+					structures = append(structures, farm)
+				}
+			}
+		}
+	}
+
+	points := 0
+	if tile.Center == Cloister {
+		found := false
+		for _, tok := range s.boardTokens {
+			if tile.X == tok.X && tile.Y == tok.Y && tok.Type == Monk {
+				found = true
 				break
 			}
 		}
-		switch token.Type {
-		case Knight:
-			city, err := s.board.generateCity(token.X, token.Y, token.Side)
+		if found {
+			count, err := s.board.tilesSurroundingCloister(tile.X, tile.Y)
 			if err != nil {
-				return nil, err
+				return 0, err
 			}
-			// score and add points
-			points, err := scoreCity(city)
-			if err != nil {
-				return nil, err
-			}
-			inside := tokensInStructure(s.boardTokens, city)
-			winners := pointsWinners(inside)
-			for _, winner := range winners {
-				scores[winner] += points
-			}
-		case Thief:
-			road, err := s.board.generateRoad(token.X, token.Y, token.Side)
-			if err != nil {
-				return nil, err
-			}
-			// score and add points
-			points, err := scoreRoad(road)
-			if err != nil {
-				return nil, err
-			}
-			inside := tokensInStructure(s.boardTokens, road)
-			winners := pointsWinners(inside)
-			for _, winner := range winners {
-				scores[winner] += points
-			}
-		case Monk:
-			tile := s.board.tile(token.X, token.Y)
-			if tile != nil && tile.Center == Cloister {
-				count, err := s.board.tilesSurroundingCloister(token.X, token.Y)
+			points += count
+		}
+	}
+
+	for _, structure := range structures {
+		inside := tokensInStructure(s.boardTokens, structure)
+		winners := pointsWinners(inside)
+		if slices.Contains(winners, team) {
+			switch structure.typ {
+			case City:
+				pts, err := scoreCity(structure)
 				if err != nil {
-					return nil, err
+					return 0, err
 				}
-				scores[token.Team] += count + 1
-			}
-		case Farmer:
-			farm, err := s.board.generateFarm(token.X, token.Y, token.Side)
-			if err != nil {
-				return nil, err
-			}
-			// score and add points
-			points, err := scoreFarm(farm, s.board.completeCities)
-			if err != nil {
-				return nil, err
-			}
-			inside := tokensInStructure(s.boardTokens, farm)
-			winners := pointsWinners(inside)
-			for _, winner := range winners {
-				scores[winner] += points
+				points += pts
+			case Road:
+				pts, err := scoreRoad(structure)
+				if err != nil {
+					return 0, err
+				}
+				points += pts
+			case Farm:
+				pts, err := scoreFarm(structure, s.board.completeCities)
+				if err != nil {
+					return 0, err
+				}
+				points += pts
 			}
 		}
 	}
-	for team, score := range s.scores {
-		scores[team] += score
-	}
-	return scores, nil
+	return points, nil
 }
 
 func (s *state) actions() []*qg.Action {

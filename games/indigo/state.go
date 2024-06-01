@@ -201,43 +201,34 @@ func (s *state) actions(team ...string) []*qg.Action {
 		for r, row := range s.board.Tiles {
 			for c, t := range row {
 				if t == nil {
-					for _, t1 := range s.hands[s.turn].GetItems() {
-						t2, _ := newTile(t1.Paths)
-						t2.RotateClockwise()
-						t3, _ := newTile(t2.Paths)
-						t3.RotateClockwise()
-						t4, _ := newTile(t3.Paths)
-						t4.RotateClockwise()
-						t5, _ := newTile(t4.Paths)
-						t5.RotateClockwise()
-						t6, _ := newTile(t5.Paths)
-						t6.RotateClockwise()
+					for _, t := range s.hands[s.turn].GetItems() {
+						for i := 0; i < 6; i++ {
+							// find all 6 rotations
+							tile, _ := newTile(t.Paths)
+							for j := 0; j < i; j++ {
+								tile.RotateClockwise()
+							}
 
-						targets = append(targets, &qg.Action{
-							Team:    s.turn,
-							Type:    PlaceAction,
-							Details: PlaceDetails{t1.Paths, r, c},
-						}, &qg.Action{
-							Team:    s.turn,
-							Type:    PlaceAction,
-							Details: PlaceDetails{t2.Paths, r, c},
-						}, &qg.Action{
-							Team:    s.turn,
-							Type:    PlaceAction,
-							Details: PlaceDetails{t3.Paths, r, c},
-						}, &qg.Action{
-							Team:    s.turn,
-							Type:    PlaceAction,
-							Details: PlaceDetails{t4.Paths, r, c},
-						}, &qg.Action{
-							Team:    s.turn,
-							Type:    PlaceAction,
-							Details: PlaceDetails{t5.Paths, r, c},
-						}, &qg.Action{
-							Team:    s.turn,
-							Type:    PlaceAction,
-							Details: PlaceDetails{t6.Paths, r, c},
-						})
+							// check if placable and add if so
+							canPlace := true
+							paths := []string{tile.Paths[0:2], tile.Paths[2:4], tile.Paths[4:6]}
+						top:
+							for _, gateway := range s.board.Gateways {
+								for _, location := range gateway.Locations {
+									if r == location[0] && c == location[1] && slices.Contains(paths, gateway.Edges) {
+										canPlace = false
+										break top
+									}
+								}
+							}
+							if canPlace {
+								targets = append(targets, &qg.Action{
+									Team:    s.turn,
+									Type:    PlaceAction,
+									Details: PlaceDetails{tile.Paths, r, c},
+								})
+							}
+						}
 					}
 				}
 			}
