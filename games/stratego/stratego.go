@@ -80,6 +80,7 @@ func (s *Stratego) GetSnapshotQGN() (*qgn.Snapshot, error) {
 	tags[qgn.KeyTag] = Key
 	tags[qgn.TeamsTag] = strings.Join(s.teams, ", ")
 	tags[qgn.SeedTag] = strconv.Itoa(int(s.seed))
+	tags[qgn.VariantTag] = s.variant
 
 	actions := make([]qgn.Action, 0)
 	for _, action := range s.history {
