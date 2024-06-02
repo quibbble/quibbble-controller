@@ -50,6 +50,21 @@ func CreatePod(key, id, image, pullyPolicy string, port int32) *corev1.Pod {
 					},
 					Env: []corev1.EnvVar{
 						{
+							Name:  "ADMIN_USERNAME",
+							Value: "quibbble",
+						},
+						{
+							Name: "ADMIN_PASSWORD",
+							ValueFrom: &corev1.EnvVarSource{
+								SecretKeyRef: &corev1.SecretKeySelector{
+									Key: "admin-password",
+									LocalObjectReference: corev1.LocalObjectReference{
+										Name: ChartName,
+									},
+								},
+							},
+						},
+						{
 							Name: "STORAGE_PASSWORD", // password used to connect to the game store
 							ValueFrom: &corev1.EnvVarSource{
 								SecretKeyRef: &corev1.SecretKeySelector{

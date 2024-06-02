@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"nhooyr.io/websocket"
@@ -18,6 +19,15 @@ func (gs *GameServer) connectHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name == "" || gs.isConnected(name) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	// admin auth
+	split := strings.Split(name, ":")
+	if len(split) == 2 && split[0] == gs.adminUsername && split[1] == gs.adminPassword {
+		name = split[0]
+	} else if split[0] == gs.adminUsername {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
 

@@ -26,6 +26,9 @@ type Params struct {
 
 	// CompleteFn called on game end
 	CompleteFn func(*qgn.Snapshot)
+
+	// Admin account info
+	AdminUsername, AdminPassword string
 }
 
 func ServeHTTP(p *Params) {
@@ -50,7 +53,7 @@ func ServeHTTP(p *Params) {
 		log.Fatal(fmt.Errorf("missing kind tag"))
 	}
 	s := &http.Server{
-		Handler:      NewGameServer(game, id, kind, p.CompleteFn),
+		Handler:      NewGameServer(game, id, kind, p.CompleteFn, p.AdminUsername, p.AdminPassword),
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}

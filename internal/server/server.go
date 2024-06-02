@@ -40,19 +40,24 @@ type GameServer struct {
 
 	// completeFn is called on game end.
 	completeFn func(*qgn.Snapshot)
+
+	// admin info
+	adminUsername, adminPassword string
 }
 
-func NewGameServer(game qg.Game, id, kind string, completeFn func(*qgn.Snapshot)) *GameServer {
+func NewGameServer(game qg.Game, id, kind string, completeFn func(*qgn.Snapshot), adminUsername, adminPassword string) *GameServer {
 	gs := &GameServer{
-		lastUpdated: time.Now(),
-		game:        game,
-		id:          id,
-		kind:        kind,
-		connected:   make(map[*Player]struct{}),
-		joinCh:      make(chan *Player),
-		leaveCh:     make(chan *Player),
-		actionCh:    make(chan *Action),
-		completeFn:  completeFn,
+		lastUpdated:   time.Now(),
+		game:          game,
+		id:            id,
+		kind:          kind,
+		connected:     make(map[*Player]struct{}),
+		joinCh:        make(chan *Player),
+		leaveCh:       make(chan *Player),
+		actionCh:      make(chan *Action),
+		completeFn:    completeFn,
+		adminUsername: adminUsername,
+		adminPassword: adminPassword,
 	}
 	go gs.Start()
 	// these will be prefixed by /game/{key}/{id} when being called through nginx

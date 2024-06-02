@@ -37,6 +37,11 @@ func main() {
 	if configPath == "" {
 		configPath = "./config.yaml"
 	}
+	adminUsername := os.Getenv("ADMIN_USERNAME")
+	if adminUsername == "" {
+		adminUsername = "quibbble"
+	}
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
 	storagePassword := os.Getenv("STORAGE_PASSWORD")
 
 	// parse qgn snapshot
@@ -91,9 +96,11 @@ func main() {
 	defer log.Println("server closed")
 
 	qs.ServeHTTP(&qs.Params{
-		Builder:    builder,
-		Port:       port,
-		CompleteFn: completeFn,
-		Snapshot:   snapshot,
+		Builder:       builder,
+		Port:          port,
+		CompleteFn:    completeFn,
+		Snapshot:      snapshot,
+		AdminUsername: adminUsername,
+		AdminPassword: adminPassword,
 	})
 }
