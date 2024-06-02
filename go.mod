@@ -3,6 +3,7 @@ module github.com/quibbble/quibbble-controller
 go 1.22
 
 require (
+	github.com/TwiN/go-away v1.6.13
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/mroth/weightedrand v1.0.0
@@ -42,7 +43,7 @@ require (
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/term v0.15.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect

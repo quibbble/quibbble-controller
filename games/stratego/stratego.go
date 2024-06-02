@@ -48,7 +48,7 @@ func (s *Stratego) Do(action *qg.Action) error {
 		s.state = g.(*Stratego).state
 		s.history = g.(*Stratego).history
 	case qg.AIAction:
-		if err := qg.AI(Builder{}, AI{}, s, 2); err != nil {
+		if err := qg.AI(Builder{}, AI{}, s, 3); err != nil {
 			return err
 		}
 	case SwitchAction:

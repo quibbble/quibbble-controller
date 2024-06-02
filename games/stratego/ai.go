@@ -39,10 +39,8 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 			if unit != nil && unit.Team != nil && *unit.Team == team {
 				score += points[unit.Type]
 			}
-			if unit != nil && unit.Team != nil && *unit.Team != team {
-				score -= points[unit.Type]
-			}
 		}
 	}
+
 	return score
 }

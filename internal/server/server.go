@@ -8,6 +8,7 @@ import (
 	"slices"
 	"time"
 
+	goaway "github.com/TwiN/go-away"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 )
@@ -90,6 +91,7 @@ func (gs *GameServer) Start() {
 					gs.sendErrorMessage(a.Player, fmt.Errorf("invalid chat action"))
 					continue
 				}
+				message = goaway.Censor(message)
 				gs.sendChatMessages(a.Player, message)
 				continue
 			case Join:

@@ -29,7 +29,11 @@ func (ai AI) Score(game qg.Game, team string) float64 {
 	}
 
 	score := tileScore
-	score += float64(g.tokens[team] * 2) // prioritize using less tokens
+	if g.tokens[team] >= 5 {
+		score -= float64(g.tokens[team]) // prioritize using more tokens when you have a lot
+	} else if g.tokens[team] <= 2 {
+		score += float64(g.tokens[team] * 2) // prioritize saving tokens if you only have a few
+	}
 
 	return score
 }
