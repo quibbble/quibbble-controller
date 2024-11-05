@@ -1,4 +1,5 @@
 .DS_Store
 
 /charts/quibbble-controller/quibbble-values.yaml
+/charts/quibbble-controller/minikube-values.yaml
 PRIVATE_README.md

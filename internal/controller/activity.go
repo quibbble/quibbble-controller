@@ -18,6 +18,18 @@ type Activity struct {
 	LivePlayerCount map[string]int `json:"live_player_count"`
 }
 
+func (c *Controller) liveGameCount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	l, err := c.clientset.CoreV1().Pods(k8s.Namespace).List(ctx, metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s=%s", k8s.Component, k8s.GameComponent),
+	})
+	if err != nil {
+		return 0, err
+	}
+	return len(l.Items), nil
+}
+
 func (c *Controller) activity() (*Activity, error) {
 	stats := Activity{
 		LiveGameCount:   make(map[string]int),

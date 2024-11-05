@@ -26,6 +26,7 @@ helm upgrade --install quibbble-controller quibbble-controller \
 - [carcassonne](/games/carcassonne/)
 - [connect4](/games/connect4/)
 - [indigo](/games/indigo/)
+- [onitama](/games/onitama/)
 - [stratego](/games/stratego/)
 - [tictactoe](/games/tictactoe/)
 - [tsuro](/games/tsuro/)
@@ -73,6 +74,7 @@ There are three main processes in this system.
 > | `400`         | `text/plain;charset=UTF-8`        | `Bad Request`                                                       |
 > | `409`         | `text/plain;charset=UTF-8`        | `Conflict`                                                          |
 > | `500`         | `text/plain;charset=UTF-8`        | `Internal Server Error`                                             |
+> | `503`         | `text/plain;charset=UTF-8`        | `Service Unavailable`                                               |
 
 ##### Example cURL
 
@@ -96,10 +98,11 @@ There are three main processes in this system.
 
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `text/plain;charset=UTF-8`        | `OK`                                                           |
+> | `200`         | `text/plain;charset=UTF-8`        | `OK`                                                                |
 > | `400`         | `text/plain;charset=UTF-8`        | `Bad Request`                                                       |
-> | `404`         | `text/plain;charset=UTF-8`        | `Not Found`                                                          |
+> | `404`         | `text/plain;charset=UTF-8`        | `Not Found`                                                         |
 > | `500`         | `text/plain;charset=UTF-8`        | `Internal Server Error`                                             |
+> | `503`         | `text/plain;charset=UTF-8`        | `Service Unavailable`                                               |
 
 ##### Example cURL
 

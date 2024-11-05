@@ -36,6 +36,14 @@ func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if count, err := c.liveGameCount(); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	} else if count >= maxLiveGameCount {
+		http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
+		return
+	}
+
 	// Check long term store to see if a snapshot exists.
 	if _, err := c.lookup(key, id); err == nil {
 		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
@@ -71,6 +79,14 @@ func (c *Controller) loadHandler(w http.ResponseWriter, r *http.Request) {
 	if found := c.find(key, id); found {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(http.StatusText(http.StatusOK)))
+		return
+	}
+
+	if count, err := c.liveGameCount(); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	} else if count >= maxLiveGameCount {
+		http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 		return
 	}
 

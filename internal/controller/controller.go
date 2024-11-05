@@ -15,7 +15,10 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-const timeout = time.Second * 3
+const (
+	timeout          = time.Second * 3
+	maxLiveGameCount = 50 // the maximum number of concurrent live games that the controller will support.
+)
 
 type Controller struct {
 	// clientset provides connection to the k8s cluster.
