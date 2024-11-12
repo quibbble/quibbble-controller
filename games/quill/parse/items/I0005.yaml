@@ -1,0 +1,17 @@
+Enabled: true
+ID: I0005
+Name: Veil
+Description: ""
+Cost: 3
+Targets:
+- Type: Units
+  Args:
+    Types:
+    - Creature
+HeldTraits:
+- Type: Buff
+  Args:
+    Stat: Health
+    Amount: 3
+- Type: Purity
+

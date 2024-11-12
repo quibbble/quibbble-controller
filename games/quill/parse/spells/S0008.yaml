@@ -1,0 +1,20 @@
+Enabled: true
+ID: S0008
+Name: Speed
+Description: "Target 'Creature' gains 'Cooldown' -2."
+Cost: 2
+Targets:
+- Type: Units
+  Args:
+    Types:
+    - Creature
+Hooks:
+Events:
+- Type: ModifyUnit
+  Args:
+    ChooseUnit: 
+      Type: Target
+      Args:
+        Index: 0
+    Stat: Cooldown
+    Amount: -2

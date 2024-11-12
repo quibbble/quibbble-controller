@@ -1,0 +1,18 @@
+Enabled: true
+ID: S0018
+Name: Quake
+Description: "All 'Creature's and 'Structure's take 2 'Magic' damage."
+Cost: 5
+Targets:
+Hooks:
+Events:
+- Type: DamageUnits
+  Args:
+    DamageType: Magic
+    Amount: 2
+    ChooseUnits:
+      Type: Units
+      Args:
+        Types:
+        - Creature
+        - Structure

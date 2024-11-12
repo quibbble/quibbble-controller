@@ -30,6 +30,7 @@ helm upgrade --install quibbble-controller quibbble-controller \
 - [stratego](/games/stratego/)
 - [tictactoe](/games/tictactoe/)
 - [tsuro](/games/tsuro/)
+- [quill](/games/quill/)
 
 ## Architecture
 

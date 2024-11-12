@@ -1,0 +1,18 @@
+Enabled: true
+ID: U0003
+Name: Archer
+Description: ""
+Cost: 2
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Ranged
+Attack: 1
+Health: 3
+Cooldown: 2
+Movement: 1
+Codex: "11110000"
+Traits:
+- Type: Ranged
+  Args:
+    Amount: 2

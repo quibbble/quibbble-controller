@@ -1,0 +1,35 @@
+Enabled: true
+ID: S0019
+Name: Call to Arms
+Description: "Summon a random 4 cost 'Unit'."
+Cost: 4
+Targets:
+- Type: Tiles
+  Args: 
+    Empty: true
+Hooks:
+Events:
+- Type: SummonUnit
+  Args:
+    ChoosePlayer:
+      Type: CurrentPlayer
+    ChooseTile:
+      Type: Target
+      Args:
+        Index: 0
+    ChooseID:
+      Type: Random
+      Args:
+        Choose:
+          Type: Composite
+          Args:
+            SetFunction: Intersect
+            ChooseChain:
+            - Type: CardIDByCost
+              Args:
+                Cost: 4
+            - Type: CardIDByType
+              Args:
+                CardTypes:
+                - Unit
+    InPlayRange: false

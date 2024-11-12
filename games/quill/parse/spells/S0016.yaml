@@ -1,0 +1,20 @@
+Enabled: true
+ID: S0016
+Name: Quick
+Description: "Target 'Creature' gains 'Movement' 2."
+Cost: 1
+Targets:
+- Type: Units
+  Args:
+    Types:
+    - Creature
+Hooks:
+Events:
+- Type: ModifyUnit
+  Args:
+    ChooseUnit: 
+      Type: Target
+      Args:
+        Index: 0
+    Stat: Movement
+    Amount: 2

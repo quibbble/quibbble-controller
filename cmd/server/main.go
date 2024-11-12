@@ -13,7 +13,7 @@ import (
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	st "github.com/quibbble/quibbble-controller/pkg/store"
 	crdb "github.com/quibbble/quibbble-controller/pkg/store/cockroachdb"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func init() {

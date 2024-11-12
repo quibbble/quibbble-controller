@@ -1,0 +1,21 @@
+Enabled: true
+ID: U0022
+Name: Giant
+Description: ""
+Cost: 5
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 3
+Health: 5
+Cooldown: 2
+Movement: 1
+Codex: "11110000"
+Traits:
+- Type: Ranged
+  Args:
+    Amount: 3
+- Type: Lobber
+Hooks:
+Events:

@@ -1,0 +1,27 @@
+Enabled: true
+ID: U0026
+Name: Wildling
+Description: ""
+Cost: 4
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 1
+Health: 8
+Cooldown: 2
+Movement: 2
+Codex: "00001111"
+Traits:
+- Type: Enrage
+  Args:
+    Description: "gain 'Attack' 1"
+    Events:
+    - Type: ModifyUnit
+      Args:
+        ChooseUnit:
+          Type: Self
+        Stat: Attack
+        Amount: 1
+Hooks:
+Events:

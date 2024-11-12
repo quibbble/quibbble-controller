@@ -1,0 +1,18 @@
+Enabled: true
+ID: U0015
+Name: Jarl
+Description: ""
+Cost: 4
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 3
+Health: 3
+Cooldown: 2
+Movement: 2
+Codex: "11110000"
+Traits:
+- Type: Haste
+Hooks:
+Events:

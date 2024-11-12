@@ -1,0 +1,14 @@
+Enabled: true
+ID: U0001
+Name: Base
+Description: ""
+Cost: 0
+Conditions:
+Targets: # SET BY PARSER
+Type: Base
+DamageType: Physical
+Attack: 0
+Health: 5
+Cooldown: -1
+Movement: 0
+Codex: "00000000"

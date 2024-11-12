@@ -1,0 +1,60 @@
+Enabled: true
+ID: U0008
+Name: Rot Eater
+Description: "Gain 'Attack' 1 and 'Health' 1 when an adjacent 'Unit' dies."
+Cost: 3
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 1
+Health: 1
+Cooldown: 2
+Movement: 1
+Codex: "00001111"
+Traits:
+Hooks:
+- When: Before
+  Types: 
+  - KillUnit
+  Conditions:
+  - Type: Match
+    Not: true
+    Args:
+      ChooseA:
+        Type: HookEventUnit
+      ChooseB:
+        Type: Self
+  - Type: Contains
+    Args:
+      ChooseChain:
+        Type: Adjacent
+        Args:
+          Types:
+          - Creature
+          ChooseUnitOrTile:
+            Type: HookEventUnit
+      Choose:
+        Type: Self
+  Events:
+  - Type: ModifyUnit
+    Args:  
+      ChooseUnit:
+        Type: Self
+      Stat: Attack
+      Amount: 1
+  - Type: ModifyUnit
+    Args:  
+      ChooseUnit:
+        Type: Self
+      Stat: Health
+      Amount: 1
+  ReuseConditions:
+  - Type: Match
+    Not: true
+    Args:
+      ChooseA:
+        Type: HookEventUnit
+      ChooseB:
+        Type: Self
+Events:

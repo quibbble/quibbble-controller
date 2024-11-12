@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
+	"github.com/go-viper/mapstructure/v2"
 	qg "github.com/quibbble/quibbble-controller/pkg/game"
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 )

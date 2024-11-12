@@ -1,0 +1,14 @@
+Enabled: true
+ID: U0002
+Name: Brave
+Description: ""
+Cost: 2
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 2
+Health: 2
+Cooldown: 1
+Movement: 2
+Codex: "10001001"

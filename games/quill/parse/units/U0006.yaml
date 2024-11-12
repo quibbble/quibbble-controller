@@ -1,0 +1,70 @@
+Enabled: true
+ID: U0006
+Name: Well
+Description: "While in play gain 'BaseMana' 1."
+Cost: 1
+Conditions:
+Targets: # SET BY PARSER
+Type: Structure
+DamageType: Physical
+Attack: 1
+Health: 1
+Cooldown: -1
+Movement: 0
+Codex: "00000000"
+Traits:
+Hooks:
+- When: After
+  Types: 
+  - KillUnit
+  - RecallUnit
+  Conditions:
+  - Type: Match
+    Not: false
+    Args:
+      ChooseA:
+        Type: HookEventUnit
+      ChooseB:
+        Type: Self
+  Events:
+  - Type: DrainMana
+    Args:
+      Amount: 1
+      ChoosePlayer:
+        Type: Owner
+        Args:
+          ChooseCard:
+            Type: Self
+  - Type: DrainBaseMana
+    Args:
+      Amount: 1
+      ChoosePlayer:
+        Type: Owner
+        Args:
+          ChooseCard:
+            Type: Self
+  ReuseConditions:
+  - Type: Match
+    Not: true
+    Args:
+      ChooseA:
+        Type: HookEventUnit
+      ChooseB:
+        Type: Self
+Events:
+- Type: GainMana
+  Args:
+    Amount: 1
+    ChoosePlayer:
+      Type: Owner
+      Args:
+        ChooseCard:
+          Type: Self
+- Type: GainBaseMana
+  Args:
+    Amount: 1
+    ChoosePlayer:
+      Type: Owner
+      Args:
+        ChooseCard:
+          Type: Self

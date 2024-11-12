@@ -1,0 +1,33 @@
+Enabled: true
+ID: U0025
+Name: Captain
+Description: ""
+Cost: 5
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 5
+Health: 6
+Cooldown: 2
+Movement: 1
+Codex: "11111111"
+Traits:
+- Type: BattleCry
+  Args:
+    Description: "adjacent 'Unit's 'Cooldown'"
+    Events:
+    - Type: ModifyUnits
+      Args:
+        ChooseUnits:
+          Type: Adjacent
+          Args:
+            ChooseUnitOrTile:
+              Type: Self
+            Types:
+            - Creature
+            - Structure
+        Stat: Cooldown
+        Amount: -1
+Hooks:
+Events:

@@ -1,0 +1,17 @@
+Enabled: true
+ID: S0017
+Name: Squall
+Description: "All 'Creature's take 1 'Magic' damage."
+Cost: 3
+Targets:
+Hooks:
+Events:
+- Type: DamageUnits
+  Args:
+    DamageType: Magic
+    Amount: 1
+    ChooseUnits:
+      Type: Units
+      Args:
+        Types:
+        - Creature

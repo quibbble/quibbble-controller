@@ -1,0 +1,18 @@
+Enabled: true
+ID: U0020
+Name: Confused Knight
+Description: ""
+Cost: 4
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 7
+Health: 7
+Cooldown: 2
+Movement: 1
+Codex: "00000000"
+Traits:
+- Type: Aimless
+Hooks:
+Events:

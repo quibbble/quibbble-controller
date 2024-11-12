@@ -1,0 +1,23 @@
+Enabled: true
+ID: U0017
+Name: Husk
+Description: ""
+Cost: 3
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 2
+Health: 4
+Cooldown: 2
+Movement: 1
+Codex: "11110000"
+Traits:
+- Type: Gift
+  Args:
+    Trait:
+      Type: Poison
+      Args:
+        Amount: 1
+Hooks:
+Events:

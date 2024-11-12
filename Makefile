@@ -24,3 +24,9 @@ push_watcher:
 
 run_watcher:
 	docker run quibbble/watcher:latest
+
+test:
+	go test ./...
+
+clean: 
+	go clean -testcache

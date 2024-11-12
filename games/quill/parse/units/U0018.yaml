@@ -1,0 +1,20 @@
+Enabled: true
+ID: U0018
+Name: Mercenary
+Description: ""
+Cost: 4
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 1
+Health: 5
+Cooldown: 2
+Movement: 3
+Codex: "11111111"
+Traits:
+- Type: Assassin
+  Args:
+    Amount: 3
+Hooks:
+Events:

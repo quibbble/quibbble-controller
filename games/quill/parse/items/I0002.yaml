@@ -1,0 +1,18 @@
+Enabled: true
+ID: I0002
+Name: Plated Armor
+Description: ""
+Cost: 2
+Targets:
+- Type: Units
+  Args:
+    Types:
+    - Creature
+HeldTraits:
+- Type: Buff
+  Args:
+    Stat: Health
+    Amount: 2
+- Type: Shield
+  Args:
+    Amount: 1

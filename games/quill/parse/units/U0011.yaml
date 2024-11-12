@@ -1,0 +1,55 @@
+Enabled: true
+ID: U0011
+Name: Recruit
+Description: "After attacking move to a random adjacent tile."
+Cost: 2
+Conditions:
+Targets: # SET BY PARSER
+Type: Creature
+DamageType: Physical
+Attack: 3
+Health: 2
+Cooldown: 2
+Movement: 1
+Codex: "11000000"
+Traits:
+Hooks:
+- When: After
+  Types: 
+  - AttackUnit
+  Conditions:
+  - Type: Match
+    Args:
+      ChooseA:
+        Type: HookEventUnit
+      ChooseB:
+        Type: Self
+  - Not: true
+    Type: UnitMissing
+    Args:
+      ChooseUnit:
+        Type: Self
+  Events:
+  - Type: MoveUnit
+    Args:
+      ChooseUnit:
+        Type: Self
+      ChooseTile:
+        Type: Random
+        Args:
+          Choose:
+            Type: Adjacent
+            Args:
+              Types:
+              - Tile
+              ChooseUnitOrTile:
+                Type: Self
+  ReuseConditions:
+  - Not: true
+    Type: Match
+    Args:
+      ChooseA:
+        Type: HookEventUnit
+      ChooseB:
+        Type: Self
+Events:

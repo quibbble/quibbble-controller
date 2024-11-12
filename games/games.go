@@ -5,6 +5,7 @@ import (
 	"github.com/quibbble/quibbble-controller/games/connect4"
 	"github.com/quibbble/quibbble-controller/games/indigo"
 	"github.com/quibbble/quibbble-controller/games/onitama"
+	"github.com/quibbble/quibbble-controller/games/quill"
 	"github.com/quibbble/quibbble-controller/games/stratego"
 	"github.com/quibbble/quibbble-controller/games/tictactoe"
 	"github.com/quibbble/quibbble-controller/games/tsuro"
@@ -19,4 +20,5 @@ var Builders = []qg.GameBuilder{
 	stratego.Builder{},
 	tictactoe.Builder{},
 	tsuro.Builder{},
+	quill.Builder{},
 }

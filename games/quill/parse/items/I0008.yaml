@@ -1,0 +1,49 @@
+Enabled: true
+ID: I0008
+Name: Eternal Sword
+Description: "When holder dies pass this item to a random 'Creature' on the same team."
+Cost: 2
+Targets:
+- Type: Units
+  Args:
+    Types:
+    - Creature
+Hooks:
+Traits:
+- Type: Eternal
+  Args:
+    ChooseUnit:
+      Type: Random
+      Args:
+        Choose:
+          Type: Composite
+          Args:
+            SetFunction: Diff
+            ChooseChain:
+            - Type: Composite
+              Args:
+                SetFunction: Intersect
+                ChooseChain:
+                - Type: OwnedUnits
+                  Args:
+                    ChoosePlayer: 
+                      Type: Owner
+                      Args:
+                        ChooseCard:
+                          Type: ItemHolder
+                          Args:
+                            ChooseItem:
+                              Type: Self
+                - Type: Units
+                  Args:
+                    Types:
+                    - Creature
+            - Type: ItemHolder
+              Args:
+                ChooseItem:
+                  Type: Self
+HeldTraits:
+- Type: Buff
+  Args:
+    Stat: Attack
+    Amount: 3
