@@ -33,11 +33,13 @@ spec:
           mountPath: /root/config.yaml
           subPath: config.yaml
         env:
+        {{- if .Values.storage.enabled }}
         - name: STORAGE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ include "quibbble-controller.fullname" . }}
               key: storage-password
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /health

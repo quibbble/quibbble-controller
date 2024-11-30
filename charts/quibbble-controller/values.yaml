@@ -2,31 +2,32 @@
 
 replicaCount: 1
 
-allowOrigins: []
+allowOrigins:
+- "http://127.0.0.1:8080"
 
 # controller parameters
 controller:
   image:
-    repository: docker.io/quibbble/controller
+    repository: quibbble/controller
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   port: 8080
 
 # watcher parameters
 watcher:
   image:
-    repository: docker.io/quibbble/watcher
+    repository: quibbble/watcher
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   suspend: false
   schedule: "*/30 * * * *"
 
 # server parameters
 server:
   image:
-    repository: docker.io/quibbble/server
+    repository: quibbble/server
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
 # storage parameters
 # if enabled, uncomment lines below. A K8s secret holding
