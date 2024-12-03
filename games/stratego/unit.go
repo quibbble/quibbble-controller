@@ -62,7 +62,7 @@ func (u *Unit) Attack(unit *Unit) (winner *Unit, err error) {
 	}
 	// any -> bomb case
 	if unit.Type == bomb {
-		return nil, nil
+		return unit, nil
 	}
 	// same type case
 	if u.Type == unit.Type {

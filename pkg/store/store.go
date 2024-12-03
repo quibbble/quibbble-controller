@@ -32,6 +32,9 @@ type Stats struct {
 
 // GameStore stores games into long term storage
 type GameStore interface {
+	// Enabled determines whether or not the store is enabled
+	Enabled() bool
+
 	// GetActiveGame retrieves game data for a game
 	GetActiveGame(ctx context.Context, key, id string) (*Game, error)
 

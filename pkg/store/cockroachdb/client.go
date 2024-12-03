@@ -11,7 +11,8 @@ import (
 )
 
 type Client struct {
-	pool *pgxpool.Pool
+	enabled bool
+	pool    *pgxpool.Pool
 }
 
 func NewClient(config *Config) (*Client, error) {
@@ -36,8 +37,13 @@ func NewClient(config *Config) (*Client, error) {
 	}
 
 	return &Client{
-		pool: pool,
+		enabled: true,
+		pool:    pool,
 	}, nil
+}
+
+func (c *Client) Enabled() bool {
+	return c.enabled
 }
 
 func (c *Client) GetActiveGame(ctx context.Context, key, id string) (*store.Game, error) {

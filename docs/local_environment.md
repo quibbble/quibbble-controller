@@ -24,6 +24,24 @@ This will start a single node cluster on your local machine and expose port `80`
 make create_cluster
 ```
 
+## Install NGINX
+
+```bash
+helm upgrade --install ingress-nginx ingress-nginx \
+    --repo https://kubernetes.github.io/ingress-nginx \
+    --namespace ingress-nginx --create-namespace
+```
+
+## Create Admin Password
+
+Create a k8s secret that holds your admin password.
+
+```bash
+kubectl create secret generic quibbble-controller \
+    --namespace=quibbble \
+    --from-literal=admin-password=<YOUR_PASSWORD_HERE>
+```
+
 ## Install Quibbble Controller
 
 This will install the Quibbble Controller onto your cluster. You should not need to make any changes but take [values.yaml](../charts/quibbble-controller/values.yaml) file beforehand and change any values as desired. 

@@ -1,5 +1,6 @@
 create_cluster:
 	k3d cluster create quibbble \
+		--k3s-arg "--disable=traefik@server:*" \
 		--port "80:80@loadbalancer" \
 		--agents 1
 

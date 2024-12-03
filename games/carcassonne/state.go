@@ -616,7 +616,6 @@ func (s *state) actions() []*qg.Action {
 					X:    s.lastPlacedTiles[s.turn].X,
 					Y:    s.lastPlacedTiles[s.turn].Y,
 					Type: Monk,
-					Side: SideCenter,
 				},
 			})
 		}

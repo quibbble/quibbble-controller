@@ -8,7 +8,41 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func CreatePod(key, id, image, pullyPolicy string, port int32) *corev1.Pod {
+func CreatePod(key, id, image, pullyPolicy string, port int32, storageEnabled bool) *corev1.Pod {
+	envs := []corev1.EnvVar{
+		{
+			Name:  "ADMIN_USERNAME",
+			Value: "quibbble",
+		},
+		{
+			Name: "ADMIN_PASSWORD",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					Key: "admin-password",
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: ChartName,
+					},
+				},
+			},
+		},
+		{
+			Name:  "PORT",
+			Value: strconv.Itoa(int(port)),
+		},
+	}
+	if storageEnabled {
+		envs = append(envs, corev1.EnvVar{
+			Name: "STORAGE_PASSWORD", // password used to connect to the game store
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					Key: "storage-password",
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: ChartName,
+					},
+				},
+			},
+		})
+	}
 	return &corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Pod",
@@ -48,38 +82,7 @@ func CreatePod(key, id, image, pullyPolicy string, port int32) *corev1.Pod {
 							ContainerPort: port,
 						},
 					},
-					Env: []corev1.EnvVar{
-						{
-							Name:  "ADMIN_USERNAME",
-							Value: "quibbble",
-						},
-						{
-							Name: "ADMIN_PASSWORD",
-							ValueFrom: &corev1.EnvVarSource{
-								SecretKeyRef: &corev1.SecretKeySelector{
-									Key: "admin-password",
-									LocalObjectReference: corev1.LocalObjectReference{
-										Name: ChartName,
-									},
-								},
-							},
-						},
-						{
-							Name: "STORAGE_PASSWORD", // password used to connect to the game store
-							ValueFrom: &corev1.EnvVarSource{
-								SecretKeyRef: &corev1.SecretKeySelector{
-									Key: "storage-password",
-									LocalObjectReference: corev1.LocalObjectReference{
-										Name: ChartName,
-									},
-								},
-							},
-						},
-						{
-							Name:  "PORT",
-							Value: strconv.Itoa(int(port)),
-						},
-					},
+					Env: envs,
 				},
 			},
 			Volumes: []corev1.Volume{
