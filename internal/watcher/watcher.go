@@ -59,6 +59,12 @@ func (w *Watcher) active(key, id string) (bool, error) {
 		return false, err
 	}
 
+	// If the game has been inactive for an hour, regardless of player count, then return false
+	if active.LastUpdated.Add(time.Hour).After(time.Now()) {
+		return false, nil
+	}
+
+	// If the game has 1 or more players or the last active was less than 15 minutes ago then return true
 	if active.PlayerCount > 0 || active.LastUpdated.Add(15*time.Minute).After(time.Now()) {
 		return true, nil
 	}
