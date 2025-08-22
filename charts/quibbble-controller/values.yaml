@@ -5,6 +5,17 @@ replicaCount: 1
 allowOrigins:
 - "http://127.0.0.1:8080"
 
+# This secret is created for you if no 'controllerSecretName' is specified:
+# 
+#  apiVersion: v1
+#  kind: Secret
+#  data:
+#    admin-password: <base64_encoded admin password>
+#    storage-password: <base64_encoded storage password>
+#  type: Opaque
+controllerSecretName: ~
+adminPassword: ~
+
 # controller parameters
 controller:
   image:
@@ -30,17 +41,15 @@ server:
     pullPolicy: Always
 
 # storage parameters
-# if enabled, uncomment lines below. A K8s secret holding
-# the storage password will also need to be create before
-# installing this chart.
 storage:
   enabled: false
-  # host: ""
-  # username: ""
-  # database: ""
-  # sslmode: ""
+  host: ~
+  username: postgres
+  password: postgres
+  database: postgres
+  sslmode: disable
 
 # ingress parameters
 ingress:
-  host: ""
+  host: ~
   port: 80
