@@ -53,24 +53,24 @@ ingress:
   controller: 
     enabled: false
     annotations: {}
-    path: "/"
-    pathType: "ImplementationSpecific"
+    path: /
+    pathType: ImplementationSpecific
     hosts: []
     # - name: ""
     #   tls:
     #     enabled: false
     #     secretName: ""
-    ingressClassName: "nginx"
+    ingressClassName: nginx
   server:
     enabled: false
     annotations: {}
     # ingress path follows pattern: '<pathPrefix>/<gameKey>/<gameID><pathPostfix>'
     pathPrefix: ""
     pathPostfix: ""
-    pathType: "ImplementationSpecific"
+    pathType: ImplementationSpecific
     hosts: []
     # - name: ""
     #   tls:
     #     enabled: false
     #     secretName: ""
-    ingressClassName: ""
+    ingressClassName: nginx
