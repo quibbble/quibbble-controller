@@ -1,24 +1,49 @@
+{{- if .Values.ingress.controller.enabled }}
+{{- $fullname := (include "quibbble-controller.fullname" .) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "quibbble-controller.fullname" . }}
+  name: {{ $fullname }}
   labels:
     {{- include "quibbble-controller.labels" . | nindent 4 }}
-  annotations:
-    "nginx.ingress.kubernetes.io/enable-cors": "true"
-    "nginx.ingress.kubernetes.io/cors-allow-methods": "GET, PUT, POST, DELETE, HEAD, OPTIONS"
-    "nginx.ingress.kubernetes.io/cors-allow-credentials": "true"
-    "nginx.ingress.kubernetes.io/cors-allow-origin": {{ join "," .Values.allowOrigins | quote }}
+  {{- with .Values.ingress.controller.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.ingress.controller.ingressClassName }}
+  {{- $anyTlsHosts := false -}}
+  {{- range .Values.ingress.controller.hosts }}
+  {{- if .tls }}
+  {{- if .tls.enabled }}
+  {{- $anyTlsHosts = true -}}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- if $anyTlsHosts }}
+  tls:
+  {{- range .Values.ingress.controller.hosts }}
+  {{- if .tls }}
+  {{- if .tls.enabled }}
+    - secretName: {{ .tls.secretName }}
+      hosts:
+        - {{ .name | quote }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
   rules:
-    - host: {{ .Values.ingress.host }}
+  {{- range .Values.ingress.controller.hosts }}
+    - host: {{ .name  }}
       http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
+          - backend:
               service:
-                name: {{ include "quibbble-controller.fullname" . }}
+                name: {{ $fullname }}
                 port:
-                  number: {{ .Values.ingress.port }}
+                  number: 80
+            {{- if $.Values.ingress.controller.path }}
+            path: {{ $.Values.ingress.controller.path }}
+            pathType: {{ $.Values.ingress.controller.pathType }}
+            {{- end }}
+  {{- end }}
+{{- end }}

@@ -57,5 +57,5 @@ func main() {
 	log.Println("controller starting...")
 	defer log.Println("controller closed")
 
-	qc.ServeHTTP(clientset, storage, config.Server, config.Port, config.AllowOrigins)
+	qc.ServeHTTP(clientset, storage, config.Server, config.Port)
 }

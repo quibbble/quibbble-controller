@@ -9,5 +9,5 @@ spec:
     {{- include "quibbble-controller.selectorLabels" . | nindent 4 }}
   ports:
     - protocol: TCP
-      port: {{ .Values.ingress.port }}
+      port: 80
       targetPort: {{ .Values.controller.port }}

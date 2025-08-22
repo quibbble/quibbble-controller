@@ -1,16 +1,65 @@
 package k8s
 
 import (
-	"fmt"
-	"strings"
-
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func CreateIngress(host, key, id string, allowOrigins []string) *networkingv1.Ingress {
-	pathType := networkingv1.PathTypeImplementationSpecific
+type IngressConfig struct {
+	Enabled          bool                `yaml:"enabled"`
+	Annotations      map[string]string   `yaml:"annotations"`
+	Path             string              `yaml:"path"`
+	PathType         string              `yaml:"pathType"`
+	Hosts            []IngressHostConfig `yaml:"hosts"`
+	IngressClassName string              `yaml:"ingressClassName"`
+}
+
+type IngressHostConfig struct {
+	Name string           `yaml:"name"`
+	TLS  IngressTLSConfig `yaml:"tls"`
+}
+
+type IngressTLSConfig struct {
+	Enabled    bool   `yaml:"enabled"`
+	SecretName string `yaml:"secretName"`
+}
+
+func CreateIngress(host, key, id string, config *IngressConfig) *networkingv1.Ingress {
+
+	tls := make([]networkingv1.IngressTLS, 0)
+	rules := make([]networkingv1.IngressRule, 0)
+	for _, host := range config.Hosts {
+		if host.TLS.Enabled {
+			tls = append(tls, networkingv1.IngressTLS{
+				SecretName: host.TLS.SecretName,
+				Hosts: []string{
+					host.Name,
+				},
+			})
+		}
+		rules = append(rules, networkingv1.IngressRule{
+			Host: host.Name,
+			IngressRuleValue: networkingv1.IngressRuleValue{
+				HTTP: &networkingv1.HTTPIngressRuleValue{
+					Paths: []networkingv1.HTTPIngressPath{
+						{
+							Backend: networkingv1.IngressBackend{
+								Service: &networkingv1.IngressServiceBackend{
+									Name: Name(key, id),
+									Port: networkingv1.ServiceBackendPort{
+										Number: 80,
+									},
+								},
+							},
+							Path:     config.Path,
+							PathType: (*networkingv1.PathType)(&config.PathType),
+						},
+					},
+				},
+			},
+		})
+	}
 	return &networkingv1.Ingress{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Ingress",
@@ -24,40 +73,12 @@ func CreateIngress(host, key, id string, allowOrigins []string) *networkingv1.In
 				qgn.KeyTag: key,
 				qgn.IDTag:  id,
 			},
-			Annotations: map[string]string{
-				"nginx.ingress.kubernetes.io/rewrite-target":         "/$2",
-				"nginx.ingress.kubernetes.io/enable-cors":            "true",
-				"nginx.ingress.kubernetes.io/cors-allow-methods":     "GET, HEAD, OPTIONS",
-				"nginx.ingress.kubernetes.io/cors-allow-credentials": "true",
-				// default is 60 - prevents continuous ws closure
-				"nginx.ingress.kubernetes.io/proxy-read-timeout": "1800",
-				"nginx.ingress.kubernetes.io/cors-allow-origin":  strings.Join(allowOrigins, ","),
-			},
+			Annotations: config.Annotations,
 		},
 		Spec: networkingv1.IngressSpec{
-			Rules: []networkingv1.IngressRule{
-				{
-					Host: host,
-					IngressRuleValue: networkingv1.IngressRuleValue{
-						HTTP: &networkingv1.HTTPIngressRuleValue{
-							Paths: []networkingv1.HTTPIngressPath{
-								{
-									Path:     fmt.Sprintf("/game/%s/%s", key, id) + "(/|$)(.*)",
-									PathType: &pathType,
-									Backend: networkingv1.IngressBackend{
-										Service: &networkingv1.IngressServiceBackend{
-											Name: Name(key, id),
-											Port: networkingv1.ServiceBackendPort{
-												Number: 80,
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
+			IngressClassName: &config.IngressClassName,
+			TLS:              tls,
+			Rules:            rules,
 		},
 	}
 }

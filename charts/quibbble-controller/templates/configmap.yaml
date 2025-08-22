@@ -4,6 +4,7 @@ metadata:
   name: {{ include "quibbble-controller.fullname" . }}
 data:
   config.yaml: |
+    port: {{ .Values.controller.port }}
     storage:
       enabled: {{ .Values.storage.enabled | default false }}
       host: {{ .Values.storage.host | default "" }}
@@ -11,11 +12,26 @@ data:
       database: {{ .Values.storage.database | default "" }}
       sslmode: {{ .Values.storage.sslmode | default "" }}
     server:
-      host: {{ .Values.ingress.host }}
       image:
         repository: {{ .Values.server.image.repository }}
         tag: {{ .Values.server.image.tag }}
         pullPolicy: {{ .Values.server.image.pullPolicy }}
-    port: {{ .Values.controller.port }}
-    allowOrigins:{{- range .Values.allowOrigins }}
-    - {{. | quote}}{{- end }}
+      ingress:
+        enabled: {{ .Values.ingress.server.enabled }}
+        {{- if .Values.ingress.server.annotations }}
+        {{- with .Values.ingress.server.annotations }}
+        annotations: {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- else }}
+        annotations: {}
+        {{- end }}
+        path: {{ default .Values.ingress.server.path "/" }}
+        pathType: {{ default .Values.ingress.server.pathType "ImplementationSpecific" }}
+        {{- if .Values.ingress.server.hosts }}
+        {{- with .Values.ingress.server.hosts }}
+        hosts: {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- else }}
+        hosts: []
+        {{- end }}
+        ingressClassName: {{ default .Values.ingress.server.ingressClassName "''" }}

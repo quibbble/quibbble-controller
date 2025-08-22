@@ -2,9 +2,6 @@
 
 replicaCount: 1
 
-allowOrigins:
-- "http://127.0.0.1:8080"
-
 # This secret is created for you if no 'controllerSecretName' is specified:
 # 
 #  apiVersion: v1
@@ -53,5 +50,25 @@ storage:
 
 # ingress parameters
 ingress:
-  host: ~
-  port: 80
+  controller: 
+    enabled: false
+    annotations: {}
+    path: "/"
+    pathType: "ImplementationSpecific"
+    hosts: []
+    # - name: ""
+    #   tls:
+    #     enabled: false
+    #     secretName: ""
+    ingressClassName: "nginx"
+  server:
+    enabled: false
+    annotations: {}
+    path: "/"
+    pathType: "ImplementationSpecific"
+    hosts: []
+    # - name: ""
+    #   tls:
+    #     enabled: false
+    #     secretName: ""
+    ingressClassName: ""

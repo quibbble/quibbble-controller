@@ -33,17 +33,13 @@ type Controller struct {
 
 	// mux handles http server handling.
 	mux http.ServeMux
-
-	// allowOrigins determines which locations may access the service
-	allowOrigins []string
 }
 
-func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore, allowOrigins []string) *Controller {
+func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore) *Controller {
 	c := &Controller{
-		clientset:    clientset,
-		storage:      storage,
-		config:       config,
-		allowOrigins: allowOrigins,
+		clientset: clientset,
+		storage:   storage,
+		config:    config,
 	}
 	c.mux.HandleFunc("POST /game", c.createHandler)
 	c.mux.HandleFunc("PUT /game", c.loadHandler)
@@ -79,8 +75,10 @@ func (c *Controller) create(snapshot *qgn.Snapshot) error {
 	if _, err := c.clientset.CoreV1().Services(k8s.Namespace).Create(ctx, k8s.CreateService(key, id), metav1.CreateOptions{}); err != nil {
 		return err
 	}
-	if _, err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Create(ctx, k8s.CreateIngress(c.config.Host, key, id, c.allowOrigins), metav1.CreateOptions{}); err != nil {
-		return err
+	if c.config.Ingress.Enabled {
+		if _, err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Create(ctx, k8s.CreateIngress(c.config.Host, key, id, &c.config.Ingress), metav1.CreateOptions{}); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -100,8 +98,10 @@ func (c *Controller) delete(key, id string) error {
 	if err := c.clientset.CoreV1().Services(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
 		errList = append(errList, err)
 	}
-	if err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
-		errList = append(errList, err)
+	if c.config.Ingress.Enabled {
+		if err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
+			errList = append(errList, err)
+		}
 	}
 	if len(errList) > 0 {
 		return errors.Join(errList...)

@@ -14,7 +14,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func ServeHTTP(clientset *kubernetes.Clientset, storage st.GameStore, config *GameServerConfig, port string, allowOrigins []string) {
+func ServeHTTP(clientset *kubernetes.Clientset, storage st.GameStore, config *GameServerConfig, port string) {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatal(err)
@@ -22,7 +22,7 @@ func ServeHTTP(clientset *kubernetes.Clientset, storage st.GameStore, config *Ga
 	log.Printf("listening on %v", l.Addr())
 
 	s := &http.Server{
-		Handler:      NewController(config, clientset, storage, allowOrigins),
+		Handler:      NewController(config, clientset, storage),
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}
