@@ -25,7 +25,8 @@ data:
         {{- else }}
         annotations: {}
         {{- end }}
-        path: {{ default .Values.ingress.server.path "/" }}
+        pathPrefix: {{ default .Values.ingress.server.pathPrefix "''" }}
+        pathPostfix: {{ default .Values.ingress.server.pathPostfix "''" }}
         pathType: {{ default .Values.ingress.server.pathType "ImplementationSpecific" }}
         {{- if .Values.ingress.server.hosts }}
         {{- with .Values.ingress.server.hosts }}

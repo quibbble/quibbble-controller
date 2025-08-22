@@ -1,6 +1,8 @@
 package k8s
 
 import (
+	"fmt"
+
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -9,7 +11,8 @@ import (
 type IngressConfig struct {
 	Enabled          bool                `yaml:"enabled"`
 	Annotations      map[string]string   `yaml:"annotations"`
-	Path             string              `yaml:"path"`
+	PathPrefix       string              `yaml:"pathPrefix"`
+	PathPostfix      string              `yaml:"pathPostfix"`
 	PathType         string              `yaml:"pathType"`
 	Hosts            []IngressHostConfig `yaml:"hosts"`
 	IngressClassName string              `yaml:"ingressClassName"`
@@ -52,7 +55,7 @@ func CreateIngress(host, key, id string, config *IngressConfig) *networkingv1.In
 									},
 								},
 							},
-							Path:     config.Path,
+							Path:     fmt.Sprintf("%s/%s/%s%s", config.PathPrefix, key, id, config.PathPostfix),
 							PathType: (*networkingv1.PathType)(&config.PathType),
 						},
 					},

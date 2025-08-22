@@ -64,7 +64,9 @@ ingress:
   server:
     enabled: false
     annotations: {}
-    path: "/"
+    # ingress path follows pattern: '<pathPrefix>/<gameKey>/<gameID><pathPostfix>'
+    pathPrefix: ""
+    pathPostfix: ""
     pathType: "ImplementationSpecific"
     hosts: []
     # - name: ""

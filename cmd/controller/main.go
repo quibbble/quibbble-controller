@@ -16,10 +16,9 @@ func init() {
 }
 
 type Config struct {
-	Storage      *crdb.Config         `yaml:"storage"`
-	Server       *qc.GameServerConfig `yaml:"server"`
-	Port         string               `yaml:"port"`
-	AllowOrigins []string             `yaml:"allowOrigins"`
+	Storage *crdb.Config         `yaml:"storage"`
+	Server  *qc.GameServerConfig `yaml:"server"`
+	Port    string               `yaml:"port"`
 }
 
 func main() {
