@@ -14,7 +14,9 @@ allowOrigins:
 #    storage-password: <base64_encoded storage password>
 #  type: Opaque
 controllerSecretName: ~
-adminPassword: ~
+admin:
+  username: quibbble
+  password: ~
 
 # controller parameters
 controller:

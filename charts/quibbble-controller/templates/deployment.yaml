@@ -33,6 +33,13 @@ spec:
           mountPath: /root/config.yaml
           subPath: config.yaml
         env:
+        - name: ADMIN_USERNAME
+          value: {{ default .Values.admin.username "quibbble" }}
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "quibbble-controller.fullname" . }}
+              key: admin-password
         {{- if .Values.storage.enabled }}
         - name: STORAGE_PASSWORD
           valueFrom:
