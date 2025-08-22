@@ -19,6 +19,7 @@ func Clean(clientset *kubernetes.Clientset) error {
 		active, err := w.active(key, id)
 		if err != nil {
 			errList = append(errList, err)
+			active = false
 		}
 		if !active {
 			if err := w.delete(key, id); err != nil {

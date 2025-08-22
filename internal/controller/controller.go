@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -88,17 +89,22 @@ func (c *Controller) create(snapshot *qgn.Snapshot) error {
 func (c *Controller) delete(key, id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
+
+	var errList []error
 	if err := c.clientset.CoreV1().ConfigMaps(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
-		return err
+		errList = append(errList, err)
 	}
 	if err := c.clientset.CoreV1().Pods(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
-		return err
+		errList = append(errList, err)
 	}
 	if err := c.clientset.CoreV1().Services(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
-		return err
+		errList = append(errList, err)
 	}
 	if err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
-		return err
+		errList = append(errList, err)
+	}
+	if len(errList) > 0 {
+		return errors.Join(errList...)
 	}
 	return nil
 }
