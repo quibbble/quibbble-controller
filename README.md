@@ -1,20 +1,8 @@
 # Quibbble K8s Controller
 
-The project allows Quibbble games to be run in a [K8s](https://kubernetes.io) cluster. Games are spun up as individual pods with their entire lifecycle handled by the Quibbble controller. This allows Quibbble to take advantage of the power of K8s, primarily the ability to scale as well as to seperate and self heal in the event of any single game failure.
+The project allows Quibbble games to be run in a [K8s](https://kubernetes.io) cluster. Games are spun up as individual pods with their entire lifecycle handled by the Quibbble controller. This allows Quibbble to take advantage of the power of K8s.
 
 ## Quick Start
-
-### Install NGINX
-
-This controller currently requires the usage of NGINX to allow for dynamic routing of games. Meaning that if a game with key `tictactoe` and id `example` is created, then NGINX will handle the routing to that game over path `/game/tictactoe/example`.
-
-```bash
-helm upgrade --install ingress-nginx ingress-nginx \
-    --repo https://kubernetes.github.io/ingress-nginx \
-    --namespace ingress-nginx --create-namespace
-```
-
-### Install Quibbble Controller
 
 ```bash
 helm upgrade --install quibbble-controller quibbble-controller \
