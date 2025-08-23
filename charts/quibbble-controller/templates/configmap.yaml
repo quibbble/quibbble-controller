@@ -14,10 +14,15 @@ data:
     server:
       fullname: {{ include "quibbble-controller.fullname" . }}
       namespace: {{ .Release.Namespace }}
-      image:
-        repository: {{ .Values.server.image.repository }}
-        tag: {{ .Values.server.image.tag }}
-        pullPolicy: {{ .Values.server.image.pullPolicy }}
+      pod:
+        image:
+          repository: {{ .Values.server.image.repository }}
+          tag: {{ .Values.server.image.tag }}
+          pullPolicy: {{ .Values.server.image.pullPolicy }}
+        resources: {{- toYaml .Values.server.resources | nindent 8 }}
+        nodeSelector: {{- toYaml .Values.server.nodeSelector | nindent 8 }}
+        affinity: {{- toYaml .Values.server.affinity | nindent 8 }}
+        tolerations: {{- toYaml .Values.server.tolerations | nindent 8 }}
       ingress:
         enabled: {{ .Values.server.ingress.enabled }}
         annotations: {{- toYaml .Values.server.ingress.annotations | nindent 10 }}
@@ -26,7 +31,3 @@ data:
         pathType: {{ .Values.server.ingress.pathType | default "ImplementationSpecific" }}
         hosts: {{- toYaml .Values.server.ingress.hosts | nindent 10 }}
         ingressClassName: {{ .Values.server.ingress.ingressClassName | default "''" }}
-      resources: {{- toYaml .Values.server.resources | nindent 8 }}
-      nodeSelector: {{- toYaml .Values.server.nodeSelector | nindent 8 }}
-      affinity: {{- toYaml .Values.server.affinity | nindent 8 }}
-      tolerations: {{- toYaml .Values.server.tolerations | nindent 8 }}

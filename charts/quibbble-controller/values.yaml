@@ -2,24 +2,6 @@
 
 replicaCount: 1
 
-# This secret is created for you if no 'controllerSecretName' is specified.
-# Otherwise create a secret with these same data parameters and use it by
-# setting the 'controllerSecretName' field with the name of the secret.
-# 
-# kind: Secret
-# apiVersion: v1
-# metadata:
-#   name: quibbble-controller
-# type: Opaque
-# data:
-#   admin-password: <base64_encoded admin password>
-#   storage-password: <base64_encoded storage password>
-
-controllerSecretName: ~
-admin:
-  username: quibbble
-  password: ~
-
 # controller parameters
 controller:
   port: 8080
@@ -98,11 +80,29 @@ server:
   affinity: {}
   tolerations: []
 
+# This secret is created for you if no 'controllerSecretName' is specified.
+# Otherwise create a secret with these same data parameters and use it by
+# setting the 'controllerSecretName' field with the name of the secret.
+# 
+# kind: Secret
+# apiVersion: v1
+# metadata:
+#   name: quibbble-controller
+# type: Opaque
+# data:
+#   admin-password: <base64_encoded admin password>
+#   storage-password: <base64_encoded storage password>
+
+controllerSecretName: ~
+admin:
+  username: quibbble
+  password: ~
+
 # storage parameters
 storage:
   enabled: false
   host: ~
   username: postgres
-  password: postgres
+  password: ~
   database: postgres
   sslmode: disable
