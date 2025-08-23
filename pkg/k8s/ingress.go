@@ -6,6 +6,7 @@ import (
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/ptr"
 )
 
 type IngressConfig struct {
@@ -79,7 +80,7 @@ func CreateIngress(host, key, id string, config *IngressConfig) *networkingv1.In
 			Annotations: config.Annotations,
 		},
 		Spec: networkingv1.IngressSpec{
-			IngressClassName: &config.IngressClassName,
+			IngressClassName: ptr.To(config.IngressClassName),
 			TLS:              tls,
 			Rules:            rules,
 		},
