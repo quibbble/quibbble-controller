@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/quibbble/quibbble-controller/pkg/errors"
-	"gopkg.in/yaml.v3"
+	"sigs.k8s.io/yaml"
 )
 
 var (
