@@ -7,10 +7,10 @@ data:
     port: {{ .Values.controller.port }}
     storage:
       enabled: {{ .Values.storage.enabled | default false }}
-      host: {{ .Values.storage.host | default "" }}
-      username: {{ .Values.storage.username | default "" }}
-      database: {{ .Values.storage.database | default "" }}
-      sslmode: {{ .Values.storage.sslmode | default "" }}
+      host: {{ .Values.storage.host | default "''" }}
+      username: {{ .Values.storage.username | default "quibbble" }}
+      database: {{ .Values.storage.database | default "quibbble" }}
+      sslmode: {{ .Values.storage.sslmode | default "''" }}
     server:
       image:
         repository: {{ .Values.server.image.repository }}
@@ -25,9 +25,9 @@ data:
         {{- else }}
         annotations: {}
         {{- end }}
-        pathPrefix: {{ default .Values.ingress.server.pathPrefix "''" }}
-        pathPostfix: {{ default .Values.ingress.server.pathPostfix "''" }}
-        pathType: {{ default .Values.ingress.server.pathType "ImplementationSpecific" }}
+        pathPrefix: {{ .Values.ingress.server.pathPrefix | default "''" }}
+        pathPostfix: {{ .Values.ingress.server.pathPostfix | default "''" }}
+        pathType: {{ .Values.ingress.server.pathType | default "ImplementationSpecific" }}
         {{- if .Values.ingress.server.hosts }}
         {{- with .Values.ingress.server.hosts }}
         hosts: {{- toYaml . | nindent 10 }}
@@ -35,4 +35,4 @@ data:
         {{- else }}
         hosts: []
         {{- end }}
-        ingressClassName: {{ default .Values.ingress.server.ingressClassName "''" }}
+        ingressClassName: {{ .Values.ingress.server.ingressClassName | default "''" }}
