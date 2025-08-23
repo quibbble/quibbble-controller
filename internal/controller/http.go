@@ -14,7 +14,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func ServeHTTP(clientset *kubernetes.Clientset, storage st.GameStore, config *GameServerConfig, port string) {
+func ServeHTTP(clientset *kubernetes.Clientset, storage st.GameStore, config *ServerConfig, port string) {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatal(err)

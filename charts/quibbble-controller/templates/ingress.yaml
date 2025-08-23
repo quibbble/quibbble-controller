@@ -1,4 +1,4 @@
-{{- if .Values.ingress.controller.enabled }}
+{{- if .Values.controller.ingress.enabled }}
 {{- $fullname := (include "quibbble-controller.fullname" .) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -6,13 +6,13 @@ metadata:
   name: {{ $fullname }}
   labels:
     {{- include "quibbble-controller.labels" . | nindent 4 }}
-  {{- with .Values.ingress.controller.annotations }}
+  {{- with .Values.controller.ingress.annotations }}
   annotations: {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.controller.ingressClassName }}
+  ingressClassName: {{ .Values.controller.ingress.ingressClassName }}
   {{- $anyTlsHosts := false -}}
-  {{- range .Values.ingress.controller.hosts }}
+  {{- range .Values.controller.ingress.hosts }}
   {{- if .tls }}
   {{- if .tls.enabled }}
   {{- $anyTlsHosts = true -}}
@@ -21,7 +21,7 @@ spec:
   {{- end }}
   {{- if $anyTlsHosts }}
   tls:
-  {{- range .Values.ingress.controller.hosts }}
+  {{- range .Values.controller.ingress.hosts }}
   {{- if .tls }}
   {{- if .tls.enabled }}
     - secretName: {{ .tls.secretName }}
@@ -32,7 +32,7 @@ spec:
   {{- end }}
   {{- end }}
   rules:
-  {{- range .Values.ingress.controller.hosts }}
+  {{- range .Values.controller.ingress.hosts }}
     - host: {{ .name  }}
       http:
         paths:
@@ -41,9 +41,9 @@ spec:
                 name: {{ $fullname }}
                 port:
                   number: 80
-            {{- if $.Values.ingress.controller.path }}
-            path: {{ $.Values.ingress.controller.path }}
-            pathType: {{ $.Values.ingress.controller.pathType }}
+            {{- if $.Values.controller.ingress.path }}
+            path: {{ $.Values.controller.ingress.path }}
+            pathType: {{ $.Values.controller.ingress.pathType }}
             {{- end }}
   {{- end }}
 {{- end }}

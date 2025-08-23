@@ -12,27 +12,21 @@ data:
       database: {{ .Values.storage.database | default "quibbble" }}
       sslmode: {{ .Values.storage.sslmode | default "''" }}
     server:
+      fullname: {{ include "quibbble-controller.fullname" . }}
+      namespace: {{ .Release.Namespace }}
       image:
         repository: {{ .Values.server.image.repository }}
         tag: {{ .Values.server.image.tag }}
         pullPolicy: {{ .Values.server.image.pullPolicy }}
       ingress:
-        enabled: {{ .Values.ingress.server.enabled }}
-        {{- if .Values.ingress.server.annotations }}
-        {{- with .Values.ingress.server.annotations }}
-        annotations: {{- toYaml . | nindent 10 }}
-        {{- end }}
-        {{- else }}
-        annotations: {}
-        {{- end }}
-        pathPrefix: {{ .Values.ingress.server.pathPrefix | default "''" }}
-        pathPostfix: {{ .Values.ingress.server.pathPostfix | default "''" }}
-        pathType: {{ .Values.ingress.server.pathType | default "ImplementationSpecific" }}
-        {{- if .Values.ingress.server.hosts }}
-        {{- with .Values.ingress.server.hosts }}
-        hosts: {{- toYaml . | nindent 10 }}
-        {{- end }}
-        {{- else }}
-        hosts: []
-        {{- end }}
-        ingressClassName: {{ .Values.ingress.server.ingressClassName | default "''" }}
+        enabled: {{ .Values.server.ingress.enabled }}
+        annotations: {{- toYaml .Values.server.ingress.annotations | nindent 10 }}
+        pathPrefix: {{ .Values.server.ingress.pathPrefix | default "''" }}
+        pathPostfix: {{ .Values.server.ingress.pathPostfix | default "''" }}
+        pathType: {{ .Values.server.ingress.pathType | default "ImplementationSpecific" }}
+        hosts: {{- toYaml .Values.server.ingress.hosts | nindent 10 }}
+        ingressClassName: {{ .Values.server.ingress.ingressClassName | default "''" }}
+      resources: {{- toYaml .Values.server.resources | nindent 8 }}
+      nodeSelector: {{- toYaml .Values.server.nodeSelector | nindent 8 }}
+      affinity: {{- toYaml .Values.server.affinity | nindent 8 }}
+      tolerations: {{- toYaml .Values.server.tolerations | nindent 8 }}

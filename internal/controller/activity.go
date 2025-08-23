@@ -21,7 +21,7 @@ type Activity struct {
 func (c *Controller) liveGameCount() (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	l, err := c.clientset.CoreV1().Pods(k8s.Namespace).List(ctx, metav1.ListOptions{
+	l, err := c.clientset.CoreV1().Pods(c.config.Namespace).List(ctx, metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", k8s.Component, k8s.GameComponent),
 	})
 	if err != nil {
@@ -44,7 +44,7 @@ func (c *Controller) activity() (*Activity, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	l, err := c.clientset.CoreV1().Pods(k8s.Namespace).List(ctx, metav1.ListOptions{
+	l, err := c.clientset.CoreV1().Pods(c.config.Namespace).List(ctx, metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", k8s.Component, k8s.GameComponent),
 	})
 	if err != nil {
@@ -55,7 +55,7 @@ func (c *Controller) activity() (*Activity, error) {
 		names = append(names, it.Name)
 	}
 	for _, name := range names {
-		url := fmt.Sprintf("http://%s.%s/activity", name, k8s.Namespace)
+		url := fmt.Sprintf("http://%s.%s/activity", name, c.config.Namespace)
 		resp, err := http.Get(url)
 		if err != nil {
 			return nil, err

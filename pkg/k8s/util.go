@@ -12,10 +12,6 @@ const (
 	GameComponent        = "game"
 )
 
-const ChartName = "quibbble-controller"
-
-const Namespace = "quibbble"
-
 func Name(key, id string) string {
 	return fmt.Sprintf("%s-%s", key, id)
 }

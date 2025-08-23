@@ -17,10 +17,11 @@ import (
 const timeout = time.Second * 3
 
 type Watcher struct {
+	namespace string
 	clientset *kubernetes.Clientset
 }
 
-func NewWatcher(clientset *kubernetes.Clientset) *Watcher {
+func NewWatcher(namespace string, clientset *kubernetes.Clientset) *Watcher {
 	return &Watcher{
 		clientset: clientset,
 	}
@@ -29,7 +30,7 @@ func NewWatcher(clientset *kubernetes.Clientset) *Watcher {
 func (w *Watcher) list() ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	l, err := w.clientset.CoreV1().Pods(k8s.Namespace).List(ctx, metav1.ListOptions{
+	l, err := w.clientset.CoreV1().Pods(w.namespace).List(ctx, metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", k8s.Component, k8s.GameComponent),
 	})
 	if err != nil {
@@ -43,7 +44,7 @@ func (w *Watcher) list() ([]string, error) {
 }
 
 func (w *Watcher) active(key, id string) (bool, error) {
-	url := fmt.Sprintf("http://%s.%s/activity", k8s.Name(key, id), k8s.Namespace)
+	url := fmt.Sprintf("http://%s.%s/activity", k8s.Name(key, id), w.namespace)
 	resp, err := http.Get(url)
 	if err != nil {
 		return false, err
@@ -72,7 +73,7 @@ func (w *Watcher) active(key, id string) (bool, error) {
 }
 
 func (w *Watcher) delete(key, id string) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("http://quibbble-controller.%s/game?key=%s&id=%s", k8s.Namespace, key, id), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("http://quibbble-controller.%s/game?key=%s&id=%s", w.namespace, key, id), nil)
 	if err != nil {
 		return err
 	}

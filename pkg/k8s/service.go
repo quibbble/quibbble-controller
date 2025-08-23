@@ -14,8 +14,7 @@ func CreateService(key, id string) *corev1.Service {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      Name(key, id),
-			Namespace: Namespace,
+			Name: Name(key, id),
 			Labels: map[string]string{
 				Component:  GameComponent,
 				qgn.KeyTag: key,

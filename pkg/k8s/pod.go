@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"fmt"
 	"strconv"
 
 	qgn "github.com/quibbble/quibbble-controller/pkg/gamenotation"
@@ -8,7 +9,19 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func CreatePod(key, id, image, pullyPolicy string, port int32, storageEnabled bool) *corev1.Pod {
+type PodConfig struct {
+	Image struct {
+		Repository string            `yaml:"repository"`
+		Tag        string            `yaml:"tag"`
+		PullPolicy corev1.PullPolicy `yaml:"pullPolicy"`
+	} `yaml:"image"`
+	Resources    corev1.ResourceRequirements `yaml:"resources"`
+	NodeSelector map[string]string           `yaml:"nodeSelector"`
+	Affinity     *corev1.Affinity            `yaml:"affinity"`
+	Tolerations  []corev1.Toleration         `yaml:"tolerations"`
+}
+
+func CreatePod(fullname, key, id string, port int32, storageEnabled bool, config *PodConfig) *corev1.Pod {
 	envs := []corev1.EnvVar{
 		{
 			Name:  "ADMIN_USERNAME",
@@ -20,7 +33,7 @@ func CreatePod(key, id, image, pullyPolicy string, port int32, storageEnabled bo
 				SecretKeyRef: &corev1.SecretKeySelector{
 					Key: "admin-password",
 					LocalObjectReference: corev1.LocalObjectReference{
-						Name: ChartName,
+						Name: fullname,
 					},
 				},
 			},
@@ -37,7 +50,7 @@ func CreatePod(key, id, image, pullyPolicy string, port int32, storageEnabled bo
 				SecretKeyRef: &corev1.SecretKeySelector{
 					Key: "storage-password",
 					LocalObjectReference: corev1.LocalObjectReference{
-						Name: ChartName,
+						Name: fullname,
 					},
 				},
 			},
@@ -49,8 +62,7 @@ func CreatePod(key, id, image, pullyPolicy string, port int32, storageEnabled bo
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      Name(key, id),
-			Namespace: Namespace,
+			Name: Name(key, id),
 			Labels: map[string]string{
 				Component:  GameComponent,
 				qgn.KeyTag: key,
@@ -61,8 +73,8 @@ func CreatePod(key, id, image, pullyPolicy string, port int32, storageEnabled bo
 			Containers: []corev1.Container{
 				{
 					Name:            Name(key, id),
-					Image:           image,
-					ImagePullPolicy: corev1.PullPolicy(pullyPolicy),
+					Image:           fmt.Sprintf("%s:%s", config.Image.Repository, config.Image.Tag),
+					ImagePullPolicy: config.Image.PullPolicy,
 					VolumeMounts: []corev1.VolumeMount{
 						{
 							Name:      "qgn-vol",
@@ -82,9 +94,13 @@ func CreatePod(key, id, image, pullyPolicy string, port int32, storageEnabled bo
 							ContainerPort: port,
 						},
 					},
-					Env: envs,
+					Env:       envs,
+					Resources: config.Resources,
 				},
 			},
+			NodeSelector: config.NodeSelector,
+			Affinity:     config.Affinity,
+			Tolerations:  config.Tolerations,
 			Volumes: []corev1.Volume{
 				{
 					Name: "qgn-vol",
@@ -101,7 +117,7 @@ func CreatePod(key, id, image, pullyPolicy string, port int32, storageEnabled bo
 					VolumeSource: corev1.VolumeSource{
 						ConfigMap: &corev1.ConfigMapVolumeSource{
 							LocalObjectReference: corev1.LocalObjectReference{
-								Name: ChartName,
+								Name: fullname,
 							},
 						},
 					},

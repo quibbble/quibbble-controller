@@ -2,14 +2,19 @@
 
 replicaCount: 1
 
-# This secret is created for you if no 'controllerSecretName' is specified:
+# This secret is created for you if no 'controllerSecretName' is specified.
+# Otherwise create a secret with these same data parameters and use it by
+# setting the 'controllerSecretName' field with the name of the secret.
 # 
-#  apiVersion: v1
-#  kind: Secret
-#  data:
-#    admin-password: <base64_encoded admin password>
-#    storage-password: <base64_encoded storage password>
-#  type: Opaque
+# kind: Secret
+# apiVersion: v1
+# metadata:
+#   name: quibbble-controller
+# type: Opaque
+# data:
+#   admin-password: <base64_encoded admin password>
+#   storage-password: <base64_encoded storage password>
+
 controllerSecretName: ~
 admin:
   username: quibbble
@@ -17,11 +22,32 @@ admin:
 
 # controller parameters
 controller:
+  port: 8080
   image:
     repository: quibbble/controller
     tag: latest
     pullPolicy: Always
-  port: 8080
+  ingress:
+    enabled: false
+    ingressClassName: nginx
+    annotations: {}
+    path: /
+    pathType: ImplementationSpecific
+    hosts: []
+    # - name: ""
+    #   tls:
+    #     enabled: false
+    #     secretName: ""
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
 
 # watcher parameters
 watcher:
@@ -31,6 +57,16 @@ watcher:
     pullPolicy: Always
   suspend: false
   schedule: "*/30 * * * *"
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
 
 # server parameters
 server:
@@ -38,31 +74,9 @@ server:
     repository: quibbble/server
     tag: latest
     pullPolicy: Always
-
-# storage parameters
-storage:
-  enabled: false
-  host: ~
-  username: postgres
-  password: postgres
-  database: postgres
-  sslmode: disable
-
-# ingress parameters
-ingress:
-  controller: 
+  ingress:
     enabled: false
-    annotations: {}
-    path: /
-    pathType: ImplementationSpecific
-    hosts: []
-    # - name: ""
-    #   tls:
-    #     enabled: false
-    #     secretName: ""
     ingressClassName: nginx
-  server:
-    enabled: false
     annotations: {}
     # ingress path follows pattern: '<pathPrefix>/<gameKey>/<gameID><pathPostfix>'
     pathPrefix: ""
@@ -73,4 +87,22 @@ ingress:
     #   tls:
     #     enabled: false
     #     secretName: ""
-    ingressClassName: nginx
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+
+# storage parameters
+storage:
+  enabled: false
+  host: ~
+  username: postgres
+  password: postgres
+  database: postgres
+  sslmode: disable

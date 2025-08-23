@@ -19,4 +19,11 @@ spec:
           - name: quibbble-watcher
             image: "{{ .Values.watcher.image.repository }}:{{ .Values.watcher.image.tag | default "latest" }}"
             imagePullPolicy: {{ .Values.watcher.image.pullPolicy }}
+            env:
+            - name: POD_NAMESPACE
+              value: {{ .Release.Namespace }}
+            resources: {{- toYaml .Values.watcher.resources | nindent 14 }}
           restartPolicy: Never
+          nodeSelector: {{- toYaml .Values.watcher.nodeSelector | nindent 12 }}
+          affinity: {{- toYaml .Values.watcher.affinity | nindent 12 }}
+          tolerations: {{- toYaml .Values.watcher.tolerations | nindent 12 }}

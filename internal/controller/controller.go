@@ -28,14 +28,14 @@ type Controller struct {
 	// storage provides connection to the game store.
 	storage st.GameStore
 
-	// config for game server creation.
-	config *GameServerConfig
+	// config for server creation.
+	config *ServerConfig
 
 	// mux handles http server handling.
 	mux http.ServeMux
 }
 
-func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, storage st.GameStore) *Controller {
+func NewController(config *ServerConfig, clientset *kubernetes.Clientset, storage st.GameStore) *Controller {
 	c := &Controller{
 		clientset: clientset,
 		storage:   storage,
@@ -53,7 +53,7 @@ func NewController(config *GameServerConfig, clientset *kubernetes.Clientset, st
 func (c *Controller) find(key, id string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	_, err := c.clientset.CoreV1().Pods(k8s.Namespace).Get(ctx, k8s.Name(key, id), metav1.GetOptions{})
+	_, err := c.clientset.CoreV1().Pods(c.config.Namespace).Get(ctx, k8s.Name(key, id), metav1.GetOptions{})
 	return err == nil
 }
 
@@ -66,17 +66,17 @@ func (c *Controller) create(snapshot *qgn.Snapshot) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	if _, err := c.clientset.CoreV1().ConfigMaps(k8s.Namespace).Create(ctx, k8s.CreateConfigMap(snapshot), metav1.CreateOptions{}); err != nil {
+	if _, err := c.clientset.CoreV1().ConfigMaps(c.config.Namespace).Create(ctx, k8s.CreateConfigMap(snapshot), metav1.CreateOptions{}); err != nil {
 		return err
 	}
-	if _, err := c.clientset.CoreV1().Pods(k8s.Namespace).Create(ctx, k8s.CreatePod(key, id, fmt.Sprintf("%s:%s", c.config.Image.Repository, c.config.Image.Tag), c.config.Image.PullPolicy, port, c.storage.Enabled()), metav1.CreateOptions{}); err != nil {
+	if _, err := c.clientset.CoreV1().Pods(c.config.Namespace).Create(ctx, k8s.CreatePod(c.config.FullName, key, id, port, c.storage.Enabled(), &c.config.Pod), metav1.CreateOptions{}); err != nil {
 		return err
 	}
-	if _, err := c.clientset.CoreV1().Services(k8s.Namespace).Create(ctx, k8s.CreateService(key, id), metav1.CreateOptions{}); err != nil {
+	if _, err := c.clientset.CoreV1().Services(c.config.Namespace).Create(ctx, k8s.CreateService(key, id), metav1.CreateOptions{}); err != nil {
 		return err
 	}
 	if c.config.Ingress.Enabled {
-		if _, err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Create(ctx, k8s.CreateIngress(c.config.Host, key, id, &c.config.Ingress), metav1.CreateOptions{}); err != nil {
+		if _, err := c.clientset.NetworkingV1().Ingresses(c.config.Namespace).Create(ctx, k8s.CreateIngress(key, id, &c.config.Ingress), metav1.CreateOptions{}); err != nil {
 			return err
 		}
 	}
@@ -89,17 +89,17 @@ func (c *Controller) delete(key, id string) error {
 	defer cancel()
 
 	var errList []error
-	if err := c.clientset.CoreV1().ConfigMaps(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
+	if err := c.clientset.CoreV1().ConfigMaps(c.config.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
 		errList = append(errList, err)
 	}
-	if err := c.clientset.CoreV1().Pods(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
+	if err := c.clientset.CoreV1().Pods(c.config.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
 		errList = append(errList, err)
 	}
-	if err := c.clientset.CoreV1().Services(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
+	if err := c.clientset.CoreV1().Services(c.config.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
 		errList = append(errList, err)
 	}
 	if c.config.Ingress.Enabled {
-		if err := c.clientset.NetworkingV1().Ingresses(k8s.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
+		if err := c.clientset.NetworkingV1().Ingresses(c.config.Namespace).Delete(ctx, k8s.Name(key, id), metav1.DeleteOptions{}); err != nil {
 			errList = append(errList, err)
 		}
 	}
@@ -122,7 +122,7 @@ func (c *Controller) lookup(key, id string) (*qgn.Snapshot, error) {
 
 // store saves a live game with key and id to long term game storage.
 func (c *Controller) store(key, id string) error {
-	url := fmt.Sprintf("http://%s.%s/snapshot?format=qgn", k8s.Name(key, id), k8s.Namespace)
+	url := fmt.Sprintf("http://%s.%s/snapshot?format=qgn", k8s.Name(key, id), c.config.Namespace)
 	resp, err := http.Get(url)
 	if err != nil {
 		return err

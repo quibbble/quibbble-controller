@@ -24,6 +24,9 @@ spec:
       - name: config-vol
         configMap:
           name: {{ include "quibbble-controller.fullname" . }}
+      nodeSelector: {{- toYaml .Values.watcher.nodeSelector | nindent 8 }}
+      affinity: {{- toYaml .Values.watcher.affinity | nindent 8 }}
+      tolerations: {{- toYaml .Values.watcher.tolerations | nindent 8 }}
       containers:
       - name: quibbble-controller
         image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default "latest" }}"
@@ -47,6 +50,7 @@ spec:
               name: {{ default .Values.controllerSecretName (include "quibbble-controller.fullname" .) }}
               key: storage-password
         {{- end }}
+        resources: {{- toYaml .Values.watcher.resources | nindent 10 }}
         livenessProbe:
           httpGet:
             path: /health

@@ -29,7 +29,7 @@ type IngressTLSConfig struct {
 	SecretName string `yaml:"secretName"`
 }
 
-func CreateIngress(host, key, id string, config *IngressConfig) *networkingv1.Ingress {
+func CreateIngress(key, id string, config *IngressConfig) *networkingv1.Ingress {
 
 	tls := make([]networkingv1.IngressTLS, 0)
 	rules := make([]networkingv1.IngressRule, 0)
@@ -70,8 +70,7 @@ func CreateIngress(host, key, id string, config *IngressConfig) *networkingv1.In
 			APIVersion: "networking.k8s.io/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      Name(key, id),
-			Namespace: Namespace,
+			Name: Name(key, id),
 			Labels: map[string]string{
 				Component:  GameComponent,
 				qgn.KeyTag: key,

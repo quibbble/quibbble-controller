@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/quibbble/quibbble-controller/internal/watcher"
 	"k8s.io/client-go/kubernetes"
@@ -24,10 +25,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	namespace := os.Getenv("POD_NAMESPACE")
+
 	log.Println("watcher starting...")
 	defer log.Println("watcher closed")
 
-	if err := watcher.Clean(clientset); err != nil {
+	if err := watcher.Clean(namespace, clientset); err != nil {
 		log.Fatal(err)
 	}
 }

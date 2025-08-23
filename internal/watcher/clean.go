@@ -7,8 +7,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func Clean(clientset *kubernetes.Clientset) error {
-	w := NewWatcher(clientset)
+func Clean(namespace string, clientset *kubernetes.Clientset) error {
+	w := NewWatcher(namespace, clientset)
 	names, err := w.list()
 	if err != nil {
 		return err

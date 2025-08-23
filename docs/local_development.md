@@ -24,7 +24,7 @@ make docker_import
 
 ## Upgrade Controller
 
-Update the [values.yaml](../charts/quibbble-controller/values.yaml) file, changing all `pullPolicy` values from `Always` to `Never`. This ensures your local images are used instead of the official ones hosted on Docker Hub.
+Update the [values.yaml](../charts/quibbble-controller/values.yaml) file, changing all `pullPolicy` values to `Never`. This ensures your local images are used instead of the official ones hosted on Docker Hub.
 
 Re-run the Helm command to pickup your new images.
 

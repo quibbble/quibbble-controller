@@ -6,9 +6,9 @@ import (
 
 	qc "github.com/quibbble/quibbble-controller/internal/controller"
 	crdb "github.com/quibbble/quibbble-controller/pkg/store/cockroachdb"
-	"gopkg.in/yaml.v3"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"sigs.k8s.io/yaml"
 )
 
 func init() {
@@ -16,9 +16,9 @@ func init() {
 }
 
 type Config struct {
-	Storage *crdb.Config         `yaml:"storage"`
-	Server  *qc.GameServerConfig `yaml:"server"`
-	Port    string               `yaml:"port"`
+	Storage *crdb.Config     `yaml:"storage"`
+	Server  *qc.ServerConfig `yaml:"server"`
+	Port    string           `yaml:"port"`
 }
 
 func main() {
