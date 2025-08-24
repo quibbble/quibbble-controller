@@ -23,6 +23,7 @@ type Watcher struct {
 
 func NewWatcher(namespace string, clientset *kubernetes.Clientset) *Watcher {
 	return &Watcher{
+		namespace: namespace,
 		clientset: clientset,
 	}
 }
