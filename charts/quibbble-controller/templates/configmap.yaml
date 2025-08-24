@@ -22,10 +22,10 @@ data:
         admin:
           username: {{ .Values.admin.username }}
           secretName: {{ .Values.controllerSecretName | default (include "quibbble-controller.fullname" .) }}
-        resources: {{- toYaml .Values.server.resources | nindent 8 }}
-        nodeSelector: {{- toYaml .Values.server.nodeSelector | nindent 8 }}
-        affinity: {{- toYaml .Values.server.affinity | nindent 8 }}
-        tolerations: {{- toYaml .Values.server.tolerations | nindent 8 }}
+        resources: {{- toYaml .Values.server.resources | nindent 10 }}
+        nodeSelector: {{- toYaml .Values.server.nodeSelector | nindent 10 }}
+        affinity: {{- toYaml .Values.server.affinity | nindent 10 }}
+        tolerations: {{- toYaml .Values.server.tolerations | nindent 10 }}
       ingress:
         enabled: {{ .Values.server.ingress.enabled }}
         annotations: {{- toYaml .Values.server.ingress.annotations | nindent 10 }}
