@@ -8,7 +8,7 @@ controller:
   image:
     repository: quibbble/controller
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   ingress:
     enabled: false
     ingressClassName: nginx
@@ -36,7 +36,7 @@ watcher:
   image:
     repository: quibbble/watcher
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   suspend: false
   schedule: "*/30 * * * *"
   resources: {}
@@ -55,7 +55,7 @@ server:
   image:
     repository: quibbble/server
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   ingress:
     enabled: false
     ingressClassName: nginx
