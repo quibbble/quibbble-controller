@@ -1,6 +1,6 @@
 # Quibbble K8s Controller
 
-The project allows Quibbble games to be run in a [K8s](https://kubernetes.io) cluster. Games are spun up as individual pods with their entire lifecycle handled by the Quibbble controller. This allows Quibbble to take advantage of the power of K8s.
+The project allows Quibbble games to be run in a [Kubernetes](https://kubernetes.io) cluster. Games are spun up as individual pods with their entire lifecycle handled by the Quibbble controller.
 
 ## Quick Start
 
