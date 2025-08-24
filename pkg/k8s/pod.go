@@ -11,6 +11,7 @@ import (
 
 type PodConfig struct {
 	Image        ImageConfig                 `yaml:"image"`
+	Admin        AdminConfig                 `yaml:"admin"`
 	Resources    corev1.ResourceRequirements `yaml:"resources"`
 	NodeSelector map[string]string           `yaml:"nodeSelector"`
 	Affinity     *corev1.Affinity            `yaml:"affinity"`
@@ -23,11 +24,16 @@ type ImageConfig struct {
 	PullPolicy corev1.PullPolicy `yaml:"pullPolicy"`
 }
 
+type AdminConfig struct {
+	Username   string `yaml:"username"`
+	SecretName string `yaml:"secretName"`
+}
+
 func CreatePod(fullname, key, id string, port int32, storageEnabled bool, config *PodConfig) *corev1.Pod {
 	envs := []corev1.EnvVar{
 		{
 			Name:  "ADMIN_USERNAME",
-			Value: "quibbble",
+			Value: config.Admin.Username,
 		},
 		{
 			Name: "ADMIN_PASSWORD",
@@ -35,7 +41,7 @@ func CreatePod(fullname, key, id string, port int32, storageEnabled bool, config
 				SecretKeyRef: &corev1.SecretKeySelector{
 					Key: "admin-password",
 					LocalObjectReference: corev1.LocalObjectReference{
-						Name: fullname,
+						Name: config.Admin.SecretName,
 					},
 				},
 			},
@@ -52,7 +58,7 @@ func CreatePod(fullname, key, id string, port int32, storageEnabled bool, config
 				SecretKeyRef: &corev1.SecretKeySelector{
 					Key: "storage-password",
 					LocalObjectReference: corev1.LocalObjectReference{
-						Name: fullname,
+						Name: config.Admin.SecretName,
 					},
 				},
 			},

@@ -19,6 +19,9 @@ data:
           repository: {{ .Values.server.image.repository }}
           tag: {{ .Values.server.image.tag }}
           pullPolicy: {{ .Values.server.image.pullPolicy }}
+        admin:
+          username: {{ .Values.admin.username }}
+          secretName: {{ .Values.controllerSecretName | default (include "quibbble-controller.fullname" .) }}
         resources: {{- toYaml .Values.server.resources | nindent 8 }}
         nodeSelector: {{- toYaml .Values.server.nodeSelector | nindent 8 }}
         affinity: {{- toYaml .Values.server.affinity | nindent 8 }}
