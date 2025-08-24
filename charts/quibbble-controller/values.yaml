@@ -1,25 +1,40 @@
-# Default values for quibbble-controller
+# -- String to partially override "quibbble-controller.fullname" template
+nameOverride: ~
 
+# -- String to fully override "quibbble-controller.fullname" template
+fullnameOverride: ~
+
+# -- The number of controller pods to run
 replicaCount: 1
 
-# controller parameters
 controller:
+  # -- Quibbble Controller port
   port: 8080
   image:
+    # -- Image repository for the Quibbble Controller
     repository: quibbble/controller
+    # -- Tag for the Quibbble Controller image
     tag: latest
+    # -- ImagePullPolicy for the Quibbble Controller image
     pullPolicy: IfNotPresent
   ingress:
+    # -- Enable an ingress resource
     enabled: false
+    # -- Defines which ingress controller will implement the resource
     ingressClassName: nginx
+    # -- Additional ingress annotations
     annotations: {}
+    # -- Ingress path
     path: /
+    # -- Ingress path type. One of `Exact`, `Prefix` or `ImplementationSpecific`
     pathType: ImplementationSpecific
+    # -- List of ingress hosts
     hosts: []
     # - name: ""
     #   tls:
     #     enabled: false
     #     secretName: ""
+  # -- Resource limits and requests for the controller
   resources: {}
     # limits:
     #   cpu: 100m
@@ -27,18 +42,27 @@ controller:
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
+  # -- [Node selector]
   nodeSelector: {}
+  # -- [Tolerations] for use with node taints
   affinity: {}
+  # -- Assign custom [affinity] rules
   tolerations: []
 
 # watcher parameters
 watcher:
   image:
+    # -- Image repository for the Quibbble Watcher
     repository: quibbble/watcher
+    # -- Tag for the Quibbble Watcher image
     tag: latest
+    # -- ImagePullPolicy for the Quibbble Watcher image
     pullPolicy: IfNotPresent
+  # -- Whether or not to suspend this cleanup job
   suspend: false
+  # -- The cron schedule for this cleanup job
   schedule: "*/30 * * * *"
+# -- Resource limits and requests for the watcher
   resources: {}
     # limits:
     #   cpu: 100m
@@ -46,29 +70,43 @@ watcher:
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
+  # -- [Node selector]
   nodeSelector: {}
+  # -- [Tolerations] for use with node taints
   affinity: {}
+  # -- Assign custom [affinity] rules
   tolerations: []
 
 # server parameters
 server:
   image:
+    # -- Image repository for the Quibbble Server
     repository: quibbble/server
+    # -- Tag for the Quibbble Server image
     tag: latest
+    # -- ImagePullPolicy for the Quibbble Server image
     pullPolicy: IfNotPresent
   ingress:
+    # -- Enable an ingress resource
     enabled: false
+    # -- Defines which ingress controller will implement the resource
     ingressClassName: nginx
+    # -- Additional ingress annotations
     annotations: {}
-    # ingress path follows pattern: '<pathPrefix>/<gameKey>/<gameID><pathPostfix>'
+    # -- ingress path prefix where path follows pattern: '<pathPrefix>/<gameKey>/<gameID><pathPostfix>'
     pathPrefix: ""
+    # -- ingress path postfix where path follows pattern: '<pathPrefix>/<gameKey>/<gameID><pathPostfix>'
     pathPostfix: ""
+    # -- Ingress path type. One of `Exact`, `Prefix` or `ImplementationSpecific`
     pathType: ImplementationSpecific
+    # -- List of ingress hosts
     hosts: []
     # - name: ""
     #   tls:
     #     enabled: false
     #     secretName: ""
+  # -- Resource limits and requests for the controller
+# -- Resource limits and requests for the server
   resources: {}
     # limits:
     #   cpu: 100m
@@ -76,8 +114,11 @@ server:
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
+  # -- [Node selector]
   nodeSelector: {}
+  # -- [Tolerations] for use with node taints
   affinity: {}
+  # -- Assign custom [affinity] rules
   tolerations: []
 
 # This secret is created for you if no 'controllerSecretName' is specified.
@@ -95,14 +136,22 @@ server:
 
 controllerSecretName: ~
 admin:
+  # -- The admin username
   username: quibbble
+  # -- The admin password. If left unset, this will be randomly generated
   password: ~
 
 # storage parameters
 storage:
+  # -- Enable a storage backend to store Quibbble game information
   enabled: false
+  # -- Storage host
   host: ~
+  # -- Storage username
   username: postgres
+  # -- Storage password. If left unset, this will be randomly generated
   password: ~
+  # Storage database
   database: postgres
+  # Storage sslmode
   sslmode: disable

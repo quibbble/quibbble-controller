@@ -1,6 +1,6 @@
 apiVersion: v2
 name: quibbble-controller
-description: K8s quibbble controller
+description: Helm Chart for the Quibbble Controller.
 type: application
 version: 0.2.5
 appVersion: latest
