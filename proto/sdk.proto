@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package quibbble.com;
+option go_package = "./sdk";
+
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+
+// gRPC definition for the SDK Server.
+// This SDK service should be implemented by developers
+// looking to create their own game(s).
+service SDK {
+    // Initialize the game.
+    rpc InitGame(InitGameRequest) returns (google.protobuf.Empty) {}
+    // Perform an action on the game.
+    rpc DoAction(ActionRequest) returns (google.protobuf.Empty) {}
+    // Retrieve the current game snapshot from a specific team's point of view.
+    rpc GetSnapshot(SnapshotRequest) returns (SnapshotResponse) {}
+}
+
+message InitGameRequest {
+    // The initial state of the game. 
+    Snapshot snapshot = 1;
+}
+
+message ActionRequest {
+    // The action to perform on the game.
+    Action action = 1;
+}
+
+message SnapshotRequest {
+    // The team requesting the snapshot. 
+    string team = 1;
+}
+
+message SnapshotResponse {
+    // The current state of the game. 
+    Snapshot snapshot = 1;
+}
+
+message Action {
+    // The team performing the action.
+    string team = 1;
+    // The kind of action to perform.
+    string kind = 2;
+    // Any additional information needed to perform the action.
+    optional google.protobuf.Any spec = 3;
+}
+
+message Snapshot {
+
+    // -- Required fields needed when playing any game --
+
+    // The kind of game i.e. tictactoe, chess, etc. 
+    string kind = 1;
+    // The list of all teams playing the game. The first team in the list should always go first.
+    repeated string teams = 2;
+    // The team who is currently active. 
+    string turn = 3;
+    // The list of teams that have won the game.
+    repeated string winners = 4;
+    // The list of all past actions played to reach this current state.
+    repeated Action history = 5;
+
+    // -- Optional fields that may make development easier --
+
+    // A seed used to generate any deterministic randomness in the game.
+    optional int64 seed = 6;
+    // Human readable message describing what action(s) to take next.
+    optional string message = 7;
+    // The list of all possible actions a team can currently take.
+    repeated Action actions = 8;
+    // Any additional information about the state of the game i.e. board, decks, hands, etc.
+    optional google.protobuf.Any spec = 9;
+}

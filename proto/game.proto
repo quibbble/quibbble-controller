@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package quibbble.com;
+option go_package = "./game";
+
+import "google/protobuf/empty.proto";
+import "./sdk.proto";
+
+// gRPC definition for the Game Server.
+// This service sits in front of the SDK service and 
+// handles all player connections and networking.
+service Game {
+    // Retrieves the current state of the game.
+    rpc GetGame(GetRequest) returns (GetResponse) {}
+    // Streams all updates to the game state.
+    rpc StreamGame(StreamRequest) returns (stream StreamResponse) {}
+    // Allows a player to join a team.
+    rpc JoinTeam(JoinRequest) returns (google.protobuf.Empty) {}
+    // Allows a player to play an action.
+    rpc PlayAction(PlayRequest) returns (google.protobuf.Empty) {}
+    // Allows a player to undo an action.
+    rpc UndoAction(UndoRequest) returns (google.protobuf.Empty) {}
+    // Allows a player to reset the game.
+    rpc ResetGame(ResetRequest) returns (google.protobuf.Empty) {}
+}
+
+enum Team {
+    NIL = 0;
+    RED = 1;
+    BLUE = 2;
+    GREEN = 3;
+    YELLOW = 4;
+    ORANGE = 5;
+    PINK = 6;
+    PURPLE = 7;
+    TURQUOISE = 8;
+}
+
+message Player {
+    // The name of the player.
+    string name = 1;
+    // Whether or not the player is connected.
+    bool online = 2;
+}
+
+message GetRequest {
+    // The player getting the game.
+    Player player = 1;
+}
+
+message GetResponse {
+    // Map of player to team.
+    map<Player, Team> players = 1;
+    // The current game snapshot.
+    Snapshot snapshot = 2;
+}
+
+message StreamRequest {
+    // The player joining the game.
+    Player player = 1;
+}
+
+message StreamResponse {
+    // Map of player to team.
+    map<Player, Team> players = 1;
+    // The current game snapshot.
+    Snapshot snapshot = 2;
+}
+
+message JoinRequest {
+    // The joining player.
+    Player player = 1;
+    // The team the player is joining.
+    Team team = 2;
+}
+
+message PlayRequest {
+    // The player doing the action.
+    Player player = 1;
+    // The action to play.
+    Action action = 2;
+}
+
+message UndoRequest {
+    // The player requesting the undo.
+    Player player = 1;
+}
+
+message ResetRequest {
+    // The player requesting the reset.
+    Player player = 1;
+}
