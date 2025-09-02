@@ -43,5 +43,5 @@ proto_js:
 
 proto_tictactoe_go:
 	protoc --proto_path=. --go_out=examples/tictactoe examples/tictactoe/proto/tictactoe.proto \
-		&& mv examples/tictactoe/tictactoe/* examples/tictactoe/go \
+		&& mv examples/tictactoe/tictactoe/* examples/tictactoe/implementations/go \
 		&& rm -r examples/tictactoe/tictactoe
