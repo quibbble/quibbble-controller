@@ -4,16 +4,17 @@
 // 	protoc        v6.32.0
 // source: game.proto
 
-package quibbble
+package game
 
 import (
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
+
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
 )
 
 const (
@@ -23,8 +24,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// GameAction defines a move someone can make that modifies the game state.
-type GameAction struct {
+// Action defines a move someone can make that modifies the game state.
+type Action struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The team doing the action.
 	Team string `protobuf:"bytes,1,opt,name=team,proto3" json:"team,omitempty"`
@@ -36,20 +37,20 @@ type GameAction struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GameAction) Reset() {
-	*x = GameAction{}
+func (x *Action) Reset() {
+	*x = Action{}
 	mi := &file_game_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GameAction) String() string {
+func (x *Action) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GameAction) ProtoMessage() {}
+func (*Action) ProtoMessage() {}
 
-func (x *GameAction) ProtoReflect() protoreflect.Message {
+func (x *Action) ProtoReflect() protoreflect.Message {
 	mi := &file_game_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -61,34 +62,34 @@ func (x *GameAction) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GameAction.ProtoReflect.Descriptor instead.
-func (*GameAction) Descriptor() ([]byte, []int) {
+// Deprecated: Use Action.ProtoReflect.Descriptor instead.
+func (*Action) Descriptor() ([]byte, []int) {
 	return file_game_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GameAction) GetTeam() string {
+func (x *Action) GetTeam() string {
 	if x != nil {
 		return x.Team
 	}
 	return ""
 }
 
-func (x *GameAction) GetKind() string {
+func (x *Action) GetKind() string {
 	if x != nil {
 		return x.Kind
 	}
 	return ""
 }
 
-func (x *GameAction) GetSpec() *anypb.Any {
+func (x *Action) GetSpec() *anypb.Any {
 	if x != nil {
 		return x.Spec
 	}
 	return nil
 }
 
-// GameSnapshot defines the game state at a specific point in time.
-type GameSnapshot struct {
+// Snapshot defines the game state at a specific point in time.
+type Snapshot struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A seed used to generate deterministic randomness in the game.
 	Seed int64 `protobuf:"varint,1,opt,name=seed,proto3" json:"seed,omitempty"`
@@ -104,20 +105,20 @@ type GameSnapshot struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GameSnapshot) Reset() {
-	*x = GameSnapshot{}
+func (x *Snapshot) Reset() {
+	*x = Snapshot{}
 	mi := &file_game_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GameSnapshot) String() string {
+func (x *Snapshot) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GameSnapshot) ProtoMessage() {}
+func (*Snapshot) ProtoMessage() {}
 
-func (x *GameSnapshot) ProtoReflect() protoreflect.Message {
+func (x *Snapshot) ProtoReflect() protoreflect.Message {
 	mi := &file_game_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -129,48 +130,48 @@ func (x *GameSnapshot) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GameSnapshot.ProtoReflect.Descriptor instead.
-func (*GameSnapshot) Descriptor() ([]byte, []int) {
+// Deprecated: Use Snapshot.ProtoReflect.Descriptor instead.
+func (*Snapshot) Descriptor() ([]byte, []int) {
 	return file_game_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GameSnapshot) GetSeed() int64 {
+func (x *Snapshot) GetSeed() int64 {
 	if x != nil {
 		return x.Seed
 	}
 	return 0
 }
 
-func (x *GameSnapshot) GetTeams() []string {
+func (x *Snapshot) GetTeams() []string {
 	if x != nil {
 		return x.Teams
 	}
 	return nil
 }
 
-func (x *GameSnapshot) GetTurn() string {
+func (x *Snapshot) GetTurn() string {
 	if x != nil {
 		return x.Turn
 	}
 	return ""
 }
 
-func (x *GameSnapshot) GetWinners() []string {
+func (x *Snapshot) GetWinners() []string {
 	if x != nil {
 		return x.Winners
 	}
 	return nil
 }
 
-func (x *GameSnapshot) GetSpec() *anypb.Any {
+func (x *Snapshot) GetSpec() *anypb.Any {
 	if x != nil {
 		return x.Spec
 	}
 	return nil
 }
 
-// GameView defines who is looking at the game.
-type GameView struct {
+// View defines who is looking at the game.
+type View struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The team requesting the game snapshot.
 	Team          string `protobuf:"bytes,1,opt,name=team,proto3" json:"team,omitempty"`
@@ -178,20 +179,20 @@ type GameView struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GameView) Reset() {
-	*x = GameView{}
+func (x *View) Reset() {
+	*x = View{}
 	mi := &file_game_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GameView) String() string {
+func (x *View) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GameView) ProtoMessage() {}
+func (*View) ProtoMessage() {}
 
-func (x *GameView) ProtoReflect() protoreflect.Message {
+func (x *View) ProtoReflect() protoreflect.Message {
 	mi := &file_game_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -203,12 +204,12 @@ func (x *GameView) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GameView.ProtoReflect.Descriptor instead.
-func (*GameView) Descriptor() ([]byte, []int) {
+// Deprecated: Use View.ProtoReflect.Descriptor instead.
+func (*View) Descriptor() ([]byte, []int) {
 	return file_game_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GameView) GetTeam() string {
+func (x *View) GetTeam() string {
 	if x != nil {
 		return x.Team
 	}
@@ -220,28 +221,27 @@ var File_game_proto protoreflect.FileDescriptor
 const file_game_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"game.proto\x12\fquibbble.com\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto\"l\n" +
-	"\n" +
-	"GameAction\x12\x12\n" +
+	"game.proto\x12\x11quibbble.com.game\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto\"h\n" +
+	"\x06Action\x12\x12\n" +
 	"\x04team\x18\x01 \x01(\tR\x04team\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12-\n" +
 	"\x04spec\x18\x03 \x01(\v2\x14.google.protobuf.AnyH\x00R\x04spec\x88\x01\x01B\a\n" +
-	"\x05_spec\"\x9e\x01\n" +
-	"\fGameSnapshot\x12\x12\n" +
+	"\x05_spec\"\x9a\x01\n" +
+	"\bSnapshot\x12\x12\n" +
 	"\x04seed\x18\x01 \x01(\x03R\x04seed\x12\x14\n" +
 	"\x05teams\x18\x02 \x03(\tR\x05teams\x12\x12\n" +
 	"\x04turn\x18\x03 \x01(\tR\x04turn\x12\x18\n" +
 	"\awinners\x18\x04 \x03(\tR\awinners\x12-\n" +
 	"\x04spec\x18\x05 \x01(\v2\x14.google.protobuf.AnyH\x00R\x04spec\x88\x01\x01B\a\n" +
-	"\x05_spec\"\x1e\n" +
-	"\bGameView\x12\x12\n" +
-	"\x04team\x18\x01 \x01(\tR\x04team2\x89\x02\n" +
-	"\x04Game\x12<\n" +
-	"\x04Init\x12\x1a.quibbble.com.GameSnapshot\x1a\x16.google.protobuf.Empty\"\x00\x12<\n" +
-	"\x04Load\x12\x1a.quibbble.com.GameSnapshot\x1a\x16.google.protobuf.Empty\"\x00\x12@\n" +
+	"\x05_spec\"\x1a\n" +
+	"\x04View\x12\x12\n" +
+	"\x04team\x18\x01 \x01(\tR\x04team2\x8e\x02\n" +
+	"\x04Game\x12=\n" +
+	"\x04Init\x12\x1b.quibbble.com.game.Snapshot\x1a\x16.google.protobuf.Empty\"\x00\x12=\n" +
+	"\x04Load\x12\x1b.quibbble.com.game.Snapshot\x1a\x16.google.protobuf.Empty\"\x00\x12A\n" +
 	"\n" +
-	"PlayAction\x12\x18.quibbble.com.GameAction\x1a\x16.google.protobuf.Empty\"\x00\x12C\n" +
-	"\vGetSnapshot\x12\x16.quibbble.com.GameView\x1a\x1a.quibbble.com.GameSnapshot\"\x00B\vZ\t/quibbbleb\x06proto3"
+	"PlayAction\x12\x19.quibbble.com.game.Action\x1a\x16.google.protobuf.Empty\"\x00\x12E\n" +
+	"\vGetSnapshot\x12\x17.quibbble.com.game.View\x1a\x1b.quibbble.com.game.Snapshot\"\x00B\aZ\x05/gameb\x06proto3"
 
 var (
 	file_game_proto_rawDescOnce sync.Once
@@ -257,23 +257,23 @@ func file_game_proto_rawDescGZIP() []byte {
 
 var file_game_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_game_proto_goTypes = []any{
-	(*GameAction)(nil),    // 0: quibbble.com.GameAction
-	(*GameSnapshot)(nil),  // 1: quibbble.com.GameSnapshot
-	(*GameView)(nil),      // 2: quibbble.com.GameView
+	(*Action)(nil),        // 0: quibbble.com.game.Action
+	(*Snapshot)(nil),      // 1: quibbble.com.game.Snapshot
+	(*View)(nil),          // 2: quibbble.com.game.View
 	(*anypb.Any)(nil),     // 3: google.protobuf.Any
 	(*emptypb.Empty)(nil), // 4: google.protobuf.Empty
 }
 var file_game_proto_depIdxs = []int32{
-	3, // 0: quibbble.com.GameAction.spec:type_name -> google.protobuf.Any
-	3, // 1: quibbble.com.GameSnapshot.spec:type_name -> google.protobuf.Any
-	1, // 2: quibbble.com.Game.Init:input_type -> quibbble.com.GameSnapshot
-	1, // 3: quibbble.com.Game.Load:input_type -> quibbble.com.GameSnapshot
-	0, // 4: quibbble.com.Game.PlayAction:input_type -> quibbble.com.GameAction
-	2, // 5: quibbble.com.Game.GetSnapshot:input_type -> quibbble.com.GameView
-	4, // 6: quibbble.com.Game.Init:output_type -> google.protobuf.Empty
-	4, // 7: quibbble.com.Game.Load:output_type -> google.protobuf.Empty
-	4, // 8: quibbble.com.Game.PlayAction:output_type -> google.protobuf.Empty
-	1, // 9: quibbble.com.Game.GetSnapshot:output_type -> quibbble.com.GameSnapshot
+	3, // 0: quibbble.com.game.Action.spec:type_name -> google.protobuf.Any
+	3, // 1: quibbble.com.game.Snapshot.spec:type_name -> google.protobuf.Any
+	1, // 2: quibbble.com.game.Game.Init:input_type -> quibbble.com.game.Snapshot
+	1, // 3: quibbble.com.game.Game.Load:input_type -> quibbble.com.game.Snapshot
+	0, // 4: quibbble.com.game.Game.PlayAction:input_type -> quibbble.com.game.Action
+	2, // 5: quibbble.com.game.Game.GetSnapshot:input_type -> quibbble.com.game.View
+	4, // 6: quibbble.com.game.Game.Init:output_type -> google.protobuf.Empty
+	4, // 7: quibbble.com.game.Game.Load:output_type -> google.protobuf.Empty
+	4, // 8: quibbble.com.game.Game.PlayAction:output_type -> google.protobuf.Empty
+	1, // 9: quibbble.com.game.Game.GetSnapshot:output_type -> quibbble.com.game.Snapshot
 	6, // [6:10] is the sub-list for method output_type
 	2, // [2:6] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

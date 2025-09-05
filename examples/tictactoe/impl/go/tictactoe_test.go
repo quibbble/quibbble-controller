@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"testing"
 
-	q "github.com/quibbble/quibbble-controller/pkg/quibbble"
+	"github.com/quibbble/quibbble-controller/pkg/game"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 )
@@ -20,7 +20,7 @@ func Test_TicTactToe(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	snap := q.GameSnapshot{
+	snap := game.Snapshot{
 		Turn:  "X",
 		Teams: []string{"X", "O"},
 		Spec:  snapSpec,
@@ -41,7 +41,7 @@ func Test_TicTactToe(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	snap2 := q.GameSnapshot{}
+	snap2 := game.Snapshot{}
 	if err := proto.Unmarshal(raw2, &snap2); err != nil {
 		t.FailNow()
 	}

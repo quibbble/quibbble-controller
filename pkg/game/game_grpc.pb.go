@@ -4,10 +4,11 @@
 // - protoc             v6.32.0
 // source: game.proto
 
-package quibbble
+package game
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,10 +21,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Game_Init_FullMethodName        = "/quibbble.com.Game/Init"
-	Game_Load_FullMethodName        = "/quibbble.com.Game/Load"
-	Game_PlayAction_FullMethodName  = "/quibbble.com.Game/PlayAction"
-	Game_GetSnapshot_FullMethodName = "/quibbble.com.Game/GetSnapshot"
+	Game_Init_FullMethodName        = "/quibbble.com.game.Game/Init"
+	Game_Load_FullMethodName        = "/quibbble.com.game.Game/Load"
+	Game_PlayAction_FullMethodName  = "/quibbble.com.game.Game/PlayAction"
+	Game_GetSnapshot_FullMethodName = "/quibbble.com.game.Game/GetSnapshot"
 )
 
 // GameClient is the client API for Game service.
@@ -35,13 +36,13 @@ const (
 // looking to create their own game(s).
 type GameClient interface {
 	// Initialize the game for the first time.
-	Init(ctx context.Context, in *GameSnapshot, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Init(ctx context.Context, in *Snapshot, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Load an existing snapshot into the game.
-	Load(ctx context.Context, in *GameSnapshot, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Load(ctx context.Context, in *Snapshot, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Does an action on the game.
-	PlayAction(ctx context.Context, in *GameAction, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	PlayAction(ctx context.Context, in *Action, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Retrieve the current game snapshot from a specific team's point of view.
-	GetSnapshot(ctx context.Context, in *GameView, opts ...grpc.CallOption) (*GameSnapshot, error)
+	GetSnapshot(ctx context.Context, in *View, opts ...grpc.CallOption) (*Snapshot, error)
 }
 
 type gameClient struct {
@@ -52,7 +53,7 @@ func NewGameClient(cc grpc.ClientConnInterface) GameClient {
 	return &gameClient{cc}
 }
 
-func (c *gameClient) Init(ctx context.Context, in *GameSnapshot, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *gameClient) Init(ctx context.Context, in *Snapshot, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Game_Init_FullMethodName, in, out, cOpts...)
@@ -62,7 +63,7 @@ func (c *gameClient) Init(ctx context.Context, in *GameSnapshot, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *gameClient) Load(ctx context.Context, in *GameSnapshot, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *gameClient) Load(ctx context.Context, in *Snapshot, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Game_Load_FullMethodName, in, out, cOpts...)
@@ -72,7 +73,7 @@ func (c *gameClient) Load(ctx context.Context, in *GameSnapshot, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *gameClient) PlayAction(ctx context.Context, in *GameAction, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *gameClient) PlayAction(ctx context.Context, in *Action, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Game_PlayAction_FullMethodName, in, out, cOpts...)
@@ -82,9 +83,9 @@ func (c *gameClient) PlayAction(ctx context.Context, in *GameAction, opts ...grp
 	return out, nil
 }
 
-func (c *gameClient) GetSnapshot(ctx context.Context, in *GameView, opts ...grpc.CallOption) (*GameSnapshot, error) {
+func (c *gameClient) GetSnapshot(ctx context.Context, in *View, opts ...grpc.CallOption) (*Snapshot, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GameSnapshot)
+	out := new(Snapshot)
 	err := c.cc.Invoke(ctx, Game_GetSnapshot_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -101,13 +102,13 @@ func (c *gameClient) GetSnapshot(ctx context.Context, in *GameView, opts ...grpc
 // looking to create their own game(s).
 type GameServer interface {
 	// Initialize the game for the first time.
-	Init(context.Context, *GameSnapshot) (*emptypb.Empty, error)
+	Init(context.Context, *Snapshot) (*emptypb.Empty, error)
 	// Load an existing snapshot into the game.
-	Load(context.Context, *GameSnapshot) (*emptypb.Empty, error)
+	Load(context.Context, *Snapshot) (*emptypb.Empty, error)
 	// Does an action on the game.
-	PlayAction(context.Context, *GameAction) (*emptypb.Empty, error)
+	PlayAction(context.Context, *Action) (*emptypb.Empty, error)
 	// Retrieve the current game snapshot from a specific team's point of view.
-	GetSnapshot(context.Context, *GameView) (*GameSnapshot, error)
+	GetSnapshot(context.Context, *View) (*Snapshot, error)
 	mustEmbedUnimplementedGameServer()
 }
 
@@ -118,16 +119,16 @@ type GameServer interface {
 // pointer dereference when methods are called.
 type UnimplementedGameServer struct{}
 
-func (UnimplementedGameServer) Init(context.Context, *GameSnapshot) (*emptypb.Empty, error) {
+func (UnimplementedGameServer) Init(context.Context, *Snapshot) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Init not implemented")
 }
-func (UnimplementedGameServer) Load(context.Context, *GameSnapshot) (*emptypb.Empty, error) {
+func (UnimplementedGameServer) Load(context.Context, *Snapshot) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Load not implemented")
 }
-func (UnimplementedGameServer) PlayAction(context.Context, *GameAction) (*emptypb.Empty, error) {
+func (UnimplementedGameServer) PlayAction(context.Context, *Action) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayAction not implemented")
 }
-func (UnimplementedGameServer) GetSnapshot(context.Context, *GameView) (*GameSnapshot, error) {
+func (UnimplementedGameServer) GetSnapshot(context.Context, *View) (*Snapshot, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSnapshot not implemented")
 }
 func (UnimplementedGameServer) mustEmbedUnimplementedGameServer() {}
@@ -152,7 +153,7 @@ func RegisterGameServer(s grpc.ServiceRegistrar, srv GameServer) {
 }
 
 func _Game_Init_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GameSnapshot)
+	in := new(Snapshot)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -164,13 +165,13 @@ func _Game_Init_Handler(srv interface{}, ctx context.Context, dec func(interface
 		FullMethod: Game_Init_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GameServer).Init(ctx, req.(*GameSnapshot))
+		return srv.(GameServer).Init(ctx, req.(*Snapshot))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Game_Load_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GameSnapshot)
+	in := new(Snapshot)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -182,13 +183,13 @@ func _Game_Load_Handler(srv interface{}, ctx context.Context, dec func(interface
 		FullMethod: Game_Load_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GameServer).Load(ctx, req.(*GameSnapshot))
+		return srv.(GameServer).Load(ctx, req.(*Snapshot))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Game_PlayAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GameAction)
+	in := new(Action)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -200,13 +201,13 @@ func _Game_PlayAction_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: Game_PlayAction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GameServer).PlayAction(ctx, req.(*GameAction))
+		return srv.(GameServer).PlayAction(ctx, req.(*Action))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Game_GetSnapshot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GameView)
+	in := new(View)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -218,7 +219,7 @@ func _Game_GetSnapshot_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: Game_GetSnapshot_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GameServer).GetSnapshot(ctx, req.(*GameView))
+		return srv.(GameServer).GetSnapshot(ctx, req.(*View))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -227,7 +228,7 @@ func _Game_GetSnapshot_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Game_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "quibbble.com.Game",
+	ServiceName: "quibbble.com.game.Game",
 	HandlerType: (*GameServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

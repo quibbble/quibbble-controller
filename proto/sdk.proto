@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package quibbble.com;
-option go_package = "/quibbble";
+package quibbble.com.sdk;
+option go_package = "/sdk";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
@@ -14,16 +14,16 @@ import "game.proto";
 // provide users with an SDK for interacting with Quibbble APIs.
 service SDK {
     // Retrieves the current state of the game from the player's viewpoint.
-    rpc GetSnapshot(Player) returns (SDKSnapshot) {}
+    rpc GetSnapshot(Player) returns (Snapshot) {}
 
     // Streams all updates to the game from the player's viewpoint.
-    rpc StreamSnapshot(Player) returns (stream SDKSnapshot) {}
+    rpc StreamSnapshot(Player) returns (stream Snapshot) {}
 
     // Allows a player to join a team.
     rpc JoinTeam(Player) returns (google.protobuf.Empty) {}
 
     // Allows a player to play an action.
-    rpc PlayAction(SDKAction) returns (google.protobuf.Empty) {}
+    rpc PlayAction(Action) returns (google.protobuf.Empty) {}
 
     // Allows a player to undo the last action if they were the ones to play the action.
     rpc UndoAction(Player) returns (google.protobuf.Empty) {}
@@ -47,8 +47,8 @@ message Player {
     bool online = 4;
 }
 
-// SDKSnapshot is a snapshot of the SDK server.
-message SDKSnapshot {
+// Snapshot is a snapshot of the SDK server.
+message Snapshot {
     // When the game was created.
     google.protobuf.Timestamp created_at = 1;
 
@@ -56,17 +56,17 @@ message SDKSnapshot {
     repeated Player players = 2;
 
     // The current game snapshot.
-    GameSnapshot snapshot = 3;
+    game.Snapshot snapshot = 3;
 
     // The list of all past actions done on the game.
-    repeated SDKAction history = 4;
+    repeated Action history = 4;
 }
 
-// SDKAction is an action done by a player.
-message SDKAction {
+// Action is an action done by a player.
+message Action {
     // The player doing the action.
     Player player = 1;
 
     // The action being done on the game.
-    GameAction action = 2;
+    game.Action action = 2;
 }

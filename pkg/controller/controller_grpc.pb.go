@@ -4,10 +4,11 @@
 // - protoc             v6.32.0
 // source: controller.proto
 
-package quibbble
+package controller
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,10 +21,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Controller_Create_FullMethodName      = "/quibbble.com.Controller/Create"
-	Controller_Delete_FullMethodName      = "/quibbble.com.Controller/Delete"
-	Controller_Store_FullMethodName       = "/quibbble.com.Controller/Store"
-	Controller_GetActivity_FullMethodName = "/quibbble.com.Controller/GetActivity"
+	Controller_Create_FullMethodName      = "/quibbble.com.controller.Controller/Create"
+	Controller_Delete_FullMethodName      = "/quibbble.com.controller.Controller/Delete"
+	Controller_Store_FullMethodName       = "/quibbble.com.controller.Controller/Store"
+	Controller_GetActivity_FullMethodName = "/quibbble.com.controller.Controller/GetActivity"
 )
 
 // ControllerClient is the client API for Controller service.
@@ -227,7 +228,7 @@ func _Controller_GetActivity_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Controller_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "quibbble.com.Controller",
+	ServiceName: "quibbble.com.controller.Controller",
 	HandlerType: (*ControllerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

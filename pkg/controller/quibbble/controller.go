@@ -3,11 +3,11 @@ package controller
 import (
 	"context"
 
-	q "github.com/quibbble/quibbble-controller/pkg/quibbble"
+	"github.com/quibbble/quibbble-controller/pkg/controller"
 )
 
 type Controller struct {
-	q.UnimplementedControllerServer
+	controller.UnimplementedControllerServer
 	ctx context.Context
 }
 
@@ -18,7 +18,7 @@ func (c *Controller) start() {
 	// create a watching process that cleans stale games
 }
 
-func (c *Controller) Create(gk *q.GameKey) error {
+func (c *Controller) Create(gk *controller.GameKey) error {
 	// TODO
 	// Check to ensure game doesn't already exist
 	// create ingress + service
@@ -26,7 +26,7 @@ func (c *Controller) Create(gk *q.GameKey) error {
 	return nil
 }
 
-func (c *Controller) Delete(gk *q.GameKey) error {
+func (c *Controller) Delete(gk *controller.GameKey) error {
 	// TODO
 	// look for game with matching name and kind
 	// delete ingress to prevent anyone from connecting anymore
@@ -36,7 +36,7 @@ func (c *Controller) Delete(gk *q.GameKey) error {
 	return nil
 }
 
-func (c *Controller) Store(gk *q.GameKey) error {
+func (c *Controller) Store(gk *controller.GameKey) error {
 	// TODO
 	// if storage is enabled
 	// look for pod with matching name and kind
@@ -44,7 +44,7 @@ func (c *Controller) Store(gk *q.GameKey) error {
 	return nil
 }
 
-func (c *Controller) GetActivity() (*q.Activity, error) {
+func (c *Controller) GetActivity() (*controller.Activity, error) {
 	// TODO
 	// lookup all pods with quibbble labels/annotations
 	// get current game snapshot and determine how many players are active

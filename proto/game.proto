@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package quibbble.com;
-option go_package = "/quibbble";
+package quibbble.com.game;
+option go_package = "/game";
 
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
@@ -11,20 +11,20 @@ import "google/protobuf/empty.proto";
 // looking to create their own game(s).
 service Game {
     // Initialize the game for the first time.
-    rpc Init(GameSnapshot) returns (google.protobuf.Empty) {}
+    rpc Init(Snapshot) returns (google.protobuf.Empty) {}
 
     // Load an existing snapshot into the game.
-    rpc Load(GameSnapshot) returns (google.protobuf.Empty) {}
+    rpc Load(Snapshot) returns (google.protobuf.Empty) {}
 
     // Does an action on the game.
-    rpc PlayAction(GameAction) returns (google.protobuf.Empty) {}
+    rpc PlayAction(Action) returns (google.protobuf.Empty) {}
 
     // Retrieve the current game snapshot from a specific team's point of view.
-    rpc GetSnapshot(GameView) returns (GameSnapshot) {}
+    rpc GetSnapshot(View) returns (Snapshot) {}
 }
 
-// GameAction defines a move someone can make that modifies the game state.
-message GameAction {
+// Action defines a move someone can make that modifies the game state.
+message Action {
     // The team doing the action.
     string team = 1;
 
@@ -35,8 +35,8 @@ message GameAction {
     optional google.protobuf.Any spec = 3;
 }
 
-// GameSnapshot defines the game state at a specific point in time.
-message GameSnapshot {
+// Snapshot defines the game state at a specific point in time.
+message Snapshot {
     // A seed used to generate deterministic randomness in the game.
     int64 seed = 1;
 
@@ -53,8 +53,8 @@ message GameSnapshot {
     optional google.protobuf.Any spec = 5;
 }
 
-// GameView defines who is looking at the game.
-message GameView {
+// View defines who is looking at the game.
+message View {
     // The team requesting the game snapshot. 
     string team = 1;
 }

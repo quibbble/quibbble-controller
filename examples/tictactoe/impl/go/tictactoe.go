@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"slices"
 
-	q "github.com/quibbble/quibbble-controller/pkg/quibbble"
+	"github.com/quibbble/quibbble-controller/pkg/game"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -19,11 +19,11 @@ const (
 )
 
 type TicTacToe struct {
-	q.UnimplementedGameServer
-	*q.GameSnapshot
+	game.UnimplementedGameServer
+	*game.Snapshot
 }
 
-func validateSnapshot(s *q.GameSnapshot) error {
+func validateSnapshot(s *game.Snapshot) error {
 	if len(s.Teams) != 2 {
 		return fmt.Errorf("only two teams are allow")
 	}
@@ -36,11 +36,11 @@ func validateSnapshot(s *q.GameSnapshot) error {
 	return nil
 }
 
-func (t *TicTacToe) Init(c context.Context, s *q.GameSnapshot) (*emptypb.Empty, error) {
+func (t *TicTacToe) Init(c context.Context, s *game.Snapshot) (*emptypb.Empty, error) {
 	if err := validateSnapshot(s); err != nil {
 		return nil, err
 	}
-	t.GameSnapshot = &q.GameSnapshot{
+	t.Snapshot = &game.Snapshot{
 		Teams: s.Teams,
 		Turn:  s.Turn,
 	}
@@ -57,15 +57,15 @@ func (t *TicTacToe) Init(c context.Context, s *q.GameSnapshot) (*emptypb.Empty, 
 	return nil, nil
 }
 
-func (t *TicTacToe) Load(c context.Context, s *q.GameSnapshot) (*emptypb.Empty, error) {
+func (t *TicTacToe) Load(c context.Context, s *game.Snapshot) (*emptypb.Empty, error) {
 	if err := validateSnapshot(s); err != nil {
 		return nil, err
 	}
-	t.GameSnapshot = s
+	t.Snapshot = s
 	return nil, nil
 }
 
-func (t *TicTacToe) PlayAction(c context.Context, a *q.GameAction) (*emptypb.Empty, error) {
+func (t *TicTacToe) PlayAction(c context.Context, a *game.Action) (*emptypb.Empty, error) {
 	switch a.Kind {
 	case MarkAction:
 		markAction := TicTacToeMarkActionSpec{}
@@ -73,7 +73,7 @@ func (t *TicTacToe) PlayAction(c context.Context, a *q.GameAction) (*emptypb.Emp
 			return nil, err
 		}
 		snapshotSpec := TicTacToeSnapshotSpec{}
-		if err := t.GameSnapshot.Spec.UnmarshalTo(&snapshotSpec); err != nil {
+		if err := t.Snapshot.Spec.UnmarshalTo(&snapshotSpec); err != nil {
 			return nil, err
 		}
 
@@ -119,7 +119,7 @@ func (t *TicTacToe) PlayAction(c context.Context, a *q.GameAction) (*emptypb.Emp
 			winner = snapshotSpec.Row[2].Column[0]
 		}
 		if winner != NilTeam {
-			t.GameSnapshot.Winners = []string{winner}
+			t.Snapshot.Winners = []string{winner}
 		}
 
 		// check for draw
@@ -144,6 +144,6 @@ func (t *TicTacToe) PlayAction(c context.Context, a *q.GameAction) (*emptypb.Emp
 	return nil, nil
 }
 
-func (t *TicTacToe) GetSnapshot(c context.Context, s *q.GameView) (*q.GameSnapshot, error) {
-	return t.GameSnapshot, nil
+func (t *TicTacToe) GetSnapshot(c context.Context, s *game.View) (*game.Snapshot, error) {
+	return t.Snapshot, nil
 }

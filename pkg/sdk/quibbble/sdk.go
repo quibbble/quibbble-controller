@@ -3,11 +3,11 @@ package sdk
 import (
 	"context"
 
-	q "github.com/quibbble/quibbble-controller/pkg/quibbble"
+	"github.com/quibbble/quibbble-controller/pkg/sdk"
 )
 
 // TODO
 type SDKServer struct {
-	q.UnimplementedSDKServer
+	sdk.UnimplementedSDKServer
 	ctx context.Context
 }

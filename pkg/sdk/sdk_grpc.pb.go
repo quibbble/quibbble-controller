@@ -4,10 +4,11 @@
 // - protoc             v6.32.0
 // source: sdk.proto
 
-package quibbble
+package sdk
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,12 +21,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SDK_GetSnapshot_FullMethodName    = "/quibbble.com.SDK/GetSnapshot"
-	SDK_StreamSnapshot_FullMethodName = "/quibbble.com.SDK/StreamSnapshot"
-	SDK_JoinTeam_FullMethodName       = "/quibbble.com.SDK/JoinTeam"
-	SDK_PlayAction_FullMethodName     = "/quibbble.com.SDK/PlayAction"
-	SDK_UndoAction_FullMethodName     = "/quibbble.com.SDK/UndoAction"
-	SDK_ResetGame_FullMethodName      = "/quibbble.com.SDK/ResetGame"
+	SDK_GetSnapshot_FullMethodName    = "/quibbble.com.sdk.SDK/GetSnapshot"
+	SDK_StreamSnapshot_FullMethodName = "/quibbble.com.sdk.SDK/StreamSnapshot"
+	SDK_JoinTeam_FullMethodName       = "/quibbble.com.sdk.SDK/JoinTeam"
+	SDK_PlayAction_FullMethodName     = "/quibbble.com.sdk.SDK/PlayAction"
+	SDK_UndoAction_FullMethodName     = "/quibbble.com.sdk.SDK/UndoAction"
+	SDK_ResetGame_FullMethodName      = "/quibbble.com.sdk.SDK/ResetGame"
 )
 
 // SDKClient is the client API for SDK service.
@@ -39,13 +40,13 @@ const (
 // provide users with an SDK for interacting with Quibbble APIs.
 type SDKClient interface {
 	// Retrieves the current state of the game from the player's viewpoint.
-	GetSnapshot(ctx context.Context, in *Player, opts ...grpc.CallOption) (*SDKSnapshot, error)
+	GetSnapshot(ctx context.Context, in *Player, opts ...grpc.CallOption) (*Snapshot, error)
 	// Streams all updates to the game from the player's viewpoint.
-	StreamSnapshot(ctx context.Context, in *Player, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SDKSnapshot], error)
+	StreamSnapshot(ctx context.Context, in *Player, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Snapshot], error)
 	// Allows a player to join a team.
 	JoinTeam(ctx context.Context, in *Player, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Allows a player to play an action.
-	PlayAction(ctx context.Context, in *SDKAction, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	PlayAction(ctx context.Context, in *Action, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Allows a player to undo the last action if they were the ones to play the action.
 	UndoAction(ctx context.Context, in *Player, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Allows a player to reset the entire game.
@@ -60,9 +61,9 @@ func NewSDKClient(cc grpc.ClientConnInterface) SDKClient {
 	return &sDKClient{cc}
 }
 
-func (c *sDKClient) GetSnapshot(ctx context.Context, in *Player, opts ...grpc.CallOption) (*SDKSnapshot, error) {
+func (c *sDKClient) GetSnapshot(ctx context.Context, in *Player, opts ...grpc.CallOption) (*Snapshot, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SDKSnapshot)
+	out := new(Snapshot)
 	err := c.cc.Invoke(ctx, SDK_GetSnapshot_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -70,13 +71,13 @@ func (c *sDKClient) GetSnapshot(ctx context.Context, in *Player, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *sDKClient) StreamSnapshot(ctx context.Context, in *Player, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SDKSnapshot], error) {
+func (c *sDKClient) StreamSnapshot(ctx context.Context, in *Player, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Snapshot], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &SDK_ServiceDesc.Streams[0], SDK_StreamSnapshot_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[Player, SDKSnapshot]{ClientStream: stream}
+	x := &grpc.GenericClientStream[Player, Snapshot]{ClientStream: stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -87,7 +88,7 @@ func (c *sDKClient) StreamSnapshot(ctx context.Context, in *Player, opts ...grpc
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type SDK_StreamSnapshotClient = grpc.ServerStreamingClient[SDKSnapshot]
+type SDK_StreamSnapshotClient = grpc.ServerStreamingClient[Snapshot]
 
 func (c *sDKClient) JoinTeam(ctx context.Context, in *Player, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -99,7 +100,7 @@ func (c *sDKClient) JoinTeam(ctx context.Context, in *Player, opts ...grpc.CallO
 	return out, nil
 }
 
-func (c *sDKClient) PlayAction(ctx context.Context, in *SDKAction, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *sDKClient) PlayAction(ctx context.Context, in *Action, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, SDK_PlayAction_FullMethodName, in, out, cOpts...)
@@ -140,13 +141,13 @@ func (c *sDKClient) ResetGame(ctx context.Context, in *Player, opts ...grpc.Call
 // provide users with an SDK for interacting with Quibbble APIs.
 type SDKServer interface {
 	// Retrieves the current state of the game from the player's viewpoint.
-	GetSnapshot(context.Context, *Player) (*SDKSnapshot, error)
+	GetSnapshot(context.Context, *Player) (*Snapshot, error)
 	// Streams all updates to the game from the player's viewpoint.
-	StreamSnapshot(*Player, grpc.ServerStreamingServer[SDKSnapshot]) error
+	StreamSnapshot(*Player, grpc.ServerStreamingServer[Snapshot]) error
 	// Allows a player to join a team.
 	JoinTeam(context.Context, *Player) (*emptypb.Empty, error)
 	// Allows a player to play an action.
-	PlayAction(context.Context, *SDKAction) (*emptypb.Empty, error)
+	PlayAction(context.Context, *Action) (*emptypb.Empty, error)
 	// Allows a player to undo the last action if they were the ones to play the action.
 	UndoAction(context.Context, *Player) (*emptypb.Empty, error)
 	// Allows a player to reset the entire game.
@@ -161,16 +162,16 @@ type SDKServer interface {
 // pointer dereference when methods are called.
 type UnimplementedSDKServer struct{}
 
-func (UnimplementedSDKServer) GetSnapshot(context.Context, *Player) (*SDKSnapshot, error) {
+func (UnimplementedSDKServer) GetSnapshot(context.Context, *Player) (*Snapshot, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSnapshot not implemented")
 }
-func (UnimplementedSDKServer) StreamSnapshot(*Player, grpc.ServerStreamingServer[SDKSnapshot]) error {
+func (UnimplementedSDKServer) StreamSnapshot(*Player, grpc.ServerStreamingServer[Snapshot]) error {
 	return status.Errorf(codes.Unimplemented, "method StreamSnapshot not implemented")
 }
 func (UnimplementedSDKServer) JoinTeam(context.Context, *Player) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method JoinTeam not implemented")
 }
-func (UnimplementedSDKServer) PlayAction(context.Context, *SDKAction) (*emptypb.Empty, error) {
+func (UnimplementedSDKServer) PlayAction(context.Context, *Action) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayAction not implemented")
 }
 func (UnimplementedSDKServer) UndoAction(context.Context, *Player) (*emptypb.Empty, error) {
@@ -223,11 +224,11 @@ func _SDK_StreamSnapshot_Handler(srv interface{}, stream grpc.ServerStream) erro
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(SDKServer).StreamSnapshot(m, &grpc.GenericServerStream[Player, SDKSnapshot]{ServerStream: stream})
+	return srv.(SDKServer).StreamSnapshot(m, &grpc.GenericServerStream[Player, Snapshot]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type SDK_StreamSnapshotServer = grpc.ServerStreamingServer[SDKSnapshot]
+type SDK_StreamSnapshotServer = grpc.ServerStreamingServer[Snapshot]
 
 func _SDK_JoinTeam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Player)
@@ -248,7 +249,7 @@ func _SDK_JoinTeam_Handler(srv interface{}, ctx context.Context, dec func(interf
 }
 
 func _SDK_PlayAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SDKAction)
+	in := new(Action)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -260,7 +261,7 @@ func _SDK_PlayAction_Handler(srv interface{}, ctx context.Context, dec func(inte
 		FullMethod: SDK_PlayAction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SDKServer).PlayAction(ctx, req.(*SDKAction))
+		return srv.(SDKServer).PlayAction(ctx, req.(*Action))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -305,7 +306,7 @@ func _SDK_ResetGame_Handler(srv interface{}, ctx context.Context, dec func(inter
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var SDK_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "quibbble.com.SDK",
+	ServiceName: "quibbble.com.sdk.SDK",
 	HandlerType: (*SDKServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -7,17 +7,17 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	q "github.com/quibbble/quibbble-controller/pkg/quibbble"
+	"github.com/quibbble/quibbble-controller/pkg/sdk"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 // SnapshotHandler does some work whenever a game snapshot is passed.
-type SnapshotHandler func(gs *q.SDKSnapshot)
+type SnapshotHandler func(gs *sdk.Snapshot)
 
 // SDK is a simple wrapper around the SDK Client.
 type SDK struct {
-	client q.SDKClient
+	client sdk.SDKClient
 	ctx    context.Context
 }
 
@@ -39,17 +39,17 @@ func NewSDK() (*SDK, error) {
 	}
 
 	return &SDK{
-		client: q.NewSDKClient(conn),
+		client: sdk.NewSDKClient(conn),
 		ctx:    context.Background(),
 	}, nil
 }
 
-func (s *SDK) GetSnapshot(player *q.Player) (*q.SDKSnapshot, error) {
+func (s *SDK) GetSnapshot(player *sdk.Player) (*sdk.Snapshot, error) {
 	snapshot, err := s.client.GetSnapshot(s.ctx, player)
 	return snapshot, errors.Wrap(err, "could not get game snapshot")
 }
 
-func (s *SDK) StreamSnapshot(player *q.Player, f SnapshotHandler) error {
+func (s *SDK) StreamSnapshot(player *sdk.Player, f SnapshotHandler) error {
 	stream, err := s.client.StreamSnapshot(s.ctx, player)
 	if err != nil {
 		return errors.Wrap(err, "could not stream the game")
@@ -68,22 +68,22 @@ func (s *SDK) StreamSnapshot(player *q.Player, f SnapshotHandler) error {
 	return nil
 }
 
-func (s *SDK) JoinTeam(player *q.Player) error {
+func (s *SDK) JoinTeam(player *sdk.Player) error {
 	_, err := s.client.JoinTeam(s.ctx, player)
 	return errors.Wrap(err, "failed to join team")
 }
 
-func (s *SDK) PlayAction(playerAction *q.SDKAction) error {
+func (s *SDK) PlayAction(playerAction *sdk.Action) error {
 	_, err := s.client.PlayAction(s.ctx, playerAction)
 	return errors.Wrap(err, "failed to play action")
 }
 
-func (s *SDK) UndoAction(player *q.Player) error {
+func (s *SDK) UndoAction(player *sdk.Player) error {
 	_, err := s.client.UndoAction(s.ctx, player)
 	return errors.Wrap(err, "failed to undo action")
 }
 
-func (s *SDK) ResetGame(player *q.Player) error {
+func (s *SDK) ResetGame(player *sdk.Player) error {
 	_, err := s.client.ResetGame(s.ctx, player)
 	return errors.Wrap(err, "failed to reset game")
 }

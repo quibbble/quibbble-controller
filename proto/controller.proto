@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package quibbble.com;
-option go_package = "/quibbble";
+package quibbble.com.controller;
+option go_package = "/controller";
 
 import "google/protobuf/empty.proto";
 import "game.proto";
@@ -32,7 +32,7 @@ message GameKey {
     string Name = 2;
 
     // A snapshot only required when creating a new game instance.
-    optional GameSnapshot snapshot = 3;
+    optional game.Snapshot snapshot = 3;
 }
 
 message Activity {
