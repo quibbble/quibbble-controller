@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . .
 
 # Build binary
-RUN GOOS=linux go build -a -o controller cmd/controller/main.go
+RUN GOOS=linux go build -a -o server cmd/sdk/main.go
 
 # Build image
 FROM scratch
@@ -19,8 +19,8 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifi
 
 # Copy config and binary
 WORKDIR /root/
-COPY --from=builder /app/controller .
+COPY --from=builder /app/sdk .
 
 # Entry and port
-CMD ["./controller"]
+CMD ["./sdk"]
 EXPOSE 8080

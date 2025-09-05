@@ -1,75 +1,72 @@
 syntax = "proto3";
 
 package quibbble.com;
-option go_package = "./sdk";
+option go_package = "/quibbble";
 
-import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "game.proto";
 
 // gRPC definition for the SDK Server.
-// This SDK service should be implemented by developers
-// looking to create their own game(s).
+// This service sits in front of the Game Server and 
+// handles all player connections and networking.
+// Wrappers are created around the SDK client to
+// provide users with an SDK for interacting with Quibbble APIs.
 service SDK {
-    // Initialize the game.
-    rpc InitGame(InitGameRequest) returns (google.protobuf.Empty) {}
-    // Perform an action on the game.
-    rpc DoAction(ActionRequest) returns (google.protobuf.Empty) {}
-    // Retrieve the current game snapshot from a specific team's point of view.
-    rpc GetSnapshot(SnapshotRequest) returns (SnapshotResponse) {}
+    // Retrieves the current state of the game from the player's viewpoint.
+    rpc GetSnapshot(Player) returns (SDKSnapshot) {}
+
+    // Streams all updates to the game from the player's viewpoint.
+    rpc StreamSnapshot(Player) returns (stream SDKSnapshot) {}
+
+    // Allows a player to join a team.
+    rpc JoinTeam(Player) returns (google.protobuf.Empty) {}
+
+    // Allows a player to play an action.
+    rpc PlayAction(SDKAction) returns (google.protobuf.Empty) {}
+
+    // Allows a player to undo the last action if they were the ones to play the action.
+    rpc UndoAction(Player) returns (google.protobuf.Empty) {}
+
+    // Allows a player to reset the entire game.
+    rpc ResetGame(Player) returns (google.protobuf.Empty) {}
 }
 
-message InitGameRequest {
-    // The initial state of the game. 
-    Snapshot snapshot = 1;
+// Player is someone playing the game.
+message Player {
+    // The unique id of the player.
+    string id = 1;
+
+    // The display name of the player.
+    string name = 2;
+
+    // The team the player is on.
+    string team = 3;
+
+    // Whether or not the player is currently connected.
+    bool online = 4;
 }
 
-message ActionRequest {
-    // The action to perform on the game.
-    Action action = 1;
+// SDKSnapshot is a snapshot of the SDK server.
+message SDKSnapshot {
+    // When the game was created.
+    google.protobuf.Timestamp created_at = 1;
+
+    // List of all players that have ever joined the game.
+    repeated Player players = 2;
+
+    // The current game snapshot.
+    GameSnapshot snapshot = 3;
+
+    // The list of all past actions done on the game.
+    repeated SDKAction history = 4;
 }
 
-message SnapshotRequest {
-    // The team requesting the snapshot. 
-    string team = 1;
-}
+// SDKAction is an action done by a player.
+message SDKAction {
+    // The player doing the action.
+    Player player = 1;
 
-message SnapshotResponse {
-    // The current state of the game. 
-    Snapshot snapshot = 1;
-}
-
-message Action {
-    // The team performing the action.
-    string team = 1;
-    // The kind of action to perform.
-    string kind = 2;
-    // Any additional information needed to perform the action.
-    optional google.protobuf.Any spec = 3;
-}
-
-message Snapshot {
-
-    // -- Required fields needed when playing any game --
-
-    // The kind of game i.e. tictactoe, chess, etc. 
-    string kind = 1;
-    // The list of all teams playing the game. The first team in the list should always go first.
-    repeated string teams = 2;
-    // The team who is currently active. 
-    string turn = 3;
-    // The list of teams that have won the game.
-    repeated string winners = 4;
-    // The list of all past actions played to reach this current state.
-    repeated Action history = 5;
-
-    // -- Optional fields that may make development easier --
-
-    // A seed used to generate any deterministic randomness in the game.
-    optional int64 seed = 6;
-    // Human readable message describing what action(s) to take next.
-    optional string message = 7;
-    // The list of all possible actions a team can currently take.
-    repeated Action actions = 8;
-    // Any additional information about the state of the game i.e. board, decks, hands, etc.
-    optional google.protobuf.Any spec = 9;
+    // The action being done on the game.
+    GameAction action = 2;
 }

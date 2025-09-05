@@ -1,56 +1,44 @@
 syntax = "proto3";
 
 package quibbble.com;
-option go_package = "./controller";
+option go_package = "/quibbble";
 
 import "google/protobuf/empty.proto";
-import "./sdk.proto";
+import "game.proto";
 
 // gRPC definition for the Quibbble Controller.
 // This service controls the complete lifecycle of all games.
 service Controller {
     // Creates a new game instance. If game storage is enabled and the game 
     // exists in storage then load that game instead of creating a new game. 
-    rpc CreateGame(CreateRequest) returns (google.protobuf.Empty) {}
+    rpc Create(GameKey) returns (google.protobuf.Empty) {}
 
-    // Deletes a game.
-    rpc DeleteGame(DeleteRequest) returns (google.protobuf.Empty) {}
+    // Deletes an active game if it exists.
+    rpc Delete(GameKey) returns (google.protobuf.Empty) {}
+
+    // Finds the active game if it exists and stores the game in storage.
+    rpc Store(GameKey) returns (google.protobuf.Empty) {}
 
     // Retrieves data about active games and players.
-    rpc GetActivity(google.protobuf.Empty) returns (ActivityResponse) {}
-
-    // Stores the snapshot in storage.
-    rpc StoreSnapshot(StoreRequest) returns (google.protobuf.Empty) {}
+    rpc GetActivity(google.protobuf.Empty) returns (Activity) {}
 }
 
-message CreateRequest {
-    // The kind of game.
-    string kind = 1;
+// GameKey defines the fields needed to lookup a game.
+message GameKey {
+    // The kind of game being played i.e. chess or carcassonne.
+    string Kind = 1;
+
     // The name of the specific game instance.
-    string name = 2;
-    // The teams playing the game.
-    repeated string teams = 3;
+    string Name = 2;
+
+    // A snapshot only required when creating a new game instance.
+    optional GameSnapshot snapshot = 3;
 }
 
-message DeleteRequest {
-    // The kind of game.
-    string kind = 1;
-    // The name of the specific game instance.
-    string name = 2;
-}
-
-message ActivityResponse {
+message Activity {
     // Map from game kind to active game count.
     map<string, int64> active_games = 1;
+
     // Map from game kind to active player count.
     map<string, int64> active_players = 2;
-}
-
-message StoreRequest {
-    // The kind of game.
-    string kind = 1;
-    // The name of the specific game instance.
-    string name = 2;
-    // The game snapshot.
-    Snapshot snapshot = 1;
 }
