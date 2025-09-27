@@ -7,14 +7,13 @@
 package controller
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
-	game "github.com/quibbble/quibbble-controller/pkg/game"
+	sdk "github.com/quibbble/quibbble-controller/pkg/proto/sdk"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -27,12 +26,14 @@ const (
 // GameKey defines the fields needed to lookup a game.
 type GameKey struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The kind of game being played i.e. chess or carcassonne.
-	Kind string `protobuf:"bytes,1,opt,name=Kind,proto3" json:"Kind,omitempty"`
+	// The image repo to pull i.e. quibbble/chess or quibbble/carcassonne.
+	Repository string `protobuf:"bytes,1,opt,name=Repository,proto3" json:"Repository,omitempty"`
+	// The image tag.
+	Tag string `protobuf:"bytes,2,opt,name=Tag,proto3" json:"Tag,omitempty"`
 	// The name of the specific game instance.
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
 	// A snapshot only required when creating a new game instance.
-	Snapshot      *game.Snapshot `protobuf:"bytes,3,opt,name=snapshot,proto3,oneof" json:"snapshot,omitempty"`
+	Snapshot      *sdk.Snapshot `protobuf:"bytes,4,opt,name=snapshot,proto3,oneof" json:"snapshot,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -67,9 +68,16 @@ func (*GameKey) Descriptor() ([]byte, []int) {
 	return file_controller_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GameKey) GetKind() string {
+func (x *GameKey) GetRepository() string {
 	if x != nil {
-		return x.Kind
+		return x.Repository
+	}
+	return ""
+}
+
+func (x *GameKey) GetTag() string {
+	if x != nil {
+		return x.Tag
 	}
 	return ""
 }
@@ -81,7 +89,7 @@ func (x *GameKey) GetName() string {
 	return ""
 }
 
-func (x *GameKey) GetSnapshot() *game.Snapshot {
+func (x *GameKey) GetSnapshot() *sdk.Snapshot {
 	if x != nil {
 		return x.Snapshot
 	}
@@ -146,12 +154,14 @@ var File_controller_proto protoreflect.FileDescriptor
 
 const file_controller_proto_rawDesc = "" +
 	"\n" +
-	"\x10controller.proto\x12\x17quibbble.com.controller\x1a\x1bgoogle/protobuf/empty.proto\x1a\n" +
-	"game.proto\"|\n" +
-	"\aGameKey\x12\x12\n" +
-	"\x04Kind\x18\x01 \x01(\tR\x04Kind\x12\x12\n" +
-	"\x04Name\x18\x02 \x01(\tR\x04Name\x12<\n" +
-	"\bsnapshot\x18\x03 \x01(\v2\x1b.quibbble.com.game.SnapshotH\x00R\bsnapshot\x88\x01\x01B\v\n" +
+	"\x10controller.proto\x12\x17quibbble.com.controller\x1a\x1bgoogle/protobuf/empty.proto\x1a\tsdk.proto\"\x99\x01\n" +
+	"\aGameKey\x12\x1e\n" +
+	"\n" +
+	"Repository\x18\x01 \x01(\tR\n" +
+	"Repository\x12\x10\n" +
+	"\x03Tag\x18\x02 \x01(\tR\x03Tag\x12\x12\n" +
+	"\x04Name\x18\x03 \x01(\tR\x04Name\x12;\n" +
+	"\bsnapshot\x18\x04 \x01(\v2\x1a.quibbble.com.sdk.SnapshotH\x00R\bsnapshot\x88\x01\x01B\v\n" +
 	"\t_snapshot\"\xc0\x02\n" +
 	"\bActivity\x12U\n" +
 	"\factive_games\x18\x01 \x03(\v22.quibbble.com.controller.Activity.ActiveGamesEntryR\vactiveGames\x12[\n" +
@@ -161,12 +171,14 @@ const file_controller_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a@\n" +
 	"\x12ActivePlayersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x012\xa9\x02\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x012\xb5\x02\n" +
 	"\n" +
-	"Controller\x12D\n" +
-	"\x06Create\x12 .quibbble.com.controller.GameKey\x1a\x16.google.protobuf.Empty\"\x00\x12D\n" +
-	"\x06Delete\x12 .quibbble.com.controller.GameKey\x1a\x16.google.protobuf.Empty\"\x00\x12C\n" +
-	"\x05Store\x12 .quibbble.com.controller.GameKey\x1a\x16.google.protobuf.Empty\"\x00\x12J\n" +
+	"Controller\x12H\n" +
+	"\n" +
+	"CreateGame\x12 .quibbble.com.controller.GameKey\x1a\x16.google.protobuf.Empty\"\x00\x12H\n" +
+	"\n" +
+	"DeleteGame\x12 .quibbble.com.controller.GameKey\x1a\x16.google.protobuf.Empty\"\x00\x12G\n" +
+	"\tStoreGame\x12 .quibbble.com.controller.GameKey\x1a\x16.google.protobuf.Empty\"\x00\x12J\n" +
 	"\vGetActivity\x12\x16.google.protobuf.Empty\x1a!.quibbble.com.controller.Activity\"\x00B\rZ\v/controllerb\x06proto3"
 
 var (
@@ -187,20 +199,20 @@ var file_controller_proto_goTypes = []any{
 	(*Activity)(nil),      // 1: quibbble.com.controller.Activity
 	nil,                   // 2: quibbble.com.controller.Activity.ActiveGamesEntry
 	nil,                   // 3: quibbble.com.controller.Activity.ActivePlayersEntry
-	(*game.Snapshot)(nil), // 4: quibbble.com.game.Snapshot
+	(*sdk.Snapshot)(nil),  // 4: quibbble.com.sdk.Snapshot
 	(*emptypb.Empty)(nil), // 5: google.protobuf.Empty
 }
 var file_controller_proto_depIdxs = []int32{
-	4, // 0: quibbble.com.controller.GameKey.snapshot:type_name -> quibbble.com.game.Snapshot
+	4, // 0: quibbble.com.controller.GameKey.snapshot:type_name -> quibbble.com.sdk.Snapshot
 	2, // 1: quibbble.com.controller.Activity.active_games:type_name -> quibbble.com.controller.Activity.ActiveGamesEntry
 	3, // 2: quibbble.com.controller.Activity.active_players:type_name -> quibbble.com.controller.Activity.ActivePlayersEntry
-	0, // 3: quibbble.com.controller.Controller.Create:input_type -> quibbble.com.controller.GameKey
-	0, // 4: quibbble.com.controller.Controller.Delete:input_type -> quibbble.com.controller.GameKey
-	0, // 5: quibbble.com.controller.Controller.Store:input_type -> quibbble.com.controller.GameKey
+	0, // 3: quibbble.com.controller.Controller.CreateGame:input_type -> quibbble.com.controller.GameKey
+	0, // 4: quibbble.com.controller.Controller.DeleteGame:input_type -> quibbble.com.controller.GameKey
+	0, // 5: quibbble.com.controller.Controller.StoreGame:input_type -> quibbble.com.controller.GameKey
 	5, // 6: quibbble.com.controller.Controller.GetActivity:input_type -> google.protobuf.Empty
-	5, // 7: quibbble.com.controller.Controller.Create:output_type -> google.protobuf.Empty
-	5, // 8: quibbble.com.controller.Controller.Delete:output_type -> google.protobuf.Empty
-	5, // 9: quibbble.com.controller.Controller.Store:output_type -> google.protobuf.Empty
+	5, // 7: quibbble.com.controller.Controller.CreateGame:output_type -> google.protobuf.Empty
+	5, // 8: quibbble.com.controller.Controller.DeleteGame:output_type -> google.protobuf.Empty
+	5, // 9: quibbble.com.controller.Controller.StoreGame:output_type -> google.protobuf.Empty
 	1, // 10: quibbble.com.controller.Controller.GetActivity:output_type -> quibbble.com.controller.Activity
 	7, // [7:11] is the sub-list for method output_type
 	3, // [3:7] is the sub-list for method input_type

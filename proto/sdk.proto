@@ -42,24 +42,21 @@ message Player {
 
     // The team the player is on.
     string team = 3;
-
-    // Whether or not the player is currently connected.
-    bool online = 4;
 }
 
 // Snapshot is a snapshot of the SDK server.
 message Snapshot {
-    // When the game was created.
-    google.protobuf.Timestamp created_at = 1;
-
     // List of all players that have ever joined the game.
-    repeated Player players = 2;
+    repeated Player players = 1;
 
     // The current game snapshot.
-    game.Snapshot snapshot = 3;
+    game.Snapshot snapshot = 2;
 
     // The list of all past actions done on the game.
-    repeated Action history = 4;
+    repeated Action history = 3;
+
+    // When the game was last updated.
+    google.protobuf.Timestamp updated_at = 4;
 }
 
 // Action is an action done by a player.

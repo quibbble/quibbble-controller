@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/quibbble/quibbble-controller/pkg/game"
+	"github.com/quibbble/quibbble-controller/pkg/proto/game"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

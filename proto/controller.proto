@@ -4,20 +4,20 @@ package quibbble.com.controller;
 option go_package = "/controller";
 
 import "google/protobuf/empty.proto";
-import "game.proto";
+import "sdk.proto";
 
 // gRPC definition for the Quibbble Controller.
 // This service controls the complete lifecycle of all games.
 service Controller {
     // Creates a new game instance. If game storage is enabled and the game 
     // exists in storage then load that game instead of creating a new game. 
-    rpc Create(GameKey) returns (google.protobuf.Empty) {}
+    rpc CreateGame(GameKey) returns (google.protobuf.Empty) {}
 
     // Deletes an active game if it exists.
-    rpc Delete(GameKey) returns (google.protobuf.Empty) {}
+    rpc DeleteGame(GameKey) returns (google.protobuf.Empty) {}
 
     // Finds the active game if it exists and stores the game in storage.
-    rpc Store(GameKey) returns (google.protobuf.Empty) {}
+    rpc StoreGame(GameKey) returns (google.protobuf.Empty) {}
 
     // Retrieves data about active games and players.
     rpc GetActivity(google.protobuf.Empty) returns (Activity) {}
@@ -25,14 +25,17 @@ service Controller {
 
 // GameKey defines the fields needed to lookup a game.
 message GameKey {
-    // The kind of game being played i.e. chess or carcassonne.
-    string Kind = 1;
+    // The image repo to pull i.e. quibbble/chess or quibbble/carcassonne.
+    string Repository = 1;
+
+    // The image tag.
+    string Tag = 2;
 
     // The name of the specific game instance.
-    string Name = 2;
+    string Name = 3;
 
     // A snapshot only required when creating a new game instance.
-    optional game.Snapshot snapshot = 3;
+    optional sdk.Snapshot snapshot = 4;
 }
 
 message Activity {

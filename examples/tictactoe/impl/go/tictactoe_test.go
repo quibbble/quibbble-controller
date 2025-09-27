@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/quibbble/quibbble-controller/pkg/game"
+	"github.com/quibbble/quibbble-controller/pkg/proto/game"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 )

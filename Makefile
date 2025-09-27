@@ -29,12 +29,12 @@ clean:
 	go clean -testcache
 
 proto_quibbble:
-	protoc --proto_path=proto --go_out=pkg --go-grpc_out=pkg proto/game.proto 
-	protoc --proto_path=proto --go_out=pkg --go-grpc_out=pkg \
-		--go_opt=Mgame.proto=github.com/quibbble/quibbble-controller/pkg/game \
+	protoc --proto_path=proto --go_out=pkg/proto --go-grpc_out=pkg/proto proto/game.proto 
+	protoc --proto_path=proto --go_out=pkg/proto --go-grpc_out=pkg/proto \
+		--go_opt=Mgame.proto=github.com/quibbble/quibbble-controller/pkg/proto/game \
 		proto/sdk.proto
-	protoc --proto_path=proto --go_out=pkg --go-grpc_out=pkg \
-		--go_opt=Mgame.proto=github.com/quibbble/quibbble-controller/pkg/game \
+	protoc --proto_path=proto --go_out=pkg/proto --go-grpc_out=pkg/proto \
+		--go_opt=Msdk.proto=github.com/quibbble/quibbble-controller/pkg/proto/sdk \
 		proto/controller.proto
 
 proto_tictactoe:

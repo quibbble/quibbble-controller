@@ -8,7 +8,6 @@ package controller
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -21,9 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Controller_Create_FullMethodName      = "/quibbble.com.controller.Controller/Create"
-	Controller_Delete_FullMethodName      = "/quibbble.com.controller.Controller/Delete"
-	Controller_Store_FullMethodName       = "/quibbble.com.controller.Controller/Store"
+	Controller_CreateGame_FullMethodName  = "/quibbble.com.controller.Controller/CreateGame"
+	Controller_DeleteGame_FullMethodName  = "/quibbble.com.controller.Controller/DeleteGame"
+	Controller_StoreGame_FullMethodName   = "/quibbble.com.controller.Controller/StoreGame"
 	Controller_GetActivity_FullMethodName = "/quibbble.com.controller.Controller/GetActivity"
 )
 
@@ -36,11 +35,11 @@ const (
 type ControllerClient interface {
 	// Creates a new game instance. If game storage is enabled and the game
 	// exists in storage then load that game instead of creating a new game.
-	Create(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateGame(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Deletes an active game if it exists.
-	Delete(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteGame(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Finds the active game if it exists and stores the game in storage.
-	Store(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	StoreGame(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Retrieves data about active games and players.
 	GetActivity(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Activity, error)
 }
@@ -53,30 +52,30 @@ func NewControllerClient(cc grpc.ClientConnInterface) ControllerClient {
 	return &controllerClient{cc}
 }
 
-func (c *controllerClient) Create(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *controllerClient) CreateGame(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, Controller_Create_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Controller_CreateGame_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *controllerClient) Delete(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *controllerClient) DeleteGame(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, Controller_Delete_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Controller_DeleteGame_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *controllerClient) Store(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *controllerClient) StoreGame(ctx context.Context, in *GameKey, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, Controller_Store_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Controller_StoreGame_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,11 +101,11 @@ func (c *controllerClient) GetActivity(ctx context.Context, in *emptypb.Empty, o
 type ControllerServer interface {
 	// Creates a new game instance. If game storage is enabled and the game
 	// exists in storage then load that game instead of creating a new game.
-	Create(context.Context, *GameKey) (*emptypb.Empty, error)
+	CreateGame(context.Context, *GameKey) (*emptypb.Empty, error)
 	// Deletes an active game if it exists.
-	Delete(context.Context, *GameKey) (*emptypb.Empty, error)
+	DeleteGame(context.Context, *GameKey) (*emptypb.Empty, error)
 	// Finds the active game if it exists and stores the game in storage.
-	Store(context.Context, *GameKey) (*emptypb.Empty, error)
+	StoreGame(context.Context, *GameKey) (*emptypb.Empty, error)
 	// Retrieves data about active games and players.
 	GetActivity(context.Context, *emptypb.Empty) (*Activity, error)
 	mustEmbedUnimplementedControllerServer()
@@ -119,14 +118,14 @@ type ControllerServer interface {
 // pointer dereference when methods are called.
 type UnimplementedControllerServer struct{}
 
-func (UnimplementedControllerServer) Create(context.Context, *GameKey) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedControllerServer) CreateGame(context.Context, *GameKey) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGame not implemented")
 }
-func (UnimplementedControllerServer) Delete(context.Context, *GameKey) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+func (UnimplementedControllerServer) DeleteGame(context.Context, *GameKey) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGame not implemented")
 }
-func (UnimplementedControllerServer) Store(context.Context, *GameKey) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Store not implemented")
+func (UnimplementedControllerServer) StoreGame(context.Context, *GameKey) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StoreGame not implemented")
 }
 func (UnimplementedControllerServer) GetActivity(context.Context, *emptypb.Empty) (*Activity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActivity not implemented")
@@ -152,56 +151,56 @@ func RegisterControllerServer(s grpc.ServiceRegistrar, srv ControllerServer) {
 	s.RegisterService(&Controller_ServiceDesc, srv)
 }
 
-func _Controller_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Controller_CreateGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GameKey)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ControllerServer).Create(ctx, in)
+		return srv.(ControllerServer).CreateGame(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Controller_Create_FullMethodName,
+		FullMethod: Controller_CreateGame_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControllerServer).Create(ctx, req.(*GameKey))
+		return srv.(ControllerServer).CreateGame(ctx, req.(*GameKey))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Controller_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Controller_DeleteGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GameKey)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ControllerServer).Delete(ctx, in)
+		return srv.(ControllerServer).DeleteGame(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Controller_Delete_FullMethodName,
+		FullMethod: Controller_DeleteGame_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControllerServer).Delete(ctx, req.(*GameKey))
+		return srv.(ControllerServer).DeleteGame(ctx, req.(*GameKey))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Controller_Store_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Controller_StoreGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GameKey)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ControllerServer).Store(ctx, in)
+		return srv.(ControllerServer).StoreGame(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Controller_Store_FullMethodName,
+		FullMethod: Controller_StoreGame_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControllerServer).Store(ctx, req.(*GameKey))
+		return srv.(ControllerServer).StoreGame(ctx, req.(*GameKey))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -232,16 +231,16 @@ var Controller_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ControllerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Create",
-			Handler:    _Controller_Create_Handler,
+			MethodName: "CreateGame",
+			Handler:    _Controller_CreateGame_Handler,
 		},
 		{
-			MethodName: "Delete",
-			Handler:    _Controller_Delete_Handler,
+			MethodName: "DeleteGame",
+			Handler:    _Controller_DeleteGame_Handler,
 		},
 		{
-			MethodName: "Store",
-			Handler:    _Controller_Store_Handler,
+			MethodName: "StoreGame",
+			Handler:    _Controller_StoreGame_Handler,
 		},
 		{
 			MethodName: "GetActivity",

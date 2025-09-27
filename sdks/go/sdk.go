@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	"github.com/quibbble/quibbble-controller/pkg/sdk"
+	"github.com/quibbble/quibbble-controller/pkg/proto/sdk"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

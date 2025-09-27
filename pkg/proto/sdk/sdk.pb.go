@@ -7,15 +7,14 @@
 package sdk
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
-	game "github.com/quibbble/quibbble-controller/pkg/game"
+	game "github.com/quibbble/quibbble-controller/pkg/proto/game"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -33,9 +32,7 @@ type Player struct {
 	// The display name of the player.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// The team the player is on.
-	Team string `protobuf:"bytes,3,opt,name=team,proto3" json:"team,omitempty"`
-	// Whether or not the player is currently connected.
-	Online        bool `protobuf:"varint,4,opt,name=online,proto3" json:"online,omitempty"`
+	Team          string `protobuf:"bytes,3,opt,name=team,proto3" json:"team,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -91,24 +88,17 @@ func (x *Player) GetTeam() string {
 	return ""
 }
 
-func (x *Player) GetOnline() bool {
-	if x != nil {
-		return x.Online
-	}
-	return false
-}
-
 // Snapshot is a snapshot of the SDK server.
 type Snapshot struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// When the game was created.
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	// List of all players that have ever joined the game.
-	Players []*Player `protobuf:"bytes,2,rep,name=players,proto3" json:"players,omitempty"`
+	Players []*Player `protobuf:"bytes,1,rep,name=players,proto3" json:"players,omitempty"`
 	// The current game snapshot.
-	Snapshot *game.Snapshot `protobuf:"bytes,3,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
+	Snapshot *game.Snapshot `protobuf:"bytes,2,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
 	// The list of all past actions done on the game.
-	History       []*Action `protobuf:"bytes,4,rep,name=history,proto3" json:"history,omitempty"`
+	History []*Action `protobuf:"bytes,3,rep,name=history,proto3" json:"history,omitempty"`
+	// When the game was last updated.
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -143,13 +133,6 @@ func (*Snapshot) Descriptor() ([]byte, []int) {
 	return file_sdk_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Snapshot) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
 func (x *Snapshot) GetPlayers() []*Player {
 	if x != nil {
 		return x.Players
@@ -167,6 +150,13 @@ func (x *Snapshot) GetSnapshot() *game.Snapshot {
 func (x *Snapshot) GetHistory() []*Action {
 	if x != nil {
 		return x.History
+	}
+	return nil
+}
+
+func (x *Snapshot) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
 	}
 	return nil
 }
@@ -231,18 +221,17 @@ var File_sdk_proto protoreflect.FileDescriptor
 const file_sdk_proto_rawDesc = "" +
 	"\n" +
 	"\tsdk.proto\x12\x10quibbble.com.sdk\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\n" +
-	"game.proto\"X\n" +
+	"game.proto\"@\n" +
 	"\x06Player\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04team\x18\x03 \x01(\tR\x04team\x12\x16\n" +
-	"\x06online\x18\x04 \x01(\bR\x06online\"\xe6\x01\n" +
-	"\bSnapshot\x129\n" +
+	"\x04team\x18\x03 \x01(\tR\x04team\"\xe6\x01\n" +
+	"\bSnapshot\x122\n" +
+	"\aplayers\x18\x01 \x03(\v2\x18.quibbble.com.sdk.PlayerR\aplayers\x127\n" +
+	"\bsnapshot\x18\x02 \x01(\v2\x1b.quibbble.com.game.SnapshotR\bsnapshot\x122\n" +
+	"\ahistory\x18\x03 \x03(\v2\x18.quibbble.com.sdk.ActionR\ahistory\x129\n" +
 	"\n" +
-	"created_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x122\n" +
-	"\aplayers\x18\x02 \x03(\v2\x18.quibbble.com.sdk.PlayerR\aplayers\x127\n" +
-	"\bsnapshot\x18\x03 \x01(\v2\x1b.quibbble.com.game.SnapshotR\bsnapshot\x122\n" +
-	"\ahistory\x18\x04 \x03(\v2\x18.quibbble.com.sdk.ActionR\ahistory\"m\n" +
+	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"m\n" +
 	"\x06Action\x120\n" +
 	"\x06player\x18\x01 \x01(\v2\x18.quibbble.com.sdk.PlayerR\x06player\x121\n" +
 	"\x06action\x18\x02 \x01(\v2\x19.quibbble.com.game.ActionR\x06action2\x9d\x03\n" +
@@ -273,16 +262,16 @@ var file_sdk_proto_goTypes = []any{
 	(*Player)(nil),                // 0: quibbble.com.sdk.Player
 	(*Snapshot)(nil),              // 1: quibbble.com.sdk.Snapshot
 	(*Action)(nil),                // 2: quibbble.com.sdk.Action
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
-	(*game.Snapshot)(nil),         // 4: quibbble.com.game.Snapshot
+	(*game.Snapshot)(nil),         // 3: quibbble.com.game.Snapshot
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
 	(*game.Action)(nil),           // 5: quibbble.com.game.Action
 	(*emptypb.Empty)(nil),         // 6: google.protobuf.Empty
 }
 var file_sdk_proto_depIdxs = []int32{
-	3,  // 0: quibbble.com.sdk.Snapshot.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 1: quibbble.com.sdk.Snapshot.players:type_name -> quibbble.com.sdk.Player
-	4,  // 2: quibbble.com.sdk.Snapshot.snapshot:type_name -> quibbble.com.game.Snapshot
-	2,  // 3: quibbble.com.sdk.Snapshot.history:type_name -> quibbble.com.sdk.Action
+	0,  // 0: quibbble.com.sdk.Snapshot.players:type_name -> quibbble.com.sdk.Player
+	3,  // 1: quibbble.com.sdk.Snapshot.snapshot:type_name -> quibbble.com.game.Snapshot
+	2,  // 2: quibbble.com.sdk.Snapshot.history:type_name -> quibbble.com.sdk.Action
+	4,  // 3: quibbble.com.sdk.Snapshot.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 4: quibbble.com.sdk.Action.player:type_name -> quibbble.com.sdk.Player
 	5,  // 5: quibbble.com.sdk.Action.action:type_name -> quibbble.com.game.Action
 	0,  // 6: quibbble.com.sdk.SDK.GetSnapshot:input_type -> quibbble.com.sdk.Player
