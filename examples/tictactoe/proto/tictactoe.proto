@@ -3,15 +3,15 @@ syntax = "proto3";
 package quibbble.com;
 option go_package = "./tictactoe";
 
-message TicTacToeRow {
+message Row {
     repeated string column = 1;
 }
 
-message TicTacToeSnapshotSpec {
-    repeated TicTacToeRow Row  = 1;
+message SnapshotSpec {
+    repeated Row board  = 1;
 }
 
-message TicTacToeMarkActionSpec {
+message MarkActionSpec {
     int64 row = 1;
     int64 column = 2;
 }

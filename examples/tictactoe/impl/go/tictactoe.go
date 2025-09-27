@@ -44,8 +44,8 @@ func (t *TicTacToe) Init(c context.Context, s *game.Snapshot) (*emptypb.Empty, e
 		Teams: s.Teams,
 		Turn:  s.Turn,
 	}
-	snapshotSpec := TicTacToeSnapshotSpec{
-		Row: []*TicTacToeRow{
+	snapshotSpec := SnapshotSpec{
+		Board: []*Row{
 			{Column: []string{NilTeam, NilTeam, NilTeam}},
 			{Column: []string{NilTeam, NilTeam, NilTeam}},
 			{Column: []string{NilTeam, NilTeam, NilTeam}},
@@ -68,11 +68,11 @@ func (t *TicTacToe) Load(c context.Context, s *game.Snapshot) (*emptypb.Empty, e
 func (t *TicTacToe) PlayAction(c context.Context, a *game.Action) (*emptypb.Empty, error) {
 	switch a.Kind {
 	case MarkAction:
-		markAction := TicTacToeMarkActionSpec{}
+		markAction := MarkActionSpec{}
 		if err := a.Spec.UnmarshalTo(&markAction); err != nil {
 			return nil, err
 		}
-		snapshotSpec := TicTacToeSnapshotSpec{}
+		snapshotSpec := SnapshotSpec{}
 		if err := t.Snapshot.Spec.UnmarshalTo(&snapshotSpec); err != nil {
 			return nil, err
 		}
@@ -85,12 +85,12 @@ func (t *TicTacToe) PlayAction(c context.Context, a *game.Action) (*emptypb.Empt
 			markAction.Row > rows || markAction.Column > columns {
 			return nil, fmt.Errorf("[%s %s] row or column out of bounds", Kind, MarkAction)
 		}
-		if snapshotSpec.Row[markAction.Row].Column[markAction.Column] != NilTeam {
+		if snapshotSpec.Board[markAction.Row].Column[markAction.Column] != NilTeam {
 			return nil, fmt.Errorf("[%s %s] location is already taken", Kind, MarkAction)
 		}
 
 		// do mark action
-		snapshotSpec.Row[markAction.Row].Column[markAction.Column] = a.Team
+		snapshotSpec.Board[markAction.Row].Column[markAction.Column] = a.Team
 		if err := t.Spec.MarshalFrom(&snapshotSpec); err != nil {
 			return nil, err
 		}
@@ -105,18 +105,18 @@ func (t *TicTacToe) PlayAction(c context.Context, a *game.Action) (*emptypb.Empt
 
 		winner := NilTeam
 		for i := range rows {
-			if equal(snapshotSpec.Row[0].Column[i], snapshotSpec.Row[1].Column[i], snapshotSpec.Row[2].Column[i]) {
-				winner = snapshotSpec.Row[0].Column[i]
+			if equal(snapshotSpec.Board[0].Column[i], snapshotSpec.Board[1].Column[i], snapshotSpec.Board[2].Column[i]) {
+				winner = snapshotSpec.Board[0].Column[i]
 			}
-			if equal(snapshotSpec.Row[i].Column[0], snapshotSpec.Row[i].Column[1], snapshotSpec.Row[i].Column[2]) {
-				winner = snapshotSpec.Row[i].Column[0]
+			if equal(snapshotSpec.Board[i].Column[0], snapshotSpec.Board[i].Column[1], snapshotSpec.Board[i].Column[2]) {
+				winner = snapshotSpec.Board[i].Column[0]
 			}
 		}
-		if equal(snapshotSpec.Row[0].Column[0], snapshotSpec.Row[1].Column[1], snapshotSpec.Row[2].Column[2]) {
-			winner = snapshotSpec.Row[0].Column[0]
+		if equal(snapshotSpec.Board[0].Column[0], snapshotSpec.Board[1].Column[1], snapshotSpec.Board[2].Column[2]) {
+			winner = snapshotSpec.Board[0].Column[0]
 		}
-		if equal(snapshotSpec.Row[2].Column[0], snapshotSpec.Row[1].Column[1], snapshotSpec.Row[0].Column[2]) {
-			winner = snapshotSpec.Row[2].Column[0]
+		if equal(snapshotSpec.Board[2].Column[0], snapshotSpec.Board[1].Column[1], snapshotSpec.Board[0].Column[2]) {
+			winner = snapshotSpec.Board[2].Column[0]
 		}
 		if winner != NilTeam {
 			t.Snapshot.Winners = []string{winner}
@@ -126,7 +126,7 @@ func (t *TicTacToe) PlayAction(c context.Context, a *game.Action) (*emptypb.Empt
 		draw := true
 		for i := range rows {
 			for j := range columns {
-				if snapshotSpec.Row[i].Column[j] == NilTeam {
+				if snapshotSpec.Board[i].Column[j] == NilTeam {
 					draw = false
 				}
 			}

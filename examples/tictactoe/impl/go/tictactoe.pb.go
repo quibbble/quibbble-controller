@@ -7,12 +7,11 @@
 package tictactoe
 
 import (
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -22,27 +21,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type TicTacToeRow struct {
+type Row struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Column        []string               `protobuf:"bytes,1,rep,name=column,proto3" json:"column,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TicTacToeRow) Reset() {
-	*x = TicTacToeRow{}
+func (x *Row) Reset() {
+	*x = Row{}
 	mi := &file_tictactoe_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TicTacToeRow) String() string {
+func (x *Row) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TicTacToeRow) ProtoMessage() {}
+func (*Row) ProtoMessage() {}
 
-func (x *TicTacToeRow) ProtoReflect() protoreflect.Message {
+func (x *Row) ProtoReflect() protoreflect.Message {
 	mi := &file_tictactoe_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -54,39 +53,39 @@ func (x *TicTacToeRow) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TicTacToeRow.ProtoReflect.Descriptor instead.
-func (*TicTacToeRow) Descriptor() ([]byte, []int) {
+// Deprecated: Use Row.ProtoReflect.Descriptor instead.
+func (*Row) Descriptor() ([]byte, []int) {
 	return file_tictactoe_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *TicTacToeRow) GetColumn() []string {
+func (x *Row) GetColumn() []string {
 	if x != nil {
 		return x.Column
 	}
 	return nil
 }
 
-type TicTacToeSnapshotSpec struct {
+type SnapshotSpec struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Row           []*TicTacToeRow        `protobuf:"bytes,1,rep,name=Row,proto3" json:"Row,omitempty"`
+	Board         []*Row                 `protobuf:"bytes,1,rep,name=board,proto3" json:"board,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TicTacToeSnapshotSpec) Reset() {
-	*x = TicTacToeSnapshotSpec{}
+func (x *SnapshotSpec) Reset() {
+	*x = SnapshotSpec{}
 	mi := &file_tictactoe_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TicTacToeSnapshotSpec) String() string {
+func (x *SnapshotSpec) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TicTacToeSnapshotSpec) ProtoMessage() {}
+func (*SnapshotSpec) ProtoMessage() {}
 
-func (x *TicTacToeSnapshotSpec) ProtoReflect() protoreflect.Message {
+func (x *SnapshotSpec) ProtoReflect() protoreflect.Message {
 	mi := &file_tictactoe_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -98,19 +97,19 @@ func (x *TicTacToeSnapshotSpec) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TicTacToeSnapshotSpec.ProtoReflect.Descriptor instead.
-func (*TicTacToeSnapshotSpec) Descriptor() ([]byte, []int) {
+// Deprecated: Use SnapshotSpec.ProtoReflect.Descriptor instead.
+func (*SnapshotSpec) Descriptor() ([]byte, []int) {
 	return file_tictactoe_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *TicTacToeSnapshotSpec) GetRow() []*TicTacToeRow {
+func (x *SnapshotSpec) GetBoard() []*Row {
 	if x != nil {
-		return x.Row
+		return x.Board
 	}
 	return nil
 }
 
-type TicTacToeMarkActionSpec struct {
+type MarkActionSpec struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Row           int64                  `protobuf:"varint,1,opt,name=row,proto3" json:"row,omitempty"`
 	Column        int64                  `protobuf:"varint,2,opt,name=column,proto3" json:"column,omitempty"`
@@ -118,20 +117,20 @@ type TicTacToeMarkActionSpec struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TicTacToeMarkActionSpec) Reset() {
-	*x = TicTacToeMarkActionSpec{}
+func (x *MarkActionSpec) Reset() {
+	*x = MarkActionSpec{}
 	mi := &file_tictactoe_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TicTacToeMarkActionSpec) String() string {
+func (x *MarkActionSpec) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TicTacToeMarkActionSpec) ProtoMessage() {}
+func (*MarkActionSpec) ProtoMessage() {}
 
-func (x *TicTacToeMarkActionSpec) ProtoReflect() protoreflect.Message {
+func (x *MarkActionSpec) ProtoReflect() protoreflect.Message {
 	mi := &file_tictactoe_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -143,19 +142,19 @@ func (x *TicTacToeMarkActionSpec) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TicTacToeMarkActionSpec.ProtoReflect.Descriptor instead.
-func (*TicTacToeMarkActionSpec) Descriptor() ([]byte, []int) {
+// Deprecated: Use MarkActionSpec.ProtoReflect.Descriptor instead.
+func (*MarkActionSpec) Descriptor() ([]byte, []int) {
 	return file_tictactoe_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *TicTacToeMarkActionSpec) GetRow() int64 {
+func (x *MarkActionSpec) GetRow() int64 {
 	if x != nil {
 		return x.Row
 	}
 	return 0
 }
 
-func (x *TicTacToeMarkActionSpec) GetColumn() int64 {
+func (x *MarkActionSpec) GetColumn() int64 {
 	if x != nil {
 		return x.Column
 	}
@@ -166,12 +165,12 @@ var File_tictactoe_proto protoreflect.FileDescriptor
 
 const file_tictactoe_proto_rawDesc = "" +
 	"\n" +
-	"\x0ftictactoe.proto\x12\fquibbble.com\"&\n" +
-	"\fTicTacToeRow\x12\x16\n" +
-	"\x06column\x18\x01 \x03(\tR\x06column\"E\n" +
-	"\x15TicTacToeSnapshotSpec\x12,\n" +
-	"\x03Row\x18\x01 \x03(\v2\x1a.quibbble.com.TicTacToeRowR\x03Row\"C\n" +
-	"\x17TicTacToeMarkActionSpec\x12\x10\n" +
+	"\x0ftictactoe.proto\x12\fquibbble.com\"\x1d\n" +
+	"\x03Row\x12\x16\n" +
+	"\x06column\x18\x01 \x03(\tR\x06column\"7\n" +
+	"\fSnapshotSpec\x12'\n" +
+	"\x05board\x18\x01 \x03(\v2\x11.quibbble.com.RowR\x05board\":\n" +
+	"\x0eMarkActionSpec\x12\x10\n" +
 	"\x03row\x18\x01 \x01(\x03R\x03row\x12\x16\n" +
 	"\x06column\x18\x02 \x01(\x03R\x06columnB\rZ\v./tictactoeb\x06proto3"
 
@@ -189,12 +188,12 @@ func file_tictactoe_proto_rawDescGZIP() []byte {
 
 var file_tictactoe_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_tictactoe_proto_goTypes = []any{
-	(*TicTacToeRow)(nil),            // 0: quibbble.com.TicTacToeRow
-	(*TicTacToeSnapshotSpec)(nil),   // 1: quibbble.com.TicTacToeSnapshotSpec
-	(*TicTacToeMarkActionSpec)(nil), // 2: quibbble.com.TicTacToeMarkActionSpec
+	(*Row)(nil),            // 0: quibbble.com.Row
+	(*SnapshotSpec)(nil),   // 1: quibbble.com.SnapshotSpec
+	(*MarkActionSpec)(nil), // 2: quibbble.com.MarkActionSpec
 }
 var file_tictactoe_proto_depIdxs = []int32{
-	0, // 0: quibbble.com.TicTacToeSnapshotSpec.Row:type_name -> quibbble.com.TicTacToeRow
+	0, // 0: quibbble.com.SnapshotSpec.board:type_name -> quibbble.com.Row
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

@@ -10,8 +10,8 @@ import (
 )
 
 func Test_TicTactToe(t *testing.T) {
-	snapSpec, err := anypb.New(&TicTacToeSnapshotSpec{
-		Row: []*TicTacToeRow{
+	snapSpec, err := anypb.New(&SnapshotSpec{
+		Board: []*Row{
 			{Column: []string{NilTeam, NilTeam, NilTeam}},
 			{Column: []string{NilTeam, NilTeam, NilTeam}},
 			{Column: []string{NilTeam, NilTeam, NilTeam}},
