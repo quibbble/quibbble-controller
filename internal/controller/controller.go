@@ -18,7 +18,7 @@ import (
 
 const (
 	timeout          = time.Second * 3
-	maxLiveGameCount = 50 // the maximum number of concurrent live games that the controller will support.
+	maxLiveGameCount = 20 // the maximum number of concurrent live games that the controller will support.
 )
 
 type Controller struct {
