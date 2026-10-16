@@ -1,6 +1,6 @@
 # quibbble-controller
 
-![Version: 0.2.5](https://img.shields.io/badge/Version-0.2.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 Helm Chart for the Quibbble Controller.
 
@@ -55,6 +55,7 @@ Helm Chart for the Quibbble Controller.
 | watcher.nodeSelector | object | `{}` | [Node selector] |
 | watcher.resources | object | `{}` | Resource limits and requests for the watcher |
 | watcher.schedule | string | `"*/30 * * * *"` | The cron schedule for this cleanup job |
+| watcher.startingDeadlineSeconds | int | `1800` | Maximum delay in seconds for starting a missed cleanup job; bounds the missed-schedule lookback after an outage |
 | watcher.suspend | bool | `false` | Whether or not to suspend this cleanup job |
 | watcher.tolerations | list | `[]` | Assign custom [affinity] rules |
 
