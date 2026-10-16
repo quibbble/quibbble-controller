@@ -62,6 +62,8 @@ watcher:
   suspend: false
   # -- The cron schedule for this cleanup job
   schedule: "*/30 * * * *"
+  # -- Maximum delay in seconds for starting a missed cleanup job; bounds the missed-schedule lookback after an outage
+  startingDeadlineSeconds: 1800
 # -- Resource limits and requests for the watcher
   resources: {}
     # limits:
